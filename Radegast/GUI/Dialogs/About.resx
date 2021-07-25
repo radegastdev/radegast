@@ -119,8 +119,8 @@
   </resheader>
   <data name="txtLicense.Text" xml:space="preserve">
     <value>Radegast-ng Metaverse Client
-Copyright © 2009-2014, Radegast Development Team
-Copyright © 2016, Cinder Roxley
+Copyright © 2009-2016, Radegast Development Team
+Copyright © 2017-2021, Sjofn LLC
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,52 +132,50 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</value>
   </data>
   <data name="txtOtherLicenses.Text" xml:space="preserve">
-    <value>Based on SLeek (BSD License)
+    <value>Based on SLeek
 Copyright © 2006-2008, Paul Clement (a.k.a. Delta)
 All rights reserved.
 
-PrimMesher (BSD License)
+PrimMesher
 Copyright © 2010 Dahlia Trimble
 http://forge.opensimulator.org/gf/project/primmesher/
 
-AIMLBot (LGPL License)
-The AIMLBot library (Program#) is a .NET implementation of the AIML standard.
-Copyright © 2006 Nicholas H.Tollervey (http://ntoll.org)
+AIMLBot
+Copyright © 2006 Nicholas H.Tollervey
 http://aimlbot.sourceforge.net/
 
-Ogg Vorbis codec (BSD License)
+Ogg Vorbis codec
 Copyright © 2002, Xiph.org Foundation
 
-log4net (Apache 2.0 License)
+log4net
 Copyright © Apache Software Foundation
 
-LSL parser from OpenSimulator project (BSD License)
+LSL parser from OpenSimulator project
 Copyright © Contributors, http://opensimulator.org/
 
-OpenTK library (MIT License)
-Copyright © 2006 - 2009 The Open Toolkit library.
+OpenTK library
+Copyright © 2006 - 2020 The Open Toolkit library.
 http://www.opentk.com/
 
-Command Line Library (MIT License)
+Command Line Library
 Copyright © 2005 - 2010 Giacomo Stelluti Scala
 http://commandline.codeplex.com/
 
-Protobuf-net (Apache 2.0 License)
-Copyright © 2008 Marc Gravell
-http://github.com/mgravell/protobuf-net/
+FMOD Studio
+Copyright © 1994-2016 Firelight Technologies Pty, Ltd.
+
+OpenJpegDotNet
+Copyright © 2021 Takuya Takuchi
+
+zlib.net
+Copyright © 2011 ComponentAce
+
+Uses code snippets from CSAT Library
+Copyright © 2011 mjt
 
 Uses artwork files are licenced under the 
 Creative Commons Share and Share Alike 3.0
-Copyright © 2002-2009 Linden Research Inc.
-
-FMOD Studio (Non-Commercial License)
-Copyright © 1994-2016 Firelight Technologies Pty, Ltd.
-(If you want to redistribute Radegast commercially, remove fmod.dll, fmod*.so and fmod*.dylib)
-http://www.fmod.org/
-
-Uses code snippets from CSAT Library (MIT License)
-Copyright © 2011 mjt
-http://code.google.com/p/csat/</value>
+Copyright © 2002-2009 Linden Research Inc.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
