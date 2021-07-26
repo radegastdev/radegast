@@ -51,26 +51,26 @@ before_build:
 
 after_build:
   - ps: New-Item -ItemType directory -Path .\$env:PLATFORM
-  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar %APPVEYOR_BUILD_FOLDER%\bin\Release\ | 7z a -si %PLATFORM%\Radegast-%TAG_VERSION%.tbz'
-  - ps: Copy-Item bin\Release\RadegastSetup_$env:PLATFORM.msi $env:PLATFORM\RadegastSetup-$env:TAG_VERSION.msi
-  - ps: Copy-Item bin\Release\RadegastBundle_$env:PLATFORM.exe $env:PLATFORM\RadegastSetup-$env:TAG_VERSION.exe
+  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar %APPVEYOR_BUILD_FOLDER%\bin\Release\ | 7z a -si Radegast_%PLATFORM%-%TAG_VERSION%.tbz'
+  - ps: Copy-Item bin\Release\RadegastSetup_$env:PLATFORM.msi RadegastSetup_$env:PLATFORM-$env:TAG_VERSION.msi
+  - ps: Copy-Item bin\Release\RadegastBundle_$env:PLATFORM.exe RadegastSetup_$env:PLATFORM-$env:TAG_VERSION.exe
 
 artifacts:
-  - path: 'x64\RadegastSetup-*.exe'
+  - path: 'RadegastSetup*.exe'
     name: 'Radegast Windows x64 Bundle'
     type: Auto
-  - path: 'x64\RadegastSetup-*.msi'
+  - path: 'RadegastSetup*.msi'
     name: 'Radegast Windows x64 MSI'
     type: Auto
-  - path: 'x64\Radegast-*.tbz'
+  - path: 'Radegast*.tbz'
     name: 'Radegast Linux x64'
     type: Auto
-  - path: 'x86\RadegastSetup-*.exe'
+  - path: 'RadegastSetup*.exe'
     name: 'Radegast Windows x86 Bundle'
     type: Auto
-  - path: 'x86\RadegastSetup-*.msi'
+  - path: 'RadegastSetup*.msi'
     name: 'Radegast Windows x86 MSI'
     type: Auto
-  - path: 'x86\Radegast-*.tbz'
+  - path: 'Radegast-*.tbz'
     name: 'Radegast Linux x86'
     type: Auto
