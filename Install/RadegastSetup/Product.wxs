@@ -49,11 +49,6 @@
             </Feature>
         </Feature>
 
-		<PropertyRef Id="WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED"/>
-		<Condition Message="$(var.productName) requires .NET Framework 4.7.2. Please install the .NET Framework then run this installer again.">
-			<![CDATA[WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED]]>
-		</Condition>
-
 		<?include UI.wxi?>
     </Product>
 

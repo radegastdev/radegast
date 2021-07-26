@@ -46,7 +46,9 @@ namespace Tools
           return Encoding.ASCII;
         }
         if ((object) str2 == (object) "UTF7")
+#pragma warning disable SYSLIB0001 // Type or member is obsolete
           return Encoding.UTF7;
+#pragma warning restore SYSLIB0001 // Type or member is obsolete
         if ((object) str2 == (object) "UTF8")
           return Encoding.UTF8;
         if ((object) str2 == (object) "Unicode")
