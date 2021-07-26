@@ -8,9 +8,9 @@
 ```
 Radegast Metaverse Client (http://radegast.life/)
 
-[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)  
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://github.com/cinderblocks/radegast/blob/master/LICENSE.txt)
+[![Latest version downloads](https://img.shields.io/github/downloads-pre/cinderblocks/radegast/latest/total)](https://radegast.life/downloads/)  
 [![Build status](https://ci.appveyor.com/api/projects/status/g34olv3opd2vho32/branch/master?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast/branch/master)  
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8ab436653f6946b693e1079be1dabba5)](https://www.codacy.com/gh/cinderblocks/radegast/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cinderblocks/radegast&amp;utm_campaign=Badge_Grade)  
 [![Commits per month](https://img.shields.io/github/commit-activity/m/cinderblocks/radegast)](https://www.github.com/cinderblocks/radegast/)  
 [![ZEC](https://img.shields.io/keybase/zec/cinder)](https://keybase.io/cinder) [![BTC](https://img.shields.io/keybase/btc/cinder)](https://keybase.io/cinder) 
 
