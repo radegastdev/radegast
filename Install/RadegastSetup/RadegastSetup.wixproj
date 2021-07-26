@@ -13,7 +13,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-	<InstallerPlatform>x86</InstallerPlatform>
+    <InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
     <SuppressIces>ICE99</SuppressIces>
@@ -21,31 +21,32 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>..\..\bin\Release\</OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-	<InstallerPlatform>x86</InstallerPlatform>
+    <InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-	<OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-	<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-	<InstallerPlatform>x64</InstallerPlatform>
-	<SignCabs>true</SignCabs>
-	<SignOutput>true</SignOutput>
-	<SuppressIces>ICE99</SuppressIces>
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <SignCabs>true</SignCabs>
+    <SignOutput>true</SignOutput>
+    <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x64' ">
-	<OutputPath>..\..\bin\Release\</OutputPath>
-	<IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-	<InstallerPlatform>x64</InstallerPlatform>
-	<SignCabs>true</SignCabs>
-	<SignOutput>true</SignOutput>
-	<SuppressValidation>False</SuppressValidation>
-	<SuppressIces>ICE99</SuppressIces>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <SignCabs>true</SignCabs>
+    <SignOutput>true</SignOutput>
+    <SuppressValidation>False</SuppressValidation>
+    <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NetCore31.wxs" />
+    <Compile Include="NetFx472.wxs" />
     <Compile Include="NetFx48.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />

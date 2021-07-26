@@ -12,34 +12,35 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-	<InstallerPlatform>x86</InstallerPlatform>
+    <InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>..\..\bin\Release\</OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-	<InstallerPlatform>x86</InstallerPlatform>
+    <InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-	<OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-	<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-	<InstallerPlatform>x64</InstallerPlatform>
-	<SignCabs>true</SignCabs>
-	<SignOutput>true</SignOutput>
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <SignCabs>true</SignCabs>
+    <SignOutput>true</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x64' ">
-	<OutputPath>..\..\bin\Release\</OutputPath>
-	<IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
-	<InstallerPlatform>x64</InstallerPlatform>
-	<SignCabs>true</SignCabs>
-	<SignOutput>true</SignOutput>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <SignCabs>true</SignCabs>
+    <SignOutput>true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Bundle.wxs" />
     <Compile Include="NetCore31.wxs" />
+    <Compile Include="NetFx472.wxs" />
     <Compile Include="NetFx48.wxs" />
   </ItemGroup>
   <ItemGroup>
