@@ -65,3 +65,12 @@ artifacts:
   - path: 'x64\Radegast-*.tbz'
     name: 'Radegast Linux x64'
     type: Auto
+  - path: 'x86\RadegastSetup-*.exe'
+    name: 'Radegast Windows x86 Bundle'
+    type: Auto
+  - path: 'x86\RadegastSetup-*.msi'
+    name: 'Radegast Windows x86 MSI'
+    type: Auto
+  - path: 'x86\Radegast-*.tbz'
+    name: 'Radegast Linux x86'
+    type: Auto
