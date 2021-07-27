@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 	<UseWindowsForms>true</UseWindowsForms>
     <AssemblyTitle>Radegast.Plugin.IRC</AssemblyTitle>
     <Company>Radegast Development Team</Company>
@@ -16,15 +16,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>obj\x86\Debug\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>obj\x86\Release\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
@@ -98,5 +94,8 @@
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

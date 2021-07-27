@@ -3,15 +3,21 @@
     <?include BuildProperties.wxi?>
     <?define productVersion="!(bind.packageVersion.RadegastSetup)"?>
 
-    <Bundle Name="$(var.productName) $(var.productVersion)" Version="$(var.productVersion)" 
+	<?if $(var.Platform)=x64 ?>
+	    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+	<?else ?>
+	    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+	<?endif ?>
+
+	<Bundle Name="$(var.productName) $(var.productVersion)" Version="$(var.productVersion)" 
             Manufacturer="$(var.companyName)" UpgradeCode="cccc26b5-aa17-47d8-8d5d-707a78ec9a10">
         <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
             <bal:WixStandardBootstrapperApplication LicenseFile="assets\license.rtf" ShowVersion="yes" />
         </BootstrapperApplicationRef>
-        <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles6432Folder]$(var.productName)" Persisted="yes" />
+        <Variable Name="InstallFolder" Type="string" Value="[$(var.PlatformProgramFilesFolder)]$(var.productName)" Persisted="yes" />
         <Chain>
-			<PackageGroupRef Id="NetFx48Redist"/>
-            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" Vital="yes" After="NetFx48Redist">
+			<PackageGroupRef Id="NetFx472Redist"/>
+            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" Vital="yes" After="NetFx472Redist">
                 <MsiProperty Name="APPLICATIONFOLDER" Value="[InstallFolder]" />
             </MsiPackage>
 		</Chain>

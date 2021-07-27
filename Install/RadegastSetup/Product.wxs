@@ -3,9 +3,15 @@
     <?include BuildProperties.wxi?>
     <?define productVersion="!(bind.fileVersion.Radegast.exe)"?>
 
+	<?if $(var.Platform)=x64 ?>
+	    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+	<?else ?>
+	    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+	<?endif ?>
+	
     <Product Id="*" Name="$(var.productName) $(var.productVersion)" Language="1033" 
              Version="$(var.productVersion)" Manufacturer="$(var.companyName)" UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
-		<Package InstallerVersion="405" Compressed="yes" />
+		<Package InstallerVersion="405" Manufacturer="$(var.companyName)" Compressed="yes" />
 
 		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
         <Media Id="1" Cabinet="Radegast.cab" EmbedCab="yes" />
@@ -43,9 +49,9 @@
             </Feature>
         </Feature>
 
-		<PropertyRef Id="WIX_IS_NETFRAMEWORK_48_OR_LATER_INSTALLED"/>
-		<Condition Message="$(var.productName) requires .NET Framework 4.8. Please install the .NET Framework then run this installer again.">
-			<![CDATA[WIX_IS_NETFRAMEWORK_48_OR_LATER_INSTALLED]]>
+		<PropertyRef Id="WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED"/>
+		<Condition Message="$(var.productName) requires .NET Framework 4.7.2. Please install the .NET Framework then run this installer again.">
+			<![CDATA[WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED]]>
 		</Condition>
 
 		<?include UI.wxi?>
@@ -53,7 +59,7 @@
 
     <Fragment>
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="ProgramFiles64Folder" Name="PFiles">
+            <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
                 <Directory Id="APPLICATIONFOLDER" Name="$(var.productName)" />
                 <Directory Id="ProductFilesComponentGroup" />
             </Directory>

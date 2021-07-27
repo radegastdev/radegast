@@ -4,21 +4,27 @@ init:
   - ps: Write-Host "Setting version to '$env:TAG_VERSION'"
   - ps: Update-AppveyorBuild -Version "$env:TAG_VERSION"
 
-image: Visual Studio 2019
-
-branches:
-  except:
-    - localbuilding
-
-configuration: ReleaseWindows
-
 environment:
+  matrix:
+  - job_name: Windows x64 Build
+    platform: x64
+    appveyor_build_worker_image: Visual Studio 2019
+    configuration: ReleaseWindows
+  - job_name: Windows x86 Build
+    platform: x86
+    appveyor_build_worker_image: Visual Studio 2019
+    configuration: ReleaseWindows
+
   PfxDownloadUrl:
     secure: 6zETilPjqhwgznp0rOyu2lloNy/uIU0coJBWCW+ADBiofQTU8ZuU3BCIEifEPI1R
   PfxDownloadPasswd:
     secure: qzHJldnavMFT8+Cm2eXndg==
   PfxPassword:
     secure: +vWSGzLkiBGVIxfPb+iRtD+/maQjI2d92hN4PoNAxMc=
+
+branches:
+  except:
+    - localbuilding
 
 pull_requests:
   do_not_increment_build_number: true
@@ -44,18 +50,27 @@ before_build:
   - nuget restore radegast.sln
 
 after_build:
-  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar %APPVEYOR_BUILD_FOLDER%\bin\Release\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
-  - cmd: 'msbuild "%APPVEYOR_BUILD_FOLDER%\radegast.sln" /t:RadegastBundle /p:Platform="x86" /p:BuildProjectReferences=false /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
-  - ps: Copy-Item bin\Release\RadegastSetup.msi RadegastSetup-$env:TAG_VERSION.msi
-  - ps: Copy-Item bin\Release\RadegastBundle.exe RadegastSetup-$env:TAG_VERSION.exe
+  - ps: New-Item -ItemType directory -Path .\$env:PLATFORM
+  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar %APPVEYOR_BUILD_FOLDER%\bin\Release\ | 7z a -si Radegast_%PLATFORM%-%TAG_VERSION%.tbz'
+  - ps: Copy-Item bin\Release\RadegastSetup_$env:PLATFORM.msi RadegastSetup_$env:PLATFORM-$env:TAG_VERSION.msi
+  - ps: Copy-Item bin\Release\RadegastBundle_$env:PLATFORM.exe RadegastSetup_$env:PLATFORM-$env:TAG_VERSION.exe
 
 artifacts:
-  - path: 'RadegastSetup-*.exe'
-    name: 'Radegast Windows Bundle'
+  - path: 'RadegastSetup*.exe'
+    name: 'Radegast Windows x64 Bundle'
     type: Auto
-  - path: 'RadegastSetup-*.msi'
-    name: 'Radegast Windows MSI'
+  - path: 'RadegastSetup*.msi'
+    name: 'Radegast Windows x64 MSI'
+    type: Auto
+  - path: 'Radegast*.tbz'
+    name: 'Radegast Linux x64'
+    type: Auto
+  - path: 'RadegastSetup*.exe'
+    name: 'Radegast Windows x86 Bundle'
+    type: Auto
+  - path: 'RadegastSetup*.msi'
+    name: 'Radegast Windows x86 MSI'
     type: Auto
   - path: 'Radegast-*.tbz'
-    name: 'Radegast Linux'
+    name: 'Radegast Linux x86'
     type: Auto
