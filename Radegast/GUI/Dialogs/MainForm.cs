@@ -33,6 +33,7 @@ using System.IO;
 using System.Web;
 using Radegast.Netcom;
 using OpenMetaverse;
+using NetSparkleUpdater.SignatureVerifiers;
 
 namespace Radegast
 {
@@ -82,6 +83,8 @@ namespace Radegast
         private bool AutoPilotActive = false;
         private TransparentButton btnDialogNextControl;
         private SlUriParser uriParser;
+        private NetSparkleUpdater.SparkleUpdater SparkleUpdater;
+
         #endregion
 
         #region Constructor and disposal
@@ -135,6 +138,20 @@ namespace Radegast
             RefreshWindowTitle();
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
+
+            #region sparkle updater
+            var appcastUrl = "https://update.radegast.life/appcast.xml";
+            var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
+            var icon = Icon.ExtractAssociatedIcon(manifestModuleName);
+            SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl, new DSAChecker(NetSparkleUpdater.Enums.SecurityMode.Strict))
+            {
+                UIFactory = new NetSparkleUpdater.UI.WinForms.UIFactory(icon),
+                RelaunchAfterUpdate = true,
+                UseNotificationToast = true,
+                SecurityProtocolType = System.Net.SecurityProtocolType.Tls12
+            };
+            SparkleUpdater.StartLoop(true);
+            #endregion
         }
 
         private void Network_SimChanged(object sender, SimChangedEventArgs e)
@@ -663,7 +680,6 @@ namespace Radegast
                     ImageNames.Add(de.Entry.Key.ToString());
                 }
             }
-            StartUpdateCheck(false);
 
             if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
             {
@@ -1159,70 +1175,6 @@ namespace Radegast
             (new frmAbout(instance)).ShowDialog();
         }
 
-        #region Update Checking
-        private UpdateChecker updateChecker = null;
-        private bool ManualUpdateCheck = false;
-
-        public void StartUpdateCheck(bool userInitiated)
-        {
-            ManualUpdateCheck = userInitiated;
-
-            if (updateChecker != null)
-            {
-                if (ManualUpdateCheck)
-                    TabConsole.DisplayNotificationInChat("Update check already in progress.");
-                return;
-            }
-
-            if (ManualUpdateCheck)
-                TabConsole.DisplayNotificationInChat("Checking for updates...", ChatBufferTextStyle.StatusBlue);
-            updateChecker = new UpdateChecker();
-            updateChecker.OnUpdateInfoReceived += OnUpdateInfoReceived;
-            updateChecker.StartCheck();
-        }
-
-        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TabConsole.SelectTab("chat");
-            StartUpdateCheck(true);
-        }
-
-        void OnUpdateInfoReceived(object sender, UpdateCheckerArgs e)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(() => OnUpdateInfoReceived(sender, e)));
-                return;
-            }
-
-            if (!e.Success)
-            {
-                if (ManualUpdateCheck)
-                    TabConsole.DisplayNotificationInChat("Error: Failed connecting to the update site.", ChatBufferTextStyle.StatusBlue);
-            }
-            else
-            {
-                if (!ManualUpdateCheck && e.Info.DisplayMOTD)
-                {
-                    TabConsole.DisplayNotificationInChat(e.Info.MOTD, ChatBufferTextStyle.StatusBlue);
-                }
-
-                if (e.Info.UpdateAvailable)
-                {
-                    TabConsole.DisplayNotificationInChat("New version available at " + e.Info.DownloadSite, ChatBufferTextStyle.Alert);
-                }
-                else
-                {
-                    if (ManualUpdateCheck)
-                        TabConsole.DisplayNotificationInChat("Your version is up to date.", ChatBufferTextStyle.StatusBlue);
-                }
-            }
-
-            updateChecker.Dispose();
-            updateChecker = null;
-        }
-        #endregion
-
         private void ToggleHidden(string tabName)
         {
             if (!TabConsole.TabExists(tabName)) return;
@@ -1678,6 +1630,11 @@ namespace Radegast
         {
             var miniMapControl = new GUI.Dialogs.MiniMapForm(client);
             miniMapControl.Show();
+        }
+
+        private void ctxCheckForUpdates_Click(object sender, EventArgs e)
+        {
+            SparkleUpdater.CheckForUpdatesAtUserRequest();
         }
     }
 }
