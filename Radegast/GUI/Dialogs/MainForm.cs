@@ -143,7 +143,7 @@ namespace Radegast
             var appcastUrl = "https://update.radegast.life/appcast.xml";
             var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
             var icon = Icon.ExtractAssociatedIcon(manifestModuleName);
-            SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl, new DSAChecker(NetSparkleUpdater.Enums.SecurityMode.Strict))
+            SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl, new Ed25519Checker(NetSparkleUpdater.Enums.SecurityMode.Strict))
             {
                 UIFactory = new NetSparkleUpdater.UI.WinForms.UIFactory(icon),
                 RelaunchAfterUpdate = true,
