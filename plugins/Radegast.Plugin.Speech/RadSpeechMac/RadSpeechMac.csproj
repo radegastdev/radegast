@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyTitle>RadSpeechMac</AssemblyTitle>
     <Company>Hewlett-Packard Company</Company>
     <Product>RadSpeechMac</Product>

@@ -46,6 +46,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NetCore31.wxs" />
+    <Compile Include="NetFx472.wxs" />
+    <Compile Include="NetFx48.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />
     <Compile Include="VCRedist.wxs" />

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 	<UseWindowsForms>true</UseWindowsForms>
     <AssemblyTitle>Radegast.Plugin.IRC</AssemblyTitle>
     <Company>Radegast Development Team</Company>

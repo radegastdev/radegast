@@ -16,7 +16,7 @@
         </BootstrapperApplicationRef>
         <Variable Name="InstallFolder" Type="string" Value="[$(var.PlatformProgramFilesFolder)]$(var.productName)" Persisted="yes" />
         <Chain>
-			<PackageGroupRef Id="WindowsDesktopRuntime31Web"/>
+			<PackageGroupRef Id="NetFx472Redist"/>
             <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" Vital="yes" After="NetFx472Redist">
                 <MsiProperty Name="APPLICATIONFOLDER" Value="[InstallFolder]" />
             </MsiPackage>
