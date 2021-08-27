@@ -87,7 +87,6 @@ namespace Radegast
             this.cbRLV = new System.Windows.Forms.CheckBox();
             this.cbRLVDebug = new System.Windows.Forms.CheckBox();
             this.cbMinToTrey = new System.Windows.Forms.CheckBox();
-            this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.Chat = new System.Windows.Forms.GroupBox();
             this.cbNameLinks = new System.Windows.Forms.CheckBox();
@@ -285,7 +284,6 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbRLV);
             this.cbMisc.Controls.Add(this.cbRLVDebug);
             this.cbMisc.Controls.Add(this.cbMinToTrey);
-            this.cbMisc.Controls.Add(this.cbRadegastClientTag);
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
@@ -296,7 +294,7 @@ namespace Radegast
             // cbThemeCompatibilityMode
             // 
             this.cbThemeCompatibilityMode.AutoSize = true;
-            this.cbThemeCompatibilityMode.Location = new System.Drawing.Point(6, 380);
+            this.cbThemeCompatibilityMode.Location = new System.Drawing.Point(6, 362);
             this.cbThemeCompatibilityMode.Name = "cbThemeCompatibilityMode";
             this.cbThemeCompatibilityMode.Size = new System.Drawing.Size(150, 17);
             this.cbThemeCompatibilityMode.TabIndex = 22;
@@ -306,7 +304,7 @@ namespace Radegast
             // cbConfirmExit
             // 
             this.cbConfirmExit.AutoSize = true;
-            this.cbConfirmExit.Location = new System.Drawing.Point(6, 357);
+            this.cbConfirmExit.Location = new System.Drawing.Point(6, 339);
             this.cbConfirmExit.Name = "cbConfirmExit";
             this.cbConfirmExit.Size = new System.Drawing.Size(81, 17);
             this.cbConfirmExit.TabIndex = 21;
@@ -315,7 +313,7 @@ namespace Radegast
             // 
             // txtResolveURITime
             // 
-            this.txtResolveURITime.Location = new System.Drawing.Point(157, 338);
+            this.txtResolveURITime.Location = new System.Drawing.Point(157, 320);
             this.txtResolveURITime.Name = "txtResolveURITime";
             this.txtResolveURITime.Size = new System.Drawing.Size(53, 20);
             this.txtResolveURITime.TabIndex = 20;
@@ -325,7 +323,7 @@ namespace Radegast
             // cbResolveURIs
             // 
             this.cbResolveURIs.AutoSize = true;
-            this.cbResolveURIs.Location = new System.Drawing.Point(6, 322);
+            this.cbResolveURIs.Location = new System.Drawing.Point(6, 304);
             this.cbResolveURIs.Name = "cbResolveURIs";
             this.cbResolveURIs.Size = new System.Drawing.Size(92, 17);
             this.cbResolveURIs.TabIndex = 18;
@@ -336,9 +334,9 @@ namespace Radegast
             // cbShowScriptErrors
             // 
             this.cbShowScriptErrors.AutoSize = true;
-            this.cbShowScriptErrors.Location = new System.Drawing.Point(6, 280);
+            this.cbShowScriptErrors.Location = new System.Drawing.Point(6, 262);
             this.cbShowScriptErrors.Name = "cbShowScriptErrors";
-            this.cbShowScriptErrors.Size = new System.Drawing.Size(110, 17);
+            this.cbShowScriptErrors.Size = new System.Drawing.Size(113, 17);
             this.cbShowScriptErrors.TabIndex = 17;
             this.cbShowScriptErrors.Text = "Show Script Errors";
             this.cbShowScriptErrors.UseVisualStyleBackColor = true;
@@ -346,7 +344,7 @@ namespace Radegast
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 341);
+            this.label4.Location = new System.Drawing.Point(23, 323);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(109, 13);
             this.label4.TabIndex = 19;
@@ -355,7 +353,7 @@ namespace Radegast
             // cbDisableHTTPInventory
             // 
             this.cbDisableHTTPInventory.AutoSize = true;
-            this.cbDisableHTTPInventory.Location = new System.Drawing.Point(6, 257);
+            this.cbDisableHTTPInventory.Location = new System.Drawing.Point(6, 239);
             this.cbDisableHTTPInventory.Name = "cbDisableHTTPInventory";
             this.cbDisableHTTPInventory.Size = new System.Drawing.Size(140, 17);
             this.cbDisableHTTPInventory.TabIndex = 16;
@@ -376,7 +374,7 @@ namespace Radegast
             // cbDisableLookAt
             // 
             this.cbDisableLookAt.AutoSize = true;
-            this.cbDisableLookAt.Location = new System.Drawing.Point(6, 234);
+            this.cbDisableLookAt.Location = new System.Drawing.Point(6, 216);
             this.cbDisableLookAt.Name = "cbDisableLookAt";
             this.cbDisableLookAt.Size = new System.Drawing.Size(140, 17);
             this.cbDisableLookAt.TabIndex = 15;
@@ -397,7 +395,7 @@ namespace Radegast
             // cbRadegastLogToFile
             // 
             this.cbRadegastLogToFile.AutoSize = true;
-            this.cbRadegastLogToFile.Location = new System.Drawing.Point(6, 211);
+            this.cbRadegastLogToFile.Location = new System.Drawing.Point(6, 193);
             this.cbRadegastLogToFile.Name = "cbRadegastLogToFile";
             this.cbRadegastLogToFile.Size = new System.Drawing.Size(72, 17);
             this.cbRadegastLogToFile.TabIndex = 14;
@@ -470,7 +468,7 @@ namespace Radegast
             // cbRLVDebug
             // 
             this.cbRLVDebug.AutoSize = true;
-            this.cbRLVDebug.Location = new System.Drawing.Point(6, 300);
+            this.cbRLVDebug.Location = new System.Drawing.Point(6, 282);
             this.cbRLVDebug.Name = "cbRLVDebug";
             this.cbRLVDebug.Size = new System.Drawing.Size(136, 17);
             this.cbRLVDebug.TabIndex = 12;
@@ -488,16 +486,6 @@ namespace Radegast
             this.cbMinToTrey.Text = "Minimize to system tray";
             this.cbMinToTrey.UseVisualStyleBackColor = true;
             this.cbMinToTrey.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
-            // 
-            // cbRadegastClientTag
-            // 
-            this.cbRadegastClientTag.AutoSize = true;
-            this.cbRadegastClientTag.Location = new System.Drawing.Point(6, 191);
-            this.cbRadegastClientTag.Name = "cbRadegastClientTag";
-            this.cbRadegastClientTag.Size = new System.Drawing.Size(146, 17);
-            this.cbRadegastClientTag.TabIndex = 13;
-            this.cbRadegastClientTag.Text = "Send Radegast client tag";
-            this.cbRadegastClientTag.UseVisualStyleBackColor = true;
             // 
             // cbSyntaxHighlight
             // 
@@ -1269,7 +1257,6 @@ namespace Radegast
             this.tbpChat.ResumeLayout(false);
             this.tbpChat.PerformLayout();
             this.ResumeLayout(false);
-            this.FormClosing += FrmSettings_FormClosing;
 
         }
 
@@ -1305,7 +1292,6 @@ namespace Radegast
         public System.Windows.Forms.RadioButton rbDNOff;
         public System.Windows.Forms.CheckBox cbTaskBarHighLight;
         public System.Windows.Forms.TabPage tbpGraphics;
-        public System.Windows.Forms.CheckBox cbRadegastClientTag;
         public System.Windows.Forms.GroupBox gnAutoInventory;
         public System.Windows.Forms.ComboBox cbOnInvOffer;
         public System.Windows.Forms.CheckBox cbDisableChatIMLog;
