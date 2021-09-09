@@ -92,6 +92,7 @@ namespace Radegast
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
             this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setHoverHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopAllAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeMyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.muteListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -131,12 +132,11 @@ namespace Radegast
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkForUpdatesToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
             this.accessibilityGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutRadegastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.debugConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
@@ -158,7 +158,8 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.setHoverHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -344,7 +345,7 @@ namespace Radegast
             // 
             this.tmnuControlFly.CheckOnClick = true;
             this.tmnuControlFly.Name = "tmnuControlFly";
-            this.tmnuControlFly.Size = new System.Drawing.Size(223, 22);
+            this.tmnuControlFly.Size = new System.Drawing.Size(221, 22);
             this.tmnuControlFly.Text = "Fly";
             this.tmnuControlFly.Click += new System.EventHandler(this.tmnuControlFly_Click);
             // 
@@ -352,68 +353,68 @@ namespace Radegast
             // 
             this.tmnuControlAlwaysRun.CheckOnClick = true;
             this.tmnuControlAlwaysRun.Name = "tmnuControlAlwaysRun";
-            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(223, 22);
+            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(221, 22);
             this.tmnuControlAlwaysRun.Text = "Always Run";
             this.tmnuControlAlwaysRun.Click += new System.EventHandler(this.tmnuControlAlwaysRun_Click);
             // 
             // groundSitToolStripMenuItem
             // 
             this.groundSitToolStripMenuItem.Name = "groundSitToolStripMenuItem";
-            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.groundSitToolStripMenuItem.Text = "Sit On Ground";
             this.groundSitToolStripMenuItem.Click += new System.EventHandler(this.groundSitToolStripMenuItem_Click);
             // 
             // standToolStripMenuItem
             // 
             this.standToolStripMenuItem.Name = "standToolStripMenuItem";
-            this.standToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.standToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.standToolStripMenuItem.Text = "Stand";
             this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
-            // 
-            // stopAllAnimationsToolStripMenuItem
-            // 
-            this.stopAllAnimationsToolStripMenuItem.Name = "stopAllAnimationsToolStripMenuItem";
-            this.stopAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.stopAllAnimationsToolStripMenuItem.Text = "Stop All Animations";
-            this.stopAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.stopAllAnimationsToolStripMenuItem_Click);
             // 
             // setHoverHeightToolStripMenuItem
             // 
             this.setHoverHeightToolStripMenuItem.Name = "setHoverHeightToolStripMenuItem";
-            this.setHoverHeightToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.setHoverHeightToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.setHoverHeightToolStripMenuItem.Text = "Set Hover Height";
             this.setHoverHeightToolStripMenuItem.Click += new System.EventHandler(this.setHoverHeightToolStripMenuItem_Click);
+            // 
+            // stopAllAnimationsToolStripMenuItem
+            // 
+            this.stopAllAnimationsToolStripMenuItem.Name = "stopAllAnimationsToolStripMenuItem";
+            this.stopAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.stopAllAnimationsToolStripMenuItem.Text = "Stop All Animations";
+            this.stopAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.stopAllAnimationsToolStripMenuItem_Click);
             // 
             // changeMyDisplayNameToolStripMenuItem
             // 
             this.changeMyDisplayNameToolStripMenuItem.Name = "changeMyDisplayNameToolStripMenuItem";
-            this.changeMyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.changeMyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.changeMyDisplayNameToolStripMenuItem.Text = "Change My Display Name";
             this.changeMyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.changeMyDisplayNameToolStripMenuItem_Click);
             // 
             // muteListToolStripMenuItem
             // 
             this.muteListToolStripMenuItem.Name = "muteListToolStripMenuItem";
-            this.muteListToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.muteListToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.muteListToolStripMenuItem.Text = "Mute List";
             this.muteListToolStripMenuItem.Click += new System.EventHandler(this.muteListToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(220, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(218, 6);
             // 
             // tmnuCreateLandmark
             // 
             this.tmnuCreateLandmark.Name = "tmnuCreateLandmark";
-            this.tmnuCreateLandmark.Size = new System.Drawing.Size(223, 22);
+            this.tmnuCreateLandmark.Size = new System.Drawing.Size(221, 22);
             this.tmnuCreateLandmark.Text = "Create Landmark Here";
             this.tmnuCreateLandmark.Click += new System.EventHandler(this.tmnuCreateLandmark_Click);
             // 
             // tmnuSetHome
             // 
             this.tmnuSetHome.Name = "tmnuSetHome";
-            this.tmnuSetHome.Size = new System.Drawing.Size(223, 22);
+            this.tmnuSetHome.Size = new System.Drawing.Size(221, 22);
             this.tmnuSetHome.Text = "Set Home To Here";
             this.tmnuSetHome.Click += new System.EventHandler(this.tmnuSetHome_Click);
             // 
@@ -421,7 +422,7 @@ namespace Radegast
             // 
             this.tmnuTeleportHome.Name = "tmnuTeleportHome";
             this.tmnuTeleportHome.ShortcutKeyDisplayString = "Ctrl-Shift-H";
-            this.tmnuTeleportHome.Size = new System.Drawing.Size(223, 22);
+            this.tmnuTeleportHome.Size = new System.Drawing.Size(221, 22);
             this.tmnuTeleportHome.Text = "Teleport Home";
             this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
@@ -429,7 +430,7 @@ namespace Radegast
             // 
             this.regionParcelToolStripMenuItem.Name = "regionParcelToolStripMenuItem";
             this.regionParcelToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl-Shift-1";
-            this.regionParcelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.regionParcelToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.regionParcelToolStripMenuItem.Text = "Region/Parcel";
             this.regionParcelToolStripMenuItem.Click += new System.EventHandler(this.regionParcelToolStripMenuItem_Click);
             // 
@@ -440,7 +441,7 @@ namespace Radegast
             this.matureToolStripMenuItem,
             this.adultToolStripMenuItem});
             this.setAccessLevelToolStripMenuItem.Name = "setAccessLevelToolStripMenuItem";
-            this.setAccessLevelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.setAccessLevelToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.setAccessLevelToolStripMenuItem.Text = "Set Access Level";
             this.setAccessLevelToolStripMenuItem.ToolTipText = "To which maturity level sims will you be able to teleport";
             // 
@@ -468,13 +469,13 @@ namespace Radegast
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(220, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(218, 6);
             // 
             // tmnuStatusAway
             // 
             this.tmnuStatusAway.CheckOnClick = true;
             this.tmnuStatusAway.Name = "tmnuStatusAway";
-            this.tmnuStatusAway.Size = new System.Drawing.Size(223, 22);
+            this.tmnuStatusAway.Size = new System.Drawing.Size(221, 22);
             this.tmnuStatusAway.Text = "Away";
             this.tmnuStatusAway.Click += new System.EventHandler(this.tmnuStatusAway_Click);
             // 
@@ -482,7 +483,7 @@ namespace Radegast
             // 
             this.tmnuStatusBusy.CheckOnClick = true;
             this.tmnuStatusBusy.Name = "tmnuStatusBusy";
-            this.tmnuStatusBusy.Size = new System.Drawing.Size(223, 22);
+            this.tmnuStatusBusy.Size = new System.Drawing.Size(221, 22);
             this.tmnuStatusBusy.Text = "Busy";
             this.tmnuStatusBusy.Click += new System.EventHandler(this.tmnuStatusBusy_Click);
             // 
@@ -496,12 +497,12 @@ namespace Radegast
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem,
             this.myAttachmentsToolStripMenuItem,
-            this.miniMapToolStripMenuItem });
+            this.miniMapToolStripMenuItem});
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
             this.tbnTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbnTools.Name = "tbnTools";
-            this.tbnTools.Size = new System.Drawing.Size(49, 22);
+            this.tbnTools.Size = new System.Drawing.Size(47, 22);
             this.tbnTools.Text = "&Tools";
             // 
             // autopilotToolStripMenuItem
@@ -546,9 +547,9 @@ namespace Radegast
             this.myAttachmentsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.myAttachmentsToolStripMenuItem.Text = "My Attachments";
             this.myAttachmentsToolStripMenuItem.Click += new System.EventHandler(this.myAttachmentsToolStripMenuItem_Click);
-            //
+            // 
             // miniMapToolStripMenuItem
-            //
+            // 
             this.miniMapToolStripMenuItem.Name = "miniMapToolStripMenuItem";
             this.miniMapToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.miniMapToolStripMenuItem.Text = "Mini Map";
@@ -676,7 +677,7 @@ namespace Radegast
             this.tbtnVoice.Image = ((System.Drawing.Image)(resources.GetObject("tbtnVoice.Image")));
             this.tbtnVoice.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnVoice.Name = "tbtnVoice";
-            this.tbtnVoice.Size = new System.Drawing.Size(40, 22);
+            this.tbtnVoice.Size = new System.Drawing.Size(39, 22);
             this.tbtnVoice.Text = "Voice";
             this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
             // 
@@ -698,9 +699,9 @@ namespace Radegast
             this.keyboardShortcutsToolStripMenuItem,
             this.reportBugsToolStripMenuItem,
             this.accessibilityGuideToolStripMenuItem,
-            this.checkForUpdatesToolStripMenuItem,
-            this.debugConsoleToolStripMenuItem,
-            this.toolStripMenuItem6,
+            this.toolStripSeparator5,
+            this.checkForUpdatesToolStripItem,
+            this.toolStripSeparator4,
             this.aboutRadegastToolStripMenuItem});
             this.tbtnHelp.Image = ((System.Drawing.Image)(resources.GetObject("tbtnHelp.Image")));
             this.tbtnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -711,30 +712,43 @@ namespace Radegast
             // keyboardShortcutsToolStripMenuItem
             // 
             this.keyboardShortcutsToolStripMenuItem.Name = "keyboardShortcutsToolStripMenuItem";
-            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts";
+            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts...";
             this.keyboardShortcutsToolStripMenuItem.Click += new System.EventHandler(this.keyboardShortcutsToolStripMenuItem_Click);
             // 
             // reportBugsToolStripMenuItem
             // 
             this.reportBugsToolStripMenuItem.Name = "reportBugsToolStripMenuItem";
-            this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.reportBugsToolStripMenuItem.Text = "Bugs/Feature Requests...";
             this.reportBugsToolStripMenuItem.Click += new System.EventHandler(this.reportBugsToolStripMenuItem_Click);
+            // 
+            // checkForUpdatesToolStripItem
+            // 
+            this.checkForUpdatesToolStripItem.Name = "checkForUpdatesToolStripItem";
+            this.checkForUpdatesToolStripItem.Size = new System.Drawing.Size(203, 22);
+            this.checkForUpdatesToolStripItem.Text = "Check For Updates...";
+            this.checkForUpdatesToolStripItem.ToolTipText = "Checks Radegast server for an updated version of Radegast";
+            this.checkForUpdatesToolStripItem.Click += new System.EventHandler(this.ctxCheckForUpdates_Click);
             // 
             // accessibilityGuideToolStripMenuItem
             // 
             this.accessibilityGuideToolStripMenuItem.Name = "accessibilityGuideToolStripMenuItem";
-            this.accessibilityGuideToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.accessibilityGuideToolStripMenuItem.Text = "Accessibility Guide";
+            this.accessibilityGuideToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.accessibilityGuideToolStripMenuItem.Text = "Accessibility Guide...";
             this.accessibilityGuideToolStripMenuItem.Click += new System.EventHandler(this.accessibilityGuideToolStripMenuItem_Click);
             // 
-            // checkForUpdatesToolStripMenuItem
+            // aboutRadegastToolStripMenuItem
             // 
-            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
-            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+            this.aboutRadegastToolStripMenuItem.Name = "aboutRadegastToolStripMenuItem";
+            this.aboutRadegastToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.aboutRadegastToolStripMenuItem.Text = "About Radegast...";
+            this.aboutRadegastToolStripMenuItem.Click += new System.EventHandler(this.aboutRadegastToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // debugConsoleToolStripMenuItem
             // 
@@ -743,23 +757,6 @@ namespace Radegast
             this.debugConsoleToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.debugConsoleToolStripMenuItem.Text = "Debug Console...";
             this.debugConsoleToolStripMenuItem.Click += new System.EventHandler(this.debugConsoleToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(220, 6);
-            // 
-            // aboutRadegastToolStripMenuItem
-            // 
-            this.aboutRadegastToolStripMenuItem.Name = "aboutRadegastToolStripMenuItem";
-            this.aboutRadegastToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.aboutRadegastToolStripMenuItem.Text = "About Radegast...";
-            this.aboutRadegastToolStripMenuItem.Click += new System.EventHandler(this.aboutRadegastToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // statusStrip1
             // 
@@ -934,23 +931,23 @@ namespace Radegast
             this.toolStripSeparator3,
             this.ctxTreyExit});
             this.ctxTrayIcon.Name = "ctxTreyIcon";
-            this.ctxTrayIcon.Size = new System.Drawing.Size(123, 82);
+            this.ctxTrayIcon.Size = new System.Drawing.Size(142, 82);
             // 
             // ctxTrayMenuLabel
             // 
             this.ctxTrayMenuLabel.Name = "ctxTrayMenuLabel";
-            this.ctxTrayMenuLabel.Size = new System.Drawing.Size(122, 22);
+            this.ctxTrayMenuLabel.Size = new System.Drawing.Size(141, 22);
             this.ctxTrayMenuLabel.Text = "Radegast-ng";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(119, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 6);
             // 
             // ctxTreyRestore
             // 
             this.ctxTreyRestore.Name = "ctxTreyRestore";
-            this.ctxTreyRestore.Size = new System.Drawing.Size(122, 22);
+            this.ctxTreyRestore.Size = new System.Drawing.Size(141, 22);
             this.ctxTreyRestore.Text = "Restore";
             this.ctxTreyRestore.ToolTipText = "Restore Window";
             this.ctxTreyRestore.Click += new System.EventHandler(this.ctxTreyRestore_Click);
@@ -958,15 +955,25 @@ namespace Radegast
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(119, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(138, 6);
             // 
             // ctxTreyExit
             // 
             this.ctxTreyExit.Name = "ctxTreyExit";
-            this.ctxTreyExit.Size = new System.Drawing.Size(122, 22);
+            this.ctxTreyExit.Size = new System.Drawing.Size(141, 22);
             this.ctxTreyExit.Text = "Exit";
-            this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
+            this.ctxTreyExit.ToolTipText = "Logs off and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(200, 6);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(200, 6);
             // 
             // frmMain
             // 
@@ -977,7 +984,7 @@ namespace Radegast
             this.Controls.Add(this.pnlDialog);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip1);
-            this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(754, 541);
@@ -1062,7 +1069,6 @@ namespace Radegast
         public System.Windows.Forms.ToolStripDropDownButton tbtnHelp;
         public System.Windows.Forms.ToolStripMenuItem reportBugsToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
-        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
         public System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tbtnFriends;
         public System.Windows.Forms.ToolStripButton tbtnInventory;
@@ -1090,6 +1096,9 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem adultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uploadmeshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setHoverHeightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 

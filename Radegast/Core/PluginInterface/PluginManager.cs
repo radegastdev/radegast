@@ -52,6 +52,8 @@ namespace Radegast
             "Meebey.SmartIrc4net.dll",
             "Monobjc.Cocoa.dll",
             "Monobjc.dll",
+            "nvdacontrollerClient32.dll",
+            "nvdacontrollerClient64.dll",
             "OpenCyc.dll",
             "openjpeg-dotnet.dll",
             "OpenMetaverse.Rendering.Meshmerizer.dll",
@@ -68,6 +70,7 @@ namespace Radegast
             "SmartThreadPool",
             "Tao.OpenGl.dll",
             "Tao.Platform.Windows.dll",
+            "UniversalSpeech.dll",
             "XmlRpcCore.dll",
             "zlib.net.dll",
         });

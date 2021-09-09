@@ -111,8 +111,6 @@ namespace Radegast
 
             if (!s.ContainsKey("rendering_use_vbo")) s["rendering_use_vbo"] = true;
 
-            if (!s.ContainsKey("send_rad_client_tag")) s["send_rad_client_tag"] = true;
-
             if (!s.ContainsKey("log_to_file")) s["log_to_file"] = true;
 
             if (!s.ContainsKey("disable_chat_im_log")) s["disable_chat_im_log"] = false;
@@ -298,13 +296,6 @@ namespace Radegast
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
 
             txtResolveURITime.Text = s["resolve_uri_time"].AsInteger().ToString();
-
-            cbRadegastClientTag.Checked = s["send_rad_client_tag"];
-            cbRadegastClientTag.CheckedChanged += (sender, e) =>
-            {
-                s["send_rad_client_tag"] = cbRadegastClientTag.Checked;
-                instance.SetClientTag();
-            };
 
             cbOnInvOffer.SelectedIndex = s["inv_auto_accept_mode"].AsInteger();
             cbOnInvOffer.SelectedIndexChanged += (sender, e) =>

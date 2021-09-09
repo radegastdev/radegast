@@ -38,7 +38,7 @@ namespace Radegast.Core
             WindowsLibraryLoader.LoadLibraries(new[]
             {
                 "fmod",
-                "openjpeg-dotnet"
+                "UniversalSpeech"
             });
         }
 

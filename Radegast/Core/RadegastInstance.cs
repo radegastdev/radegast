@@ -304,7 +304,6 @@ namespace Radegast
             client.Self.Movement.UpdateInterval = 250;
 
             RegisterClientEvents(client);
-            SetClientTag();
         }
 
         public string ComputeCacheName(string cacheDir, UUID assetID)
@@ -349,10 +348,6 @@ namespace Radegast
             client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
         }
 
-        public void SetClientTag()
-        {
-            Client.Settings.CLIENT_IDENTIFICATION_TAG = GlobalSettings["send_rad_client_tag"] ? new UUID("b748af88-58e2-995b-cf26-9486dea8e830") : UUID.Zero;
-        }
         private void GetWorldTimeZone()
         {
             try
