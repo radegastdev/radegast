@@ -37,7 +37,8 @@ namespace Radegast.Core
         {
             WindowsLibraryLoader.LoadLibraries(new[]
             {
-                "fmod"
+                "fmod",
+                "UniversalSpeech"
             });
         }
 
