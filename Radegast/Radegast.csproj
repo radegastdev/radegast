@@ -2068,7 +2068,7 @@
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.Rendering.Meshmerizer\LibreMetaverse.Rendering.Meshmerizer.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.Utilities\LibreMetaverse.Utilities.csproj" />
-    <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse.Types\LibreMetaverse.Types.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
     <ProjectReference Include="..\libremetaverse\PrimMesher\LibreMetaverse.PrimMesher.csproj" />
     <ProjectReference Include="..\LSLTools\LSLTools.csproj" />

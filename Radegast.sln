@@ -80,9 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreMetaverse.StructuredDa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreMetaverse.Utilities", "libremetaverse\LibreMetaverse.Utilities\LibreMetaverse.Utilities.csproj", "{1266CE08-0000-0000-0000-000000000000}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreMetaverse.Types", "libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj", "{B37B02AD-0000-0000-0000-000000000000}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreMetaverse.PrimMesher", "libremetaverse\PrimMesher\LibreMetaverse.PrimMesher.csproj", "{2E2B643F-F18B-4791-BA4B-6E82D0E794B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreMetaverse.Types", "libremetaverse\LibreMetaverse.Types\LibreMetaverse.Types.csproj", "{B37B02AD-0000-0000-0000-000000000000}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
