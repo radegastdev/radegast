@@ -61,9 +61,9 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibreMetaverse" Version="1.8.4.217" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.8.4.217" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.8.4.217" />
+    <PackageReference Include="LibreMetaverse" Version="1.8.6.228" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.8.6.228" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.8.6.228" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
