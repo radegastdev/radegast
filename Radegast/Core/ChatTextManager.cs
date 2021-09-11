@@ -130,7 +130,7 @@ namespace Radegast
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
         {
-            if (e.Message.ToLower().Contains("autopilot canceled")) return; //workaround the stupid autopilot alerts
+            if (e.NotificationId == "AutopilotCanceled") { return; } // workaround the stupid autopilot alerts
 
             ChatBufferItem item = new ChatBufferItem(
                 DateTime.Now, "Alert message", UUID.Zero, ": " + e.Message, ChatBufferTextStyle.Alert);
