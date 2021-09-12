@@ -110,6 +110,7 @@ namespace Radegast
         Teleport,
         InventoryOffer,
         RequestLure,
+        RegionRestart,
         SendLureRequest,
         SendLureOffer
     }
