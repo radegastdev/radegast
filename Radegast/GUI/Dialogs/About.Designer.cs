@@ -63,20 +63,22 @@ namespace Radegast
             this.txtTitle = new System.Windows.Forms.Label();
             this.txtLicense = new System.Windows.Forms.TextBox();
             this.txtOtherLicenses = new System.Windows.Forms.TextBox();
-            this.txtWrittenBy = new System.Windows.Forms.TextBox();
+            this.contributorsTxt = new System.Windows.Forms.TextBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.lblHomepage = new System.Windows.Forms.Label();
+            this.authorTxt = new System.Windows.Forms.TextBox();
+            this.contributorsTxt2 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::Radegast.Properties.Resources.radegast_large;
+            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.InitialImage = null;
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(143, 108);
+            this.pictureBox1.Size = new System.Drawing.Size(110, 110);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -84,7 +86,7 @@ namespace Radegast
             // 
             this.txtTitle.AutoSize = true;
             this.txtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTitle.Location = new System.Drawing.Point(161, 9);
+            this.txtTitle.Location = new System.Drawing.Point(125, 7);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(101, 17);
             this.txtTitle.TabIndex = 1;
@@ -118,19 +120,18 @@ namespace Radegast
             this.txtOtherLicenses.TabStop = false;
             this.txtOtherLicenses.Text = resources.GetString("txtOtherLicenses.Text");
             // 
-            // txtWrittenBy
+            // contributorsTxt
             // 
-            this.txtWrittenBy.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtWrittenBy.Location = new System.Drawing.Point(165, 27);
-            this.txtWrittenBy.Multiline = true;
-            this.txtWrittenBy.Name = "txtWrittenBy";
-            this.txtWrittenBy.ReadOnly = true;
-            this.txtWrittenBy.Size = new System.Drawing.Size(162, 143);
-            this.txtWrittenBy.TabIndex = 1;
-            this.txtWrittenBy.TabStop = false;
-            this.txtWrittenBy.Text = "Written by Latif Khalifa\r\nwith contributions from\r\n- Cinder Roxley\r\n- Douglas R. " +
-    "Miles\r\n- Mojito Sorbet\r\n- Robin Cornelius\r\n- Revolution Smythe\r\n- Signpost Marv\r" +
-    "\n- nooperation\r\n- nopjmp\r\n- Madpeterz";
+            this.contributorsTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.contributorsTxt.Location = new System.Drawing.Point(128, 49);
+            this.contributorsTxt.Multiline = true;
+            this.contributorsTxt.Name = "contributorsTxt";
+            this.contributorsTxt.ReadOnly = true;
+            this.contributorsTxt.Size = new System.Drawing.Size(108, 121);
+            this.contributorsTxt.TabIndex = 1;
+            this.contributorsTxt.TabStop = false;
+            this.contributorsTxt.Text = "with contributions from:\r\n- Cinder Roxley\r\n- Douglas R. Miles\r\n- Mojito Sorbet\r\n-" +
+    " Robin Cornelius\r\n- Revolution Smythe\r\n- Signpost Marv";
             // 
             // btnClose
             // 
@@ -155,6 +156,30 @@ namespace Radegast
             this.lblHomepage.Text = "radegast.life";
             this.lblHomepage.Click += new System.EventHandler(this.lblHomepage_Click);
             // 
+            // authorTxt
+            // 
+            this.authorTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.authorTxt.Location = new System.Drawing.Point(128, 27);
+            this.authorTxt.Multiline = true;
+            this.authorTxt.Name = "authorTxt";
+            this.authorTxt.ReadOnly = true;
+            this.authorTxt.Size = new System.Drawing.Size(110, 16);
+            this.authorTxt.TabIndex = 5;
+            this.authorTxt.TabStop = false;
+            this.authorTxt.Text = "Written by Latif Khalifa";
+            // 
+            // contributorsTxt2
+            // 
+            this.contributorsTxt2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.contributorsTxt2.Location = new System.Drawing.Point(242, 61);
+            this.contributorsTxt2.Multiline = true;
+            this.contributorsTxt2.Name = "contributorsTxt2";
+            this.contributorsTxt2.ReadOnly = true;
+            this.contributorsTxt2.Size = new System.Drawing.Size(85, 109);
+            this.contributorsTxt2.TabIndex = 6;
+            this.contributorsTxt2.TabStop = false;
+            this.contributorsTxt2.Text = "- nooperation\r\n- nopjmp\r\n- Madpeterz";
+            // 
             // frmAbout
             // 
             this.AcceptButton = this.btnClose;
@@ -163,12 +188,14 @@ namespace Radegast
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(334, 391);
+            this.Controls.Add(this.contributorsTxt2);
+            this.Controls.Add(this.authorTxt);
             this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.txtLicense);
             this.Controls.Add(this.lblHomepage);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.txtOtherLicenses);
-            this.Controls.Add(this.txtWrittenBy);
+            this.Controls.Add(this.contributorsTxt);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -191,9 +218,10 @@ namespace Radegast
         public System.Windows.Forms.Label txtTitle;
         public System.Windows.Forms.TextBox txtLicense;
         public System.Windows.Forms.TextBox txtOtherLicenses;
-        public System.Windows.Forms.TextBox txtWrittenBy;
+        public System.Windows.Forms.TextBox contributorsTxt;
         public System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label lblHomepage;
-
+        public System.Windows.Forms.TextBox authorTxt;
+        public System.Windows.Forms.TextBox contributorsTxt2;
     }
 }

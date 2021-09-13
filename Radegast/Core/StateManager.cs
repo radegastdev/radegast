@@ -802,7 +802,7 @@ namespace Radegast
 
         void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
-            if (e.Message.Contains("Autopilot cancel"))
+            if (e.NotificationId == "AutopilotCanceled")
             {
                 if (IsWalking)
                 {

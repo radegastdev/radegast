@@ -905,9 +905,9 @@ namespace Radegast.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap radegast_large {
+        internal static System.Drawing.Bitmap radegast_logo {
             get {
-                object obj = ResourceManager.GetObject("radegast_large", resourceCulture);
+                object obj = ResourceManager.GetObject("radegast_logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

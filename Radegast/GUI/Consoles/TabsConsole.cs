@@ -318,6 +318,17 @@ namespace Radegast
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
         {
+            if (e.NotificationId == "AutopilotCanceled") { return; }
+
+            // Pop up a notification for region restarts
+            if (e.NotificationId == "RegionRestartMinutes") {
+                int minutes = ((OpenMetaverse.StructuredData.OSDMap)e.ExtraParams)["MINUTES"].AsInteger();
+                instance.MainForm.AddNotification(new ntfRegionRestart(instance, minutes * 60));
+            } else if (e.NotificationId == "RegionRestartSeconds") {
+                int seconds = ((OpenMetaverse.StructuredData.OSDMap)e.ExtraParams)["SECONDS"].AsInteger();
+                instance.MainForm.AddNotification(new ntfRegionRestart(instance, seconds));
+            }
+
             Tabs["chat"].Highlight();
         }
 
