@@ -83,27 +83,27 @@ namespace Radegast
             // txtHead
             // 
             this.txtHead.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtHead.Location = new System.Drawing.Point(9, 14);
+            this.txtHead.Location = new System.Drawing.Point(9, 3);
             this.txtHead.Multiline = true;
             this.txtHead.Name = "txtHead";
             this.txtHead.ReadOnly = true;
-            this.txtHead.Size = new System.Drawing.Size(244, 34);
+            this.txtHead.Size = new System.Drawing.Size(244, 46);
             this.txtHead.TabIndex = 10;
             this.txtHead.TabStop = false;
-            this.txtHead.Text = "The region you are currently in is about to restart.\r\nIf you remain here, you will be logged out.";
+            this.txtHead.Text = "The region you are currently in is about to restart.\r\nIf you remain here, you wil" +
+    "l be logged out.";
             // 
             // txtCountdown
             // 
             this.txtCountdown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtCountdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCountdown.Location = new System.Drawing.Point(9, 65);
+            this.txtCountdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCountdown.Location = new System.Drawing.Point(9, 68);
             this.txtCountdown.Multiline = true;
             this.txtCountdown.Name = "txtCountdown";
             this.txtCountdown.ReadOnly = true;
-            this.txtCountdown.Size = new System.Drawing.Size(244, 26);
+            this.txtCountdown.Size = new System.Drawing.Size(244, 23);
             this.txtCountdown.TabIndex = 12;
             this.txtCountdown.TabStop = false;
-            this.txtCountdown.Text = "69";
             this.txtCountdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ntfRegionRestart
