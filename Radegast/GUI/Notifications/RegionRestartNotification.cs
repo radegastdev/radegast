@@ -44,6 +44,7 @@ namespace Radegast
             CountdownTimer = new System.Timers.Timer();
             CountdownTimer.Interval = 1000; // 1s
             CountdownTimer.Elapsed += OnCountdownTimerEvent;
+            CountdownTimer.Start();
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -52,15 +53,21 @@ namespace Radegast
         {
             Invoke(new Action(() =>
             {
-                --CountdownSeconds;
-                var ts = TimeSpan.FromSeconds(CountdownSeconds);
-                txtCountdown.Text = ts.ToString(@"mm:ss");
+                var ts = TimeSpan.FromSeconds(--CountdownSeconds);
+                txtCountdown.Text = ts.ToString(@"mm\:ss");
             }));
+        }
+
+        // TODO: we need a notification closed event to hook up to...
+        private void OnNotificationClosed(object sender, NotificationEventArgs e)
+        {
+            CountdownTimer.Stop();
         }
 
         private void btnHome_Click(object sender, EventArgs e)
         {
             instance.Client.Self.RequestTeleport(OpenMetaverse.UUID.Zero);
+            CountdownTimer.Stop();
             instance.MainForm.RemoveNotification(this);
         }
 
@@ -68,11 +75,13 @@ namespace Radegast
         {
             // idk, this is silly and Second Life specific.
             instance.Client.Self.Teleport("Hippo Hollow", new OpenMetaverse.Vector3(180, 205, 44));
+            CountdownTimer.Stop();
             instance.MainForm.RemoveNotification(this);
         }
 
         private void btnIgnore_Click(object sender, EventArgs e)
         {
+            CountdownTimer.Stop();
             instance.MainForm.RemoveNotification(this);
         }
     }
