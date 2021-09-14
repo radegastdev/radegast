@@ -322,11 +322,13 @@ namespace Radegast
 
             // Pop up a notification for region restarts
             if (e.NotificationId == "RegionRestartMinutes") {
-                int minutes = ((OpenMetaverse.StructuredData.OSDMap)e.ExtraParams)["MINUTES"].AsInteger();
-                instance.MainForm.AddNotification(new ntfRegionRestart(instance, minutes * 60));
+                int minutes = e.ExtraParams["MINUTES"].AsInteger();
+                string name = e.ExtraParams["NAME"].AsString();
+                instance.MainForm.AddNotification(new ntfRegionRestart(instance, name, minutes * 60));
             } else if (e.NotificationId == "RegionRestartSeconds") {
-                int seconds = ((OpenMetaverse.StructuredData.OSDMap)e.ExtraParams)["SECONDS"].AsInteger();
-                instance.MainForm.AddNotification(new ntfRegionRestart(instance, seconds));
+                int seconds = e.ExtraParams["SECONDS"].AsInteger();
+                string name = e.ExtraParams["NAME"].AsString();
+                instance.MainForm.AddNotification(new ntfRegionRestart(instance, name, seconds));
             }
 
             Tabs["chat"].Highlight();

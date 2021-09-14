@@ -24,14 +24,16 @@ namespace Radegast
     public partial class ntfRegionRestart : Notification
     {
         private RadegastInstance instance;
+        private string RegionName;
         private int CountdownSeconds;
         private System.Timers.Timer CountdownTimer;
 
-        public ntfRegionRestart(RadegastInstance instance, int countdown_seconds)
+        public ntfRegionRestart(RadegastInstance instance, string region_name, int countdown_seconds)
             : base(NotificationType.RegionRestart)
         {
             InitializeComponent();
             this.instance = instance;
+            this.RegionName = region_name;
             this.CountdownSeconds = countdown_seconds;
 
             txtHead.BackColor = instance.MainForm.NotificationBackground;
