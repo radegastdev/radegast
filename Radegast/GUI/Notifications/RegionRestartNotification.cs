@@ -39,12 +39,17 @@ namespace Radegast
             txtHead.BackColor = instance.MainForm.NotificationBackground;
             txtCountdownLabel.BackColor = instance.MainForm.NotificationBackground;
             txtCountdown.BackColor = instance.MainForm.NotificationBackground;
-            btnHome.Focus();
 
-            CountdownTimer = new System.Timers.Timer();
-            CountdownTimer.Interval = 1000; // 1s
+            CountdownTimer = new System.Timers.Timer
+            {
+                Interval = 1000 // 1s
+            };
             CountdownTimer.Elapsed += OnCountdownTimerEvent;
             CountdownTimer.Start();
+
+            btnHome.Focus();
+
+            this.instance.MediaManager.PlayUISound(UISounds.Warning);
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -67,21 +72,28 @@ namespace Radegast
         private void btnHome_Click(object sender, EventArgs e)
         {
             instance.Client.Self.RequestTeleport(OpenMetaverse.UUID.Zero);
-            CountdownTimer.Stop();
+            
             instance.MainForm.RemoveNotification(this);
         }
 
         private void btnElsewhere_Click(object sender, EventArgs e)
         {
-            // idk, this is silly and Second Life specific.
-            instance.Client.Self.Teleport("Hippo Hollow", new OpenMetaverse.Vector3(180, 205, 44));
-            CountdownTimer.Stop();
+            Automation.PseudoHomePreferences prefs = instance.State.PseudoHome?.Preferences;
+
+            if (prefs != null && prefs.Region.Trim() != string.Empty)
+            {
+                instance.Client.Self.Teleport(prefs.Region, prefs.Position);
+            }
+            else
+            {
+                // idk, this is silly and Second Life specific.
+                instance.Client.Self.Teleport("Hippo Hollow", new OpenMetaverse.Vector3(180, 205, 44));
+            }
             instance.MainForm.RemoveNotification(this);
         }
 
         private void btnIgnore_Click(object sender, EventArgs e)
         {
-            CountdownTimer.Stop();
             instance.MainForm.RemoveNotification(this);
         }
     }
