@@ -123,7 +123,7 @@ namespace Radegast
             this.btnNewPick = new System.Windows.Forms.Button();
             this.tpgFirstLife = new System.Windows.Forms.TabPage();
             this.txtUUID = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.labelKey = new System.Windows.Forms.Label();
             this.rlPicPanel = new System.Windows.Forms.Panel();
             this.rtbAboutFL = new System.Windows.Forms.RichTextBox();
             this.tabNotes = new System.Windows.Forms.TabPage();
@@ -526,6 +526,7 @@ namespace Radegast
             this.txtLanguages.ReadOnly = true;
             this.txtLanguages.Size = new System.Drawing.Size(285, 21);
             this.txtLanguages.TabIndex = 19;
+            this.txtLanguages.Leave += new System.EventHandler(this.interestsUpdated);
             // 
             // txtSkills
             // 
@@ -534,6 +535,7 @@ namespace Radegast
             this.txtSkills.ReadOnly = true;
             this.txtSkills.Size = new System.Drawing.Size(285, 21);
             this.txtSkills.TabIndex = 18;
+            this.txtSkills.Leave += new System.EventHandler(this.interestsUpdated);
             // 
             // txtWantTo
             // 
@@ -542,6 +544,7 @@ namespace Radegast
             this.txtWantTo.ReadOnly = true;
             this.txtWantTo.Size = new System.Drawing.Size(285, 21);
             this.txtWantTo.TabIndex = 17;
+            this.txtWantTo.Leave += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxEventPlanning
             // 
@@ -553,6 +556,7 @@ namespace Radegast
             this.checkBoxEventPlanning.TabIndex = 16;
             this.checkBoxEventPlanning.Text = "Event Planning";
             this.checkBoxEventPlanning.UseVisualStyleBackColor = true;
+            this.checkBoxEventPlanning.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxCustomCharacters
             // 
@@ -564,6 +568,7 @@ namespace Radegast
             this.checkBoxCustomCharacters.TabIndex = 15;
             this.checkBoxCustomCharacters.Text = "Custom Characters";
             this.checkBoxCustomCharacters.UseVisualStyleBackColor = true;
+            this.checkBoxCustomCharacters.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxArchitecture
             // 
@@ -575,6 +580,7 @@ namespace Radegast
             this.checkBoxArchitecture.TabIndex = 14;
             this.checkBoxArchitecture.Text = "Architecture";
             this.checkBoxArchitecture.UseVisualStyleBackColor = true;
+            this.checkBoxArchitecture.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxScripting
             // 
@@ -586,6 +592,7 @@ namespace Radegast
             this.checkBoxScripting.TabIndex = 13;
             this.checkBoxScripting.Text = "Scripting";
             this.checkBoxScripting.UseVisualStyleBackColor = true;
+            this.checkBoxScripting.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxModeling
             // 
@@ -597,6 +604,7 @@ namespace Radegast
             this.checkBoxModeling.TabIndex = 12;
             this.checkBoxModeling.Text = "Modeling";
             this.checkBoxModeling.UseVisualStyleBackColor = true;
+            this.checkBoxModeling.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxTextures
             // 
@@ -608,6 +616,7 @@ namespace Radegast
             this.checkBoxTextures.TabIndex = 11;
             this.checkBoxTextures.Text = "Textures";
             this.checkBoxTextures.UseVisualStyleBackColor = true;
+            this.checkBoxTextures.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxHire
             // 
@@ -619,6 +628,7 @@ namespace Radegast
             this.checkBoxHire.TabIndex = 10;
             this.checkBoxHire.Text = "Hire";
             this.checkBoxHire.UseVisualStyleBackColor = true;
+            this.checkBoxHire.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxBuy
             // 
@@ -630,6 +640,7 @@ namespace Radegast
             this.checkBoxBuy.TabIndex = 9;
             this.checkBoxBuy.Text = "Buy";
             this.checkBoxBuy.UseVisualStyleBackColor = true;
+            this.checkBoxBuy.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxBeHired
             // 
@@ -641,6 +652,7 @@ namespace Radegast
             this.checkBoxBeHired.TabIndex = 8;
             this.checkBoxBeHired.Text = "Be Hired";
             this.checkBoxBeHired.UseVisualStyleBackColor = true;
+            this.checkBoxBeHired.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxExplore
             // 
@@ -652,6 +664,7 @@ namespace Radegast
             this.checkBoxExplore.TabIndex = 7;
             this.checkBoxExplore.Text = "Explore";
             this.checkBoxExplore.UseVisualStyleBackColor = true;
+            this.checkBoxExplore.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxSell
             // 
@@ -663,6 +676,7 @@ namespace Radegast
             this.checkBoxSell.TabIndex = 6;
             this.checkBoxSell.Text = "Sell";
             this.checkBoxSell.UseVisualStyleBackColor = true;
+            this.checkBoxSell.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxGroup
             // 
@@ -674,6 +688,7 @@ namespace Radegast
             this.checkBoxGroup.TabIndex = 5;
             this.checkBoxGroup.Text = "Group";
             this.checkBoxGroup.UseVisualStyleBackColor = true;
+            this.checkBoxGroup.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxMeet
             // 
@@ -685,6 +700,7 @@ namespace Radegast
             this.checkBoxMeet.TabIndex = 4;
             this.checkBoxMeet.Text = "Meet";
             this.checkBoxMeet.UseVisualStyleBackColor = true;
+            this.checkBoxMeet.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // checkBoxBuild
             // 
@@ -696,6 +712,7 @@ namespace Radegast
             this.checkBoxBuild.TabIndex = 3;
             this.checkBoxBuild.Text = "Build";
             this.checkBoxBuild.UseVisualStyleBackColor = true;
+            this.checkBoxBuild.CheckedChanged += new System.EventHandler(this.interestsUpdated);
             // 
             // labelLanguages
             // 
@@ -860,7 +877,7 @@ namespace Radegast
             // tpgFirstLife
             // 
             this.tpgFirstLife.Controls.Add(this.txtUUID);
-            this.tpgFirstLife.Controls.Add(this.label9);
+            this.tpgFirstLife.Controls.Add(this.labelKey);
             this.tpgFirstLife.Controls.Add(this.rlPicPanel);
             this.tpgFirstLife.Controls.Add(this.rtbAboutFL);
             this.tpgFirstLife.Location = new System.Drawing.Point(4, 22);
@@ -880,15 +897,15 @@ namespace Radegast
             this.txtUUID.Size = new System.Drawing.Size(259, 21);
             this.txtUUID.TabIndex = 17;
             // 
-            // label9
+            // labelKey
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 433);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(29, 13);
-            this.label9.TabIndex = 16;
-            this.label9.Text = "Key:";
+            this.labelKey.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelKey.AutoSize = true;
+            this.labelKey.Location = new System.Drawing.Point(8, 433);
+            this.labelKey.Name = "labelKey";
+            this.labelKey.Size = new System.Drawing.Size(29, 13);
+            this.labelKey.TabIndex = 16;
+            this.labelKey.Text = "Key:";
             // 
             // rlPicPanel
             // 
@@ -930,10 +947,11 @@ namespace Radegast
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbNotes.Location = new System.Drawing.Point(6, 19);
             this.rtbNotes.Name = "rtbNotes";
-            this.rtbNotes.ReadOnly = true;
+            this.rtbNotes.ReadOnly = false;
             this.rtbNotes.Size = new System.Drawing.Size(448, 277);
             this.rtbNotes.TabIndex = 1;
             this.rtbNotes.Text = "";
+            this.rtbNotes.Leave += new System.EventHandler(this.rtbNotes_Leave);
             // 
             // labelNotes
             // 
@@ -1045,7 +1063,7 @@ namespace Radegast
         public AgentNameTextBox anPartner;
         public AgentNameTextBox txtFullName;
         public System.Windows.Forms.TextBox txtUUID;
-        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.Label labelKey;
         public ListViewNoFlicker lvwGroups;
         private System.Windows.Forms.ColumnHeader clGroupName;
         private System.Windows.Forms.ColumnHeader clGroupTitle;

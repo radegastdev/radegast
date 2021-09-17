@@ -117,6 +117,7 @@ namespace Radegast
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             client.Avatars.AvatarInterestsReply += new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
+            client.Avatars.AvatarNotesReply += new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
@@ -134,6 +135,7 @@ namespace Radegast
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             client.Avatars.AvatarInterestsReply -= new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
+            client.Avatars.AvatarNotesReply -= new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
             client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated -= new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
@@ -234,6 +236,18 @@ namespace Radegast
             txtSkills.Text = Interests.SkillsText;
 
             txtLanguages.Text = Interests.LanguagesText;
+        }
+
+        void Avatars_AvatarNotesReply(object sender, AvatarNotesReplyEventArgs e)
+        {
+            if (e.AvatarID != AgentID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_AvatarNotesReply(sender, e)));
+                return;
+            }
+            rtbNotes.Text = e.Notes;
         }
 
         void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
@@ -726,6 +740,40 @@ namespace Radegast
                     Invoke(new MethodInvoker(() => ClearPicks()));
                     client.Avatars.RequestAvatarPicks(AgentID);
                 });
+        }
+
+        private void interestsUpdated(object sender, EventArgs e)
+        {
+            uint wantto = ((checkBoxBuild.Checked ? 1u << 0 : 0u)
+                            | (checkBoxExplore.Checked ? 1u << 1 : 0u)
+                            | (checkBoxMeet.Checked ? 1u << 2 : 0u)
+                            | (checkBoxGroup.Checked ? 1u << 3 : 0u)
+                            | (checkBoxBuy.Checked ? 1u << 4 : 0u)
+                            | (checkBoxSell.Checked ? 1u << 5 : 0u)
+                            | (checkBoxBeHired.Checked ? 1u << 6 : 0u)
+                            | (checkBoxHire.Checked ? 1u << 7 : 0u));
+
+            uint skills = ((checkBoxTextures.Checked ? 1u << 0 : 0u)
+                            | (checkBoxArchitecture.Checked ? 1u << 1 : 0u)
+                            | (checkBoxEventPlanning.Checked ? 1u << 2 : 0u)
+                            | (checkBoxModeling.Checked ? 1u << 3 : 0u)
+                            | (checkBoxScripting.Checked ? 1u << 4 : 0u)
+                            | (checkBoxCustomCharacters.Checked ? 1u << 5 : 0u));
+
+            var interests = new Avatar.Interests
+            {
+                SkillsMask = skills,
+                WantToMask = wantto,
+                LanguagesText = txtLanguages.Text,
+                SkillsText = txtSkills.Text,
+                WantToText = txtWantTo.Text
+            };
+            client.Self.UpdateInterests(interests);
+        }
+
+        private void rtbNotes_Leave(object sender, EventArgs e)
+        {
+            client.Self.UpdateProfileNotes(AgentID, rtbNotes.Text);
         }
 
         private void btnMute_Click(object sender, EventArgs e)
