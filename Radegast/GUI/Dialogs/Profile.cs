@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -32,11 +32,12 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom;
-        private GridClient client;
-        private string fullName;
+        private readonly GridClient client;
+        private readonly string fullName;
 
         public UUID AgentID { get; }
         private Avatar.AvatarProperties Profile;
+        private Avatar.Interests Interests;
         bool myProfile = false;
         UUID newPickID = UUID.Zero;
 
@@ -87,14 +88,36 @@ namespace Radegast
                 btnRequestTeleport.Visible = false;
                 btnDeletePick.Visible = true;
                 btnNewPick.Visible = true;
+
+                txtWantTo.ReadOnly = false;
+                txtSkills.ReadOnly = false;
+                txtLanguages.ReadOnly = false;
+
+                checkBoxBuild.Enabled = true;
+                checkBoxExplore.Enabled = true;
+                checkBoxMeet.Enabled = true;
+                checkBoxGroup.Enabled = true;
+                checkBoxBuy.Enabled = true;
+                checkBoxSell.Enabled = true;
+                checkBoxBeHired.Enabled = true;
+                checkBoxHire.Enabled = true;
+                checkBoxTextures.Enabled = true;
+                checkBoxArchitecture.Enabled = true;
+                checkBoxEventPlanning.Enabled = true;
+                checkBoxModeling.Enabled = true;
+                checkBoxScripting.Enabled = true;
+                checkBoxCustomCharacters.Enabled = true;
             }
 
             // Callbacks
             client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            //client.Avatars.AvatarClassifiedReply += new EventHandler<AvatarClassifiedReplyEventArgs>(Avatars_AvatarClassifiedsReply);
             client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
+            client.Avatars.AvatarInterestsReply += new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
+            client.Avatars.AvatarNotesReply += new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
@@ -107,9 +130,12 @@ namespace Radegast
         {
             client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             client.Avatars.AvatarPicksReply -= new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            //client.Avatars.AvatarClassifiedReply -= new EventHandler<AvatarClassifiedReplyEventArgs>(Avatars_AvatarClassifiedsReply);
             client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
+            client.Avatars.AvatarInterestsReply -= new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
+            client.Avatars.AvatarNotesReply -= new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
             client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated -= new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
@@ -175,6 +201,53 @@ namespace Radegast
 
             lvwGroups.EndUpdate();
 
+        }
+
+        void Avatars_AvatarInterestsReply(object sender, AvatarInterestsReplyEventArgs e)
+        {
+            if (e.AvatarID != AgentID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_AvatarInterestsReply(sender, e)));
+                return;
+            }
+
+            Interests = e.Interests;
+
+            // want to's
+            checkBoxBuild.Checked = (Interests.WantToMask & (1 << 0)) != 0;
+            checkBoxExplore.Checked = (Interests.WantToMask & (1 << 1)) != 0;
+            checkBoxMeet.Checked = (Interests.WantToMask & (1 << 2)) != 0;
+            checkBoxGroup.Checked = (Interests.WantToMask & (1 << 3)) != 0;
+            checkBoxBuy.Checked = (Interests.WantToMask & (1 << 4)) != 0;
+            checkBoxSell.Checked = (Interests.WantToMask & (1 << 5)) != 0;
+            checkBoxBeHired.Checked = (Interests.WantToMask & (1 << 6)) != 0;
+            checkBoxHire.Checked = (Interests.WantToMask & (1 << 7)) != 0;
+            txtWantTo.Text = Interests.WantToText;
+
+            // skills
+            checkBoxTextures.Checked = (Interests.WantToMask & (1 << 0)) != 0;
+            checkBoxArchitecture.Checked = (Interests.WantToMask & (1 << 1)) != 0;
+            checkBoxEventPlanning.Checked = (Interests.WantToMask & (1 << 2)) != 0;
+            checkBoxModeling.Checked = (Interests.WantToMask & (1 << 3)) != 0;
+            checkBoxScripting.Checked = (Interests.WantToMask & (1 << 4)) != 0;
+            checkBoxCustomCharacters.Checked = (Interests.WantToMask & (1 << 5)) != 0;
+            txtSkills.Text = Interests.SkillsText;
+
+            txtLanguages.Text = Interests.LanguagesText;
+        }
+
+        void Avatars_AvatarNotesReply(object sender, AvatarNotesReplyEventArgs e)
+        {
+            if (e.AvatarID != AgentID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_AvatarNotesReply(sender, e)));
+                return;
+            }
+            rtbNotes.Text = e.Notes;
         }
 
         void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
@@ -667,6 +740,40 @@ namespace Radegast
                     Invoke(new MethodInvoker(() => ClearPicks()));
                     client.Avatars.RequestAvatarPicks(AgentID);
                 });
+        }
+
+        private void interestsUpdated(object sender, EventArgs e)
+        {
+            uint wantto = ((checkBoxBuild.Checked ? 1u << 0 : 0u)
+                            | (checkBoxExplore.Checked ? 1u << 1 : 0u)
+                            | (checkBoxMeet.Checked ? 1u << 2 : 0u)
+                            | (checkBoxGroup.Checked ? 1u << 3 : 0u)
+                            | (checkBoxBuy.Checked ? 1u << 4 : 0u)
+                            | (checkBoxSell.Checked ? 1u << 5 : 0u)
+                            | (checkBoxBeHired.Checked ? 1u << 6 : 0u)
+                            | (checkBoxHire.Checked ? 1u << 7 : 0u));
+
+            uint skills = ((checkBoxTextures.Checked ? 1u << 0 : 0u)
+                            | (checkBoxArchitecture.Checked ? 1u << 1 : 0u)
+                            | (checkBoxEventPlanning.Checked ? 1u << 2 : 0u)
+                            | (checkBoxModeling.Checked ? 1u << 3 : 0u)
+                            | (checkBoxScripting.Checked ? 1u << 4 : 0u)
+                            | (checkBoxCustomCharacters.Checked ? 1u << 5 : 0u));
+
+            var interests = new Avatar.Interests
+            {
+                SkillsMask = skills,
+                WantToMask = wantto,
+                LanguagesText = txtLanguages.Text,
+                SkillsText = txtSkills.Text,
+                WantToText = txtWantTo.Text
+            };
+            client.Self.UpdateInterests(interests);
+        }
+
+        private void rtbNotes_Leave(object sender, EventArgs e)
+        {
+            client.Self.UpdateProfileNotes(AgentID, rtbNotes.Text);
         }
 
         private void btnMute_Click(object sender, EventArgs e)

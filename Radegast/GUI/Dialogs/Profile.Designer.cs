@@ -77,18 +77,38 @@ namespace Radegast
             this.btnPay = new System.Windows.Forms.Button();
             this.rtbAccountInfo = new System.Windows.Forms.RichTextBox();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelPartner = new System.Windows.Forms.Label();
+            this.labelInfo = new System.Windows.Forms.Label();
             this.txtBornOn = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelBornOn = new System.Windows.Forms.Label();
+            this.labelName = new System.Windows.Forms.Label();
             this.tpgWeb = new System.Windows.Forms.TabPage();
             this.pnlWeb = new System.Windows.Forms.Panel();
             this.btnWebOpen = new System.Windows.Forms.Button();
             this.btnWebView = new System.Windows.Forms.Button();
             this.txtWebURL = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.labelUrl = new System.Windows.Forms.Label();
+            this.tabInterests = new System.Windows.Forms.TabPage();
+            this.txtLanguages = new System.Windows.Forms.TextBox();
+            this.txtSkills = new System.Windows.Forms.TextBox();
+            this.txtWantTo = new System.Windows.Forms.TextBox();
+            this.checkBoxEventPlanning = new System.Windows.Forms.CheckBox();
+            this.checkBoxCustomCharacters = new System.Windows.Forms.CheckBox();
+            this.checkBoxArchitecture = new System.Windows.Forms.CheckBox();
+            this.checkBoxScripting = new System.Windows.Forms.CheckBox();
+            this.checkBoxModeling = new System.Windows.Forms.CheckBox();
+            this.checkBoxTextures = new System.Windows.Forms.CheckBox();
+            this.checkBoxHire = new System.Windows.Forms.CheckBox();
+            this.checkBoxBuy = new System.Windows.Forms.CheckBox();
+            this.checkBoxBeHired = new System.Windows.Forms.CheckBox();
+            this.checkBoxExplore = new System.Windows.Forms.CheckBox();
+            this.checkBoxSell = new System.Windows.Forms.CheckBox();
+            this.checkBoxGroup = new System.Windows.Forms.CheckBox();
+            this.checkBoxMeet = new System.Windows.Forms.CheckBox();
+            this.checkBoxBuild = new System.Windows.Forms.CheckBox();
+            this.labelLanguages = new System.Windows.Forms.Label();
+            this.labelSkills = new System.Windows.Forms.Label();
+            this.labelWantTo = new System.Windows.Forms.Label();
             this.tbpPicks = new System.Windows.Forms.TabPage();
             this.pickDetailPanel = new System.Windows.Forms.Panel();
             this.pickDetail = new System.Windows.Forms.RichTextBox();
@@ -103,21 +123,24 @@ namespace Radegast
             this.btnNewPick = new System.Windows.Forms.Button();
             this.tpgFirstLife = new System.Windows.Forms.TabPage();
             this.txtUUID = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.labelKey = new System.Windows.Forms.Label();
             this.rlPicPanel = new System.Windows.Forms.Panel();
             this.rtbAboutFL = new System.Windows.Forms.RichTextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.tabNotes = new System.Windows.Forms.TabPage();
+            this.rtbNotes = new System.Windows.Forms.RichTextBox();
+            this.labelNotes = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
+            this.tabInterests.SuspendLayout();
             this.tbpPicks.SuspendLayout();
             this.pickDetailPanel.SuspendLayout();
             this.picksLowerPanel.SuspendLayout();
             this.pickListPanel.SuspendLayout();
             this.tpgFirstLife.SuspendLayout();
+            this.tabNotes.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabProfile
@@ -127,8 +150,10 @@ namespace Radegast
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabProfile.Controls.Add(this.tpgProfile);
             this.tabProfile.Controls.Add(this.tpgWeb);
+            this.tabProfile.Controls.Add(this.tabInterests);
             this.tabProfile.Controls.Add(this.tbpPicks);
             this.tabProfile.Controls.Add(this.tpgFirstLife);
+            this.tabProfile.Controls.Add(this.tabNotes);
             this.tabProfile.Location = new System.Drawing.Point(12, 12);
             this.tabProfile.Name = "tabProfile";
             this.tabProfile.SelectedIndex = 0;
@@ -152,12 +177,11 @@ namespace Radegast
             this.tpgProfile.Controls.Add(this.btnPay);
             this.tpgProfile.Controls.Add(this.rtbAccountInfo);
             this.tpgProfile.Controls.Add(this.rtbAbout);
-            this.tpgProfile.Controls.Add(this.label5);
-            this.tpgProfile.Controls.Add(this.label4);
-            this.tpgProfile.Controls.Add(this.label3);
+            this.tpgProfile.Controls.Add(this.labelPartner);
+            this.tpgProfile.Controls.Add(this.labelInfo);
             this.tpgProfile.Controls.Add(this.txtBornOn);
-            this.tpgProfile.Controls.Add(this.label2);
-            this.tpgProfile.Controls.Add(this.label1);
+            this.tpgProfile.Controls.Add(this.labelBornOn);
+            this.tpgProfile.Controls.Add(this.labelName);
             this.tpgProfile.Location = new System.Drawing.Point(4, 22);
             this.tpgProfile.Name = "tpgProfile";
             this.tpgProfile.Padding = new System.Windows.Forms.Padding(3);
@@ -229,6 +253,7 @@ namespace Radegast
             // txtFullName
             // 
             this.txtFullName.AccessibleName = "Name";
+            this.txtFullName.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtFullName.AgentID")));
             this.txtFullName.Location = new System.Drawing.Point(50, 6);
             this.txtFullName.Name = "txtFullName";
             this.txtFullName.ReadOnly = true;
@@ -238,6 +263,7 @@ namespace Radegast
             // anPartner
             // 
             this.anPartner.AccessibleName = "Partner";
+            this.anPartner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("anPartner.AgentID")));
             this.anPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.anPartner.Location = new System.Drawing.Point(306, 34);
             this.anPartner.Name = "anPartner";
@@ -344,35 +370,25 @@ namespace Radegast
             this.rtbAbout.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
             this.rtbAbout.Leave += new System.EventHandler(this.rtbAbout_Leave);
             // 
-            // label5
+            // labelPartner
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(252, 36);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(47, 13);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Partner:";
+            this.labelPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelPartner.AutoSize = true;
+            this.labelPartner.Location = new System.Drawing.Point(252, 36);
+            this.labelPartner.Name = "labelPartner";
+            this.labelPartner.Size = new System.Drawing.Size(47, 13);
+            this.labelPartner.TabIndex = 9;
+            this.labelPartner.Text = "Partner:";
             // 
-            // label4
+            // labelInfo
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 280);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "About:";
-            // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(251, 63);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Info:";
+            this.labelInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelInfo.AutoSize = true;
+            this.labelInfo.Location = new System.Drawing.Point(251, 63);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(31, 13);
+            this.labelInfo.TabIndex = 7;
+            this.labelInfo.Text = "Info:";
             // 
             // txtBornOn
             // 
@@ -384,24 +400,24 @@ namespace Radegast
             this.txtBornOn.Size = new System.Drawing.Size(148, 21);
             this.txtBornOn.TabIndex = 2;
             // 
-            // label2
+            // labelBornOn
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(252, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Born on:";
+            this.labelBornOn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelBornOn.AutoSize = true;
+            this.labelBornOn.Location = new System.Drawing.Point(252, 9);
+            this.labelBornOn.Name = "labelBornOn";
+            this.labelBornOn.Size = new System.Drawing.Size(48, 13);
+            this.labelBornOn.TabIndex = 3;
+            this.labelBornOn.Text = "Born on:";
             // 
-            // label1
+            // labelName
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Name:";
+            this.labelName.AutoSize = true;
+            this.labelName.Location = new System.Drawing.Point(6, 9);
+            this.labelName.Name = "labelName";
+            this.labelName.Size = new System.Drawing.Size(38, 13);
+            this.labelName.TabIndex = 1;
+            this.labelName.Text = "Name:";
             // 
             // tpgWeb
             // 
@@ -409,7 +425,7 @@ namespace Radegast
             this.tpgWeb.Controls.Add(this.btnWebOpen);
             this.tpgWeb.Controls.Add(this.btnWebView);
             this.tpgWeb.Controls.Add(this.txtWebURL);
-            this.tpgWeb.Controls.Add(this.label6);
+            this.tpgWeb.Controls.Add(this.labelUrl);
             this.tpgWeb.Location = new System.Drawing.Point(4, 22);
             this.tpgWeb.Name = "tpgWeb";
             this.tpgWeb.Padding = new System.Windows.Forms.Padding(3);
@@ -464,14 +480,266 @@ namespace Radegast
             this.txtWebURL.TabIndex = 1;
             this.txtWebURL.Leave += new System.EventHandler(this.txtWebURL_Leave);
             // 
-            // label6
+            // labelUrl
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(30, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "URL:";
+            this.labelUrl.AutoSize = true;
+            this.labelUrl.Location = new System.Drawing.Point(6, 9);
+            this.labelUrl.Name = "labelUrl";
+            this.labelUrl.Size = new System.Drawing.Size(30, 13);
+            this.labelUrl.TabIndex = 0;
+            this.labelUrl.Text = "URL:";
+            // 
+            // tabInterests
+            // 
+            this.tabInterests.Controls.Add(this.txtLanguages);
+            this.tabInterests.Controls.Add(this.txtSkills);
+            this.tabInterests.Controls.Add(this.txtWantTo);
+            this.tabInterests.Controls.Add(this.checkBoxEventPlanning);
+            this.tabInterests.Controls.Add(this.checkBoxCustomCharacters);
+            this.tabInterests.Controls.Add(this.checkBoxArchitecture);
+            this.tabInterests.Controls.Add(this.checkBoxScripting);
+            this.tabInterests.Controls.Add(this.checkBoxModeling);
+            this.tabInterests.Controls.Add(this.checkBoxTextures);
+            this.tabInterests.Controls.Add(this.checkBoxHire);
+            this.tabInterests.Controls.Add(this.checkBoxBuy);
+            this.tabInterests.Controls.Add(this.checkBoxBeHired);
+            this.tabInterests.Controls.Add(this.checkBoxExplore);
+            this.tabInterests.Controls.Add(this.checkBoxSell);
+            this.tabInterests.Controls.Add(this.checkBoxGroup);
+            this.tabInterests.Controls.Add(this.checkBoxMeet);
+            this.tabInterests.Controls.Add(this.checkBoxBuild);
+            this.tabInterests.Controls.Add(this.labelLanguages);
+            this.tabInterests.Controls.Add(this.labelSkills);
+            this.tabInterests.Controls.Add(this.labelWantTo);
+            this.tabInterests.Location = new System.Drawing.Point(4, 22);
+            this.tabInterests.Name = "tabInterests";
+            this.tabInterests.Padding = new System.Windows.Forms.Padding(3);
+            this.tabInterests.Size = new System.Drawing.Size(460, 476);
+            this.tabInterests.TabIndex = 5;
+            this.tabInterests.Text = "Interests";
+            this.tabInterests.UseVisualStyleBackColor = true;
+            // 
+            // txtLanguages
+            // 
+            this.txtLanguages.Location = new System.Drawing.Point(77, 271);
+            this.txtLanguages.Name = "txtLanguages";
+            this.txtLanguages.ReadOnly = true;
+            this.txtLanguages.Size = new System.Drawing.Size(285, 21);
+            this.txtLanguages.TabIndex = 19;
+            this.txtLanguages.Leave += new System.EventHandler(this.interestsUpdated);
+            // 
+            // txtSkills
+            // 
+            this.txtSkills.Location = new System.Drawing.Point(77, 233);
+            this.txtSkills.Name = "txtSkills";
+            this.txtSkills.ReadOnly = true;
+            this.txtSkills.Size = new System.Drawing.Size(285, 21);
+            this.txtSkills.TabIndex = 18;
+            this.txtSkills.Leave += new System.EventHandler(this.interestsUpdated);
+            // 
+            // txtWantTo
+            // 
+            this.txtWantTo.Location = new System.Drawing.Point(77, 118);
+            this.txtWantTo.Name = "txtWantTo";
+            this.txtWantTo.ReadOnly = true;
+            this.txtWantTo.Size = new System.Drawing.Size(285, 21);
+            this.txtWantTo.TabIndex = 17;
+            this.txtWantTo.Leave += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxEventPlanning
+            // 
+            this.checkBoxEventPlanning.AutoSize = true;
+            this.checkBoxEventPlanning.Enabled = false;
+            this.checkBoxEventPlanning.Location = new System.Drawing.Point(239, 187);
+            this.checkBoxEventPlanning.Name = "checkBoxEventPlanning";
+            this.checkBoxEventPlanning.Size = new System.Drawing.Size(97, 17);
+            this.checkBoxEventPlanning.TabIndex = 16;
+            this.checkBoxEventPlanning.Text = "Event Planning";
+            this.checkBoxEventPlanning.UseVisualStyleBackColor = true;
+            this.checkBoxEventPlanning.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxCustomCharacters
+            // 
+            this.checkBoxCustomCharacters.AutoSize = true;
+            this.checkBoxCustomCharacters.Enabled = false;
+            this.checkBoxCustomCharacters.Location = new System.Drawing.Point(239, 210);
+            this.checkBoxCustomCharacters.Name = "checkBoxCustomCharacters";
+            this.checkBoxCustomCharacters.Size = new System.Drawing.Size(118, 17);
+            this.checkBoxCustomCharacters.TabIndex = 15;
+            this.checkBoxCustomCharacters.Text = "Custom Characters";
+            this.checkBoxCustomCharacters.UseVisualStyleBackColor = true;
+            this.checkBoxCustomCharacters.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxArchitecture
+            // 
+            this.checkBoxArchitecture.AutoSize = true;
+            this.checkBoxArchitecture.Enabled = false;
+            this.checkBoxArchitecture.Location = new System.Drawing.Point(239, 164);
+            this.checkBoxArchitecture.Name = "checkBoxArchitecture";
+            this.checkBoxArchitecture.Size = new System.Drawing.Size(85, 17);
+            this.checkBoxArchitecture.TabIndex = 14;
+            this.checkBoxArchitecture.Text = "Architecture";
+            this.checkBoxArchitecture.UseVisualStyleBackColor = true;
+            this.checkBoxArchitecture.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxScripting
+            // 
+            this.checkBoxScripting.AutoSize = true;
+            this.checkBoxScripting.Enabled = false;
+            this.checkBoxScripting.Location = new System.Drawing.Point(77, 210);
+            this.checkBoxScripting.Name = "checkBoxScripting";
+            this.checkBoxScripting.Size = new System.Drawing.Size(67, 17);
+            this.checkBoxScripting.TabIndex = 13;
+            this.checkBoxScripting.Text = "Scripting";
+            this.checkBoxScripting.UseVisualStyleBackColor = true;
+            this.checkBoxScripting.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxModeling
+            // 
+            this.checkBoxModeling.AutoSize = true;
+            this.checkBoxModeling.Enabled = false;
+            this.checkBoxModeling.Location = new System.Drawing.Point(77, 187);
+            this.checkBoxModeling.Name = "checkBoxModeling";
+            this.checkBoxModeling.Size = new System.Drawing.Size(68, 17);
+            this.checkBoxModeling.TabIndex = 12;
+            this.checkBoxModeling.Text = "Modeling";
+            this.checkBoxModeling.UseVisualStyleBackColor = true;
+            this.checkBoxModeling.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxTextures
+            // 
+            this.checkBoxTextures.AutoSize = true;
+            this.checkBoxTextures.Enabled = false;
+            this.checkBoxTextures.Location = new System.Drawing.Point(77, 164);
+            this.checkBoxTextures.Name = "checkBoxTextures";
+            this.checkBoxTextures.Size = new System.Drawing.Size(69, 17);
+            this.checkBoxTextures.TabIndex = 11;
+            this.checkBoxTextures.Text = "Textures";
+            this.checkBoxTextures.UseVisualStyleBackColor = true;
+            this.checkBoxTextures.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxHire
+            // 
+            this.checkBoxHire.AutoSize = true;
+            this.checkBoxHire.Enabled = false;
+            this.checkBoxHire.Location = new System.Drawing.Point(239, 95);
+            this.checkBoxHire.Name = "checkBoxHire";
+            this.checkBoxHire.Size = new System.Drawing.Size(45, 17);
+            this.checkBoxHire.TabIndex = 10;
+            this.checkBoxHire.Text = "Hire";
+            this.checkBoxHire.UseVisualStyleBackColor = true;
+            this.checkBoxHire.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxBuy
+            // 
+            this.checkBoxBuy.AutoSize = true;
+            this.checkBoxBuy.Enabled = false;
+            this.checkBoxBuy.Location = new System.Drawing.Point(239, 49);
+            this.checkBoxBuy.Name = "checkBoxBuy";
+            this.checkBoxBuy.Size = new System.Drawing.Size(44, 17);
+            this.checkBoxBuy.TabIndex = 9;
+            this.checkBoxBuy.Text = "Buy";
+            this.checkBoxBuy.UseVisualStyleBackColor = true;
+            this.checkBoxBuy.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxBeHired
+            // 
+            this.checkBoxBeHired.AutoSize = true;
+            this.checkBoxBeHired.Enabled = false;
+            this.checkBoxBeHired.Location = new System.Drawing.Point(239, 72);
+            this.checkBoxBeHired.Name = "checkBoxBeHired";
+            this.checkBoxBeHired.Size = new System.Drawing.Size(66, 17);
+            this.checkBoxBeHired.TabIndex = 8;
+            this.checkBoxBeHired.Text = "Be Hired";
+            this.checkBoxBeHired.UseVisualStyleBackColor = true;
+            this.checkBoxBeHired.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxExplore
+            // 
+            this.checkBoxExplore.AutoSize = true;
+            this.checkBoxExplore.Enabled = false;
+            this.checkBoxExplore.Location = new System.Drawing.Point(77, 95);
+            this.checkBoxExplore.Name = "checkBoxExplore";
+            this.checkBoxExplore.Size = new System.Drawing.Size(62, 17);
+            this.checkBoxExplore.TabIndex = 7;
+            this.checkBoxExplore.Text = "Explore";
+            this.checkBoxExplore.UseVisualStyleBackColor = true;
+            this.checkBoxExplore.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxSell
+            // 
+            this.checkBoxSell.AutoSize = true;
+            this.checkBoxSell.Enabled = false;
+            this.checkBoxSell.Location = new System.Drawing.Point(239, 26);
+            this.checkBoxSell.Name = "checkBoxSell";
+            this.checkBoxSell.Size = new System.Drawing.Size(42, 17);
+            this.checkBoxSell.TabIndex = 6;
+            this.checkBoxSell.Text = "Sell";
+            this.checkBoxSell.UseVisualStyleBackColor = true;
+            this.checkBoxSell.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxGroup
+            // 
+            this.checkBoxGroup.AutoSize = true;
+            this.checkBoxGroup.Enabled = false;
+            this.checkBoxGroup.Location = new System.Drawing.Point(77, 72);
+            this.checkBoxGroup.Name = "checkBoxGroup";
+            this.checkBoxGroup.Size = new System.Drawing.Size(55, 17);
+            this.checkBoxGroup.TabIndex = 5;
+            this.checkBoxGroup.Text = "Group";
+            this.checkBoxGroup.UseVisualStyleBackColor = true;
+            this.checkBoxGroup.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxMeet
+            // 
+            this.checkBoxMeet.AutoSize = true;
+            this.checkBoxMeet.Enabled = false;
+            this.checkBoxMeet.Location = new System.Drawing.Point(77, 49);
+            this.checkBoxMeet.Name = "checkBoxMeet";
+            this.checkBoxMeet.Size = new System.Drawing.Size(50, 17);
+            this.checkBoxMeet.TabIndex = 4;
+            this.checkBoxMeet.Text = "Meet";
+            this.checkBoxMeet.UseVisualStyleBackColor = true;
+            this.checkBoxMeet.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // checkBoxBuild
+            // 
+            this.checkBoxBuild.AutoSize = true;
+            this.checkBoxBuild.Enabled = false;
+            this.checkBoxBuild.Location = new System.Drawing.Point(77, 26);
+            this.checkBoxBuild.Name = "checkBoxBuild";
+            this.checkBoxBuild.Size = new System.Drawing.Size(48, 17);
+            this.checkBoxBuild.TabIndex = 3;
+            this.checkBoxBuild.Text = "Build";
+            this.checkBoxBuild.UseVisualStyleBackColor = true;
+            this.checkBoxBuild.CheckedChanged += new System.EventHandler(this.interestsUpdated);
+            // 
+            // labelLanguages
+            // 
+            this.labelLanguages.AutoSize = true;
+            this.labelLanguages.Location = new System.Drawing.Point(8, 271);
+            this.labelLanguages.Name = "labelLanguages";
+            this.labelLanguages.Size = new System.Drawing.Size(63, 13);
+            this.labelLanguages.TabIndex = 2;
+            this.labelLanguages.Text = "Languages:";
+            // 
+            // labelSkills
+            // 
+            this.labelSkills.AutoSize = true;
+            this.labelSkills.Location = new System.Drawing.Point(37, 164);
+            this.labelSkills.Name = "labelSkills";
+            this.labelSkills.Size = new System.Drawing.Size(33, 13);
+            this.labelSkills.TabIndex = 1;
+            this.labelSkills.Text = "Skills:";
+            // 
+            // labelWantTo
+            // 
+            this.labelWantTo.AutoSize = true;
+            this.labelWantTo.Location = new System.Drawing.Point(15, 26);
+            this.labelWantTo.Name = "labelWantTo";
+            this.labelWantTo.Size = new System.Drawing.Size(55, 13);
+            this.labelWantTo.TabIndex = 0;
+            this.labelWantTo.Text = "I want to:";
             // 
             // tbpPicks
             // 
@@ -609,11 +877,9 @@ namespace Radegast
             // tpgFirstLife
             // 
             this.tpgFirstLife.Controls.Add(this.txtUUID);
-            this.tpgFirstLife.Controls.Add(this.label9);
+            this.tpgFirstLife.Controls.Add(this.labelKey);
             this.tpgFirstLife.Controls.Add(this.rlPicPanel);
             this.tpgFirstLife.Controls.Add(this.rtbAboutFL);
-            this.tpgFirstLife.Controls.Add(this.label8);
-            this.tpgFirstLife.Controls.Add(this.label7);
             this.tpgFirstLife.Location = new System.Drawing.Point(4, 22);
             this.tpgFirstLife.Name = "tpgFirstLife";
             this.tpgFirstLife.Padding = new System.Windows.Forms.Padding(3);
@@ -631,15 +897,15 @@ namespace Radegast
             this.txtUUID.Size = new System.Drawing.Size(259, 21);
             this.txtUUID.TabIndex = 17;
             // 
-            // label9
+            // labelKey
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 433);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(29, 13);
-            this.label9.TabIndex = 16;
-            this.label9.Text = "Key:";
+            this.labelKey.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelKey.AutoSize = true;
+            this.labelKey.Location = new System.Drawing.Point(8, 433);
+            this.labelKey.Name = "labelKey";
+            this.labelKey.Size = new System.Drawing.Size(29, 13);
+            this.labelKey.TabIndex = 16;
+            this.labelKey.Text = "Key:";
             // 
             // rlPicPanel
             // 
@@ -662,24 +928,39 @@ namespace Radegast
             this.rtbAboutFL.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAboutFL_LinkClicked);
             this.rtbAboutFL.Leave += new System.EventHandler(this.rtbAboutFL_Leave);
             // 
-            // label8
+            // tabNotes
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 6);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 13);
-            this.label8.TabIndex = 6;
-            this.label8.Text = "My first life pic:";
+            this.tabNotes.Controls.Add(this.rtbNotes);
+            this.tabNotes.Controls.Add(this.labelNotes);
+            this.tabNotes.Location = new System.Drawing.Point(4, 22);
+            this.tabNotes.Name = "tabNotes";
+            this.tabNotes.Padding = new System.Windows.Forms.Padding(3);
+            this.tabNotes.Size = new System.Drawing.Size(460, 476);
+            this.tabNotes.TabIndex = 4;
+            this.tabNotes.Text = "Notes";
+            this.tabNotes.UseVisualStyleBackColor = true;
             // 
-            // label7
+            // rtbNotes
             // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 185);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(96, 13);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "About my first life:";
+            this.rtbNotes.AccessibleName = "Private Notes on Avatar";
+            this.rtbNotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbNotes.Location = new System.Drawing.Point(6, 19);
+            this.rtbNotes.Name = "rtbNotes";
+            this.rtbNotes.ReadOnly = false;
+            this.rtbNotes.Size = new System.Drawing.Size(448, 277);
+            this.rtbNotes.TabIndex = 1;
+            this.rtbNotes.Text = "";
+            this.rtbNotes.Leave += new System.EventHandler(this.rtbNotes_Leave);
+            // 
+            // labelNotes
+            // 
+            this.labelNotes.AutoSize = true;
+            this.labelNotes.Location = new System.Drawing.Point(6, 3);
+            this.labelNotes.Name = "labelNotes";
+            this.labelNotes.Size = new System.Drawing.Size(146, 13);
+            this.labelNotes.TabIndex = 0;
+            this.labelNotes.Text = "Private notes on this Avatar:";
             // 
             // btnClose
             // 
@@ -726,6 +1007,8 @@ namespace Radegast
             this.tpgProfile.PerformLayout();
             this.tpgWeb.ResumeLayout(false);
             this.tpgWeb.PerformLayout();
+            this.tabInterests.ResumeLayout(false);
+            this.tabInterests.PerformLayout();
             this.tbpPicks.ResumeLayout(false);
             this.pickDetailPanel.ResumeLayout(false);
             this.pickDetailPanel.PerformLayout();
@@ -733,6 +1016,8 @@ namespace Radegast
             this.pickListPanel.ResumeLayout(false);
             this.tpgFirstLife.ResumeLayout(false);
             this.tpgFirstLife.PerformLayout();
+            this.tabNotes.ResumeLayout(false);
+            this.tabNotes.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -744,20 +1029,17 @@ namespace Radegast
         public System.Windows.Forms.TabPage tpgProfile;
         public System.Windows.Forms.TabPage tpgWeb;
         public System.Windows.Forms.TabPage tpgFirstLife;
-        public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.Label label2;
-        public System.Windows.Forms.Label label4;
-        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Label labelName;
+        public System.Windows.Forms.Label labelBornOn;
+        public System.Windows.Forms.Label labelInfo;
         public System.Windows.Forms.TextBox txtBornOn;
-        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.Label labelPartner;
         public System.Windows.Forms.Button btnClose;
         public System.Windows.Forms.Panel pnlWeb;
         public System.Windows.Forms.Button btnWebOpen;
         public System.Windows.Forms.Button btnWebView;
         public System.Windows.Forms.TextBox txtWebURL;
-        public System.Windows.Forms.Label label6;
-        public System.Windows.Forms.Label label8;
-        public System.Windows.Forms.Label label7;
+        public System.Windows.Forms.Label labelUrl;
         public System.Windows.Forms.RichTextBox rtbAbout;
         public System.Windows.Forms.RichTextBox rtbAboutFL;
         public System.Windows.Forms.RichTextBox rtbAccountInfo;
@@ -781,7 +1063,7 @@ namespace Radegast
         public AgentNameTextBox anPartner;
         public AgentNameTextBox txtFullName;
         public System.Windows.Forms.TextBox txtUUID;
-        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.Label labelKey;
         public ListViewNoFlicker lvwGroups;
         private System.Windows.Forms.ColumnHeader clGroupName;
         private System.Windows.Forms.ColumnHeader clGroupTitle;
@@ -791,6 +1073,29 @@ namespace Radegast
         public System.Windows.Forms.Button btnUnmute;
         public System.Windows.Forms.Button btnMute;
         private System.Windows.Forms.Button btnRequestTeleport;
-
+        private System.Windows.Forms.TabPage tabNotes;
+        private System.Windows.Forms.TabPage tabInterests;
+        private System.Windows.Forms.TextBox txtLanguages;
+        private System.Windows.Forms.TextBox txtSkills;
+        private System.Windows.Forms.TextBox txtWantTo;
+        private System.Windows.Forms.CheckBox checkBoxEventPlanning;
+        private System.Windows.Forms.CheckBox checkBoxCustomCharacters;
+        private System.Windows.Forms.CheckBox checkBoxArchitecture;
+        private System.Windows.Forms.CheckBox checkBoxScripting;
+        private System.Windows.Forms.CheckBox checkBoxModeling;
+        private System.Windows.Forms.CheckBox checkBoxTextures;
+        private System.Windows.Forms.CheckBox checkBoxHire;
+        private System.Windows.Forms.CheckBox checkBoxBuy;
+        private System.Windows.Forms.CheckBox checkBoxBeHired;
+        private System.Windows.Forms.CheckBox checkBoxExplore;
+        private System.Windows.Forms.CheckBox checkBoxSell;
+        private System.Windows.Forms.CheckBox checkBoxGroup;
+        private System.Windows.Forms.CheckBox checkBoxMeet;
+        private System.Windows.Forms.CheckBox checkBoxBuild;
+        private System.Windows.Forms.Label labelLanguages;
+        private System.Windows.Forms.Label labelSkills;
+        private System.Windows.Forms.Label labelWantTo;
+        public System.Windows.Forms.RichTextBox rtbNotes;
+        private System.Windows.Forms.Label labelNotes;
     }
 }
