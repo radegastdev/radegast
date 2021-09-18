@@ -9,9 +9,18 @@
 	    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
 	<?endif ?>
 	
-    <Product Id="*" Name="$(var.productName) $(var.productVersion)" Language="1033" 
-             Version="$(var.productVersion)" Manufacturer="$(var.companyName)" UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
-		<Package InstallerVersion="405" Manufacturer="$(var.companyName)" Compressed="yes" />
+    <Product Id="*" 
+			 Name="$(var.productName)" 
+			 Language="1033" 
+             Version="$(var.productVersion)" 
+			 Manufacturer="$(var.companyName)" 
+			 UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
+		<Package InstallerVersion="405" 
+				 Manufacturer="$(var.companyName)" 
+				 Description="$(var.productDesc)"
+		         Compressed="yes" />
+		
+		<Icon Id="radegast.ico" SourceFile="..\..\Radegast\radegast.ico"/>
 
 		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
         <Media Id="1" Cabinet="Radegast.cab" EmbedCab="yes" />
@@ -22,14 +31,14 @@
         <!-- Windows Add/Remove Programs properties -->
         <Property Id="ARPCOMMENTS">$(var.productDesc)</Property>
         <Property Id="ARPCONTACT">$(var.companyName)</Property>
-        <Property Id="ARPHELPLINK">https://radegast.life/</Property>
-        <Property Id="ARPURLINFOABOUT">https://radegast.life/</Property>
-        <Property Id="ARPURLUPDATEINFO">https://radegast.life/</Property>
+		<Property Id="ARPPRODUCTICON" Value="radegast.ico" />
+        <Property Id="ARPHELPLINK">$(var.aboutUrl)</Property>
+        <Property Id="ARPURLINFOABOUT">$(var.aboutUrl)</Property>
+        <Property Id="ARPURLUPDATEINFO">$(var.aboutUrl)</Property>
         <!--<Property Id="ARPHELPTELEPHONE"></Property>-->
         <Property Id="ARPREADME">https://radegast.life/</Property>
+		<!-- Update this value with the install size in Kb -->
         <Property Id="ARPSIZE">$(var.totalFileSize)</Property>
-        <!-- Update this value with the install size in Kb -->
-        <Property Id="ARPPRODUCTICON">ICO_File</Property>
         <!-- This refers to the Id attribute of the <Icon> element -->
         <!--<Property Id="ARPNOMODIFY">1</Property>-->
         <!-- Prevent the Modify feature in Add/Remove Programs -->

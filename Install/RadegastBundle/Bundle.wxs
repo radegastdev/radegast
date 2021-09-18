@@ -9,8 +9,15 @@
 	    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
 	<?endif ?>
 
-	<Bundle Name="$(var.productName) $(var.productVersion)" Version="$(var.productVersion)" 
-            Manufacturer="$(var.companyName)" UpgradeCode="cccc26b5-aa17-47d8-8d5d-707a78ec9a10">
+	<Bundle Name="$(var.productName)" 
+			Version="$(var.productVersion)" 
+            Manufacturer="$(var.companyName)"
+			AboutUrl="$(var.aboutUrl)"
+			HelpUrl="$(var.aboutUrl)"
+			UpdateUrl="$(var.aboutUrl)"
+			Copyright="$(var.copyright)"
+			IconSourceFile="..\..\Radegast\radegast.ico"
+			UpgradeCode="cccc26b5-aa17-47d8-8d5d-707a78ec9a10">
         <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
             <bal:WixStandardBootstrapperApplication LicenseFile="assets\license.rtf" ShowVersion="yes" />
         </BootstrapperApplicationRef>
