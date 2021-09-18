@@ -238,32 +238,6 @@ namespace Radegast
             txtLanguages.Text = Interests.LanguagesText;
         }
 
-        void SendAvatarNotesRequest(UUID targetid)
-        {
-            OpenMetaverse.Packets.GenericMessagePacket gmp = new OpenMetaverse.Packets.GenericMessagePacket
-            {
-                AgentData =
-                {
-                    AgentID = Client.Self.AgentID,
-                    SessionID = Client.Self.SessionID,
-                    TransactionID = UUID.Zero
-                },
-                MethodData =
-                {
-                    Method = Utils.StringToBytes("avatarnotesrequest"),
-                    Invoice = UUID.Zero
-                },
-                ParamList = new OpenMetaverse.Packets.GenericMessagePacket.ParamListBlock[1]
-            };
-
-            gmp.ParamList[0] =
-                new OpenMetaverse.Packets.GenericMessagePacket.ParamListBlock { 
-                    Parameter = Utils.StringToBytes(targetid.ToString()) 
-                };
-
-            Client.Network.SendPacket(gmp);
-        }
-
         void Avatars_AvatarNotesReply(object sender, AvatarNotesReplyEventArgs e)
         {
             if (e.AvatarID != AgentID) return;
@@ -526,7 +500,10 @@ namespace Radegast
             txtBornOn.Text = properties.BornOn;
             anPartner.AgentID = properties.Partner;
 
-            if (fullName.EndsWith("Linden")) rtbAccountInfo.AppendText("Linden Lab Employee\n");
+            if (!string.IsNullOrEmpty(properties.CharterMember))
+            {
+                rtbAccountInfo.AppendText($"{properties.CharterMember}\n");
+            }
             if (properties.Identified) rtbAccountInfo.AppendText("Identified\n");
             if (properties.Transacted) rtbAccountInfo.AppendText("Transacted\n");
 
@@ -545,7 +522,7 @@ namespace Radegast
             btnOfferTeleport.Enabled = btnPay.Enabled = (AgentID != client.Self.AgentID);
 
             client.Avatars.RequestAvatarProperties(AgentID);
-            SendAvatarNotesRequest(AgentID);
+            client.Avatars.RequestAvatarNotes(AgentID);
             UpdateMuteButton();
 
             if (AgentID == client.Self.AgentID)
