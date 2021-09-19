@@ -436,10 +436,10 @@ namespace Radegast
                 Utils.LongToUInts(handle, out regX, out regY);
                 regX /= regionSize;
                 regY /= regionSize;
-                int zoom = 1;
+                int zoomlevel = 1;
 
                 downloader.QueueDownlad(
-                    new Uri(string.Format("http://map.secondlife.com/map-{0}-{1}-{2}-objects.jpg", zoom, regX, regY)),
+                    new Uri($"http://map.secondlife.com/map-{zoomlevel}-{regX}-{regY}-objects.jpg"),
                     20 * 1000,
                     null,
                     null,
