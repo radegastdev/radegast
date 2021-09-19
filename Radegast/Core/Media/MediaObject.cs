@@ -217,7 +217,6 @@ namespace Radegast.Media
         }
         protected void UnRegisterSound()
         {
-            if (sound.handle == null) return;
             IntPtr raw = sound.handle;
             if (allSounds.ContainsKey( raw ))
             {
@@ -226,7 +225,6 @@ namespace Radegast.Media
         }
         protected void UnRegisterChannel()
         {
-            if (channel.handle == null) return;
             IntPtr raw = channel.handle;
             if (allChannels.ContainsKey(raw))
             {
