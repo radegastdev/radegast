@@ -164,10 +164,10 @@ namespace Tools
       {
         return (int) dollar;
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         Console.WriteLine("attempt to convert from " + (object) s.m_dollar.GetType());
-        throw ex;
+        throw;
       }
     }
   }
