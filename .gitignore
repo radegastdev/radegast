@@ -12,4 +12,5 @@ compile.bat
 .vs
 .idea
 libremetaverse/
+sparkle/
 ProductInstallFiles.wxs

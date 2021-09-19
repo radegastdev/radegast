@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
     <?define productName="Radegast"?>
+	<?define productDesc="A lightweight client for Second Life and OpenSimulator"?>
     <?define companyName="Sjofn, LLC"?>
+	<?define aboutUrl="https://radegast.life/"?>
+	<?define copyright="Copyright (c) 2006-2021 Sjofn LLC."?>
     <?define totalFileSize="10"?>
 </Include>

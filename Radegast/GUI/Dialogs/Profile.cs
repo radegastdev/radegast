@@ -500,12 +500,16 @@ namespace Radegast
             txtBornOn.Text = properties.BornOn;
             anPartner.AgentID = properties.Partner;
 
-            if (!string.IsNullOrEmpty(properties.CharterMember))
+            if (fullName.EndsWith("Linden"))
+            {
+                rtbAccountInfo.AppendText("Linden Lab Employee\n");
+            }
+            else if (!string.IsNullOrEmpty(properties.CharterMember))
             {
                 rtbAccountInfo.AppendText($"{properties.CharterMember}\n");
             }
-            if (properties.Identified) rtbAccountInfo.AppendText("Identified\n");
-            if (properties.Transacted) rtbAccountInfo.AppendText("Transacted\n");
+            if (properties.Identified) { rtbAccountInfo.AppendText("Identified\n"); }
+            if (properties.Transacted) { rtbAccountInfo.AppendText("Transacted\n"); }
 
             rtbAbout.AppendText(properties.AboutText);
 
