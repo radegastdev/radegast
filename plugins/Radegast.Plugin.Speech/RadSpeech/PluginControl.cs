@@ -471,7 +471,7 @@ namespace RadegastSpeech
                             try
                             {
                                 // This is the one.  Instantiate it.
-                                osLayer = (IRadSpeech)ci.Invoke(new object[0]);
+                                osLayer = (IRadSpeech)ci.Invoke(Array.Empty<object>());
                                 return;
                             }
                             catch (Exception ex)
