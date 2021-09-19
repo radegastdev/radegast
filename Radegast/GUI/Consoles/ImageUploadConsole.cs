@@ -238,7 +238,7 @@ namespace Radegast
                 btnSave.Enabled = false;
                 btnUpload.Enabled = false;
                 txtStatus.AppendText(string.Format("Failed to load the image:" + Environment.NewLine 
-                    + "{ 0}" + Environment.NewLine, ex.Message));
+                    + "{0}" + Environment.NewLine, ex.Message));
             }
         }
 
