@@ -139,20 +139,7 @@ namespace Radegast
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
 
-            #region sparkle updater
-            var appcastUrl = "https://update.radegast.life/appcast.xml";
-            var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
-            var icon = Icon.ExtractAssociatedIcon(manifestModuleName);
-            SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl, 
-                new Ed25519Checker(NetSparkleUpdater.Enums.SecurityMode.Strict, "YR4STztpPyLnlPwhOVwaL2F7ToCmyXZ53cTt/encBu8="))
-            {
-                UIFactory = new NetSparkleUpdater.UI.WinForms.UIFactory(icon),
-                RelaunchAfterUpdate = true,
-                UseNotificationToast = true,
-                SecurityProtocolType = System.Net.SecurityProtocolType.Tls12
-            };
-            SparkleUpdater.StartLoop(true);
-            #endregion
+            InitUpdater();
         }
 
         private void Network_SimChanged(object sender, SimChangedEventArgs e)
@@ -1631,6 +1618,22 @@ namespace Radegast
         {
             var miniMapControl = new GUI.Dialogs.MiniMapForm(client);
             miniMapControl.Show();
+        }
+
+        private void InitUpdater()
+        {
+            var appcastUrl = "https://update.radegast.life/appcast.xml";
+            var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
+            var icon = Icon.ExtractAssociatedIcon(manifestModuleName);
+            SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl,
+                new Ed25519Checker(NetSparkleUpdater.Enums.SecurityMode.Strict, "YR4STztpPyLnlPwhOVwaL2F7ToCmyXZ53cTt/encBu8="))
+            {
+                UIFactory = new NetSparkleUpdater.UI.WinForms.UIFactory(icon),
+                RelaunchAfterUpdate = true,
+                UseNotificationToast = true,
+                SecurityProtocolType = System.Net.SecurityProtocolType.Tls12
+            };
+            SparkleUpdater.StartLoop(true);
         }
 
         private void ctxCheckForUpdates_Click(object sender, EventArgs e)
