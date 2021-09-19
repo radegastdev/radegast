@@ -141,7 +141,7 @@ namespace Radegast
 
             if (e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => { RefreshGroupInfo(); }));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
                 instance.TabConsole.DisplayNotificationInChat("Group member ejected.");
             }
             else
@@ -172,7 +172,7 @@ namespace Radegast
                 groupRolesMembersRequest = client.Groups.RequestGroupRolesMembers(group.ID);
                 if (roles == null) roles = e.Roles;
                 else lock (roles) roles = e.Roles;
-                BeginInvoke(new MethodInvoker(() => DisplayGroupRoles()));
+                BeginInvoke(new MethodInvoker(DisplayGroupRoles));
             }
         }
 
@@ -180,7 +180,7 @@ namespace Radegast
         {
             if (e.GroupID == group.ID && e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
             }
         }
 
@@ -188,7 +188,7 @@ namespace Radegast
         {
             if (e.GroupID == group.ID && e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
             }
         }
 

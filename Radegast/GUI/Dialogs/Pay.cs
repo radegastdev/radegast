@@ -107,22 +107,18 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    UpdateResident();
-                }
-                ));
+                BeginInvoke(new MethodInvoker(UpdateResident));
                 return;
             }
 
-            lblResident.Text = string.Format("Pay resident: {0}", instance.Names.Get(owner));
+            lblResident.Text = $"Pay resident: {instance.Names.Get(owner)}";
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (e.Names.ContainsKey(owner))
             {
-                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+                instance.Names.NameUpdated -= Avatars_UUIDNameReply;
                 UpdateResident();
             }
         }

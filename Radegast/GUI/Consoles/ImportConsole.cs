@@ -350,7 +350,7 @@ namespace Radegast
                     MessageBox.Show(ex.Message, "Importing failed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-                BeginInvoke(new MethodInvoker(() => EnableWindow()));
+                BeginInvoke(new MethodInvoker(EnableWindow));
             }) {IsBackground = true};
             t.Start();
 		}

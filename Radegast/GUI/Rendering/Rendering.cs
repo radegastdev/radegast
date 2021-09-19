@@ -378,7 +378,7 @@ namespace Radegast.Rendering
             if (InvokeRequired)
             {
                 if (!IsHandleCreated) return;
-                BeginInvoke(new MethodInvoker(() => Dispose()));
+                BeginInvoke(new MethodInvoker(Dispose));
             }
         }
 
@@ -738,7 +738,7 @@ namespace Radegast.Rendering
 
                 // glControl.Context.MakeCurrent(null);
                 TextureThreadContextReady.Reset();
-                var textureThread = new Thread(() => TextureThread())
+                var textureThread = new Thread(TextureThread)
                 {
                     IsBackground = true,
                     Name = "TextureDecodingThread"

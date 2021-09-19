@@ -745,7 +745,7 @@ namespace Radegast
                         Instance.State.Parcel.Desc
                         );
 
-                    Invoke(new MethodInvoker(() => ClearPicks()));
+                    Invoke(new MethodInvoker(ClearPicks));
                     client.Avatars.RequestAvatarPicks(AgentID);
                 });
         }

@@ -122,7 +122,7 @@ namespace Radegast
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
                 {
-                    BeginInvoke(new MethodInvoker(() => UpdateButtons()));
+                    BeginInvoke(new MethodInvoker(UpdateButtons));
                 }
                 return;
             }

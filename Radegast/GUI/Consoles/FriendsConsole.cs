@@ -325,7 +325,7 @@ namespace Radegast
                                 ));
                             }
                             client.Self.GroupChatJoined -= handler;
-                            BeginInvoke(new MethodInvoker(() => RefreshFriendsList()));
+                            BeginInvoke(new MethodInvoker(RefreshFriendsList));
                         }
                     }
                 );

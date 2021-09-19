@@ -103,7 +103,7 @@ namespace Radegast
         {
             if (instance.MainForm.InvokeRequired)
             {
-                instance.MainForm.BeginInvoke(new MethodInvoker(() => Init2()));
+                instance.MainForm.BeginInvoke(new MethodInvoker(Init2));
                 return;
             }
 
