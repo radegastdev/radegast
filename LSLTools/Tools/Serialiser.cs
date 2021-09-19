@@ -153,8 +153,9 @@ namespace Tools
       {
         byte[] bytes = encoding.GetBytes((string) o);
         s._Write(bytes.Length);
-        for (int index = 0; index < bytes.Length; ++index)
-          s._Write((int) bytes[index]);
+        foreach (var t in bytes)
+            s._Write((int) t);
+
         return (object) null;
       }
       int count = s._Read();

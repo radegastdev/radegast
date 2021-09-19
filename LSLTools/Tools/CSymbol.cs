@@ -115,11 +115,11 @@ namespace Tools
 
     public void AddStartItems(ParseState pstate, SymbolSet follows)
     {
-      for (int index = 0; index < this.m_prods.Count; ++index)
-      {
-        Production prod = (Production) this.m_prods[index];
-        pstate.MaybeAdd(new ProdItem(prod, 0));
-      }
+        foreach (var p in this.m_prods)
+        {
+            Production prod = (Production) p;
+            pstate.MaybeAdd(new ProdItem(prod, 0));
+        }
     }
 
     public bool IsNullable()
