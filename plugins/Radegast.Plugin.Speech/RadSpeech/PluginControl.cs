@@ -57,11 +57,13 @@ namespace RadegastSpeech
 
             if (config == null)
             {
-                config = new OSDMap();
-                config["enabled"] = new OSDBoolean(false);
-                config["voices"] = new OSDMap();
-                config["properties"] = new OSDMap();
-                config["substitutions"] = new OSDMap();
+                config = new OSDMap
+                {
+                    ["enabled"] = new OSDBoolean(false),
+                    ["voices"] = new OSDMap(),
+                    ["properties"] = new OSDMap(),
+                    ["substitutions"] = new OSDMap()
+                };
                 instance.GlobalSettings["plugin.speech"] = config;
             }
 

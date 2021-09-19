@@ -136,9 +136,11 @@ namespace Tools
             {
               this.m_sgen.m_lexer.yytext = "%" + prod.m_lhs.yytext;
               this.m_sgen.m_prod = prod;
-              ParserSimpleAction parserSimpleAction = new ParserSimpleAction(this.m_sgen);
-              parserSimpleAction.m_sym = prod.m_lhs;
-              parserSimpleAction.m_len = count;
+              var parserSimpleAction = new ParserSimpleAction(this.m_sgen)
+              {
+                  m_sym = prod.m_lhs,
+                  m_len = count
+              };
               parserReduce = new ParserReduce((ParserAction) parserSimpleAction, count, prod);
             }
             foreach (CSymbol key in (IEnumerable) pi.m_prod.m_lhs.m_follow.Keys)

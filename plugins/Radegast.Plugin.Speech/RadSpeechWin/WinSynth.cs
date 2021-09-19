@@ -181,10 +181,12 @@ namespace RadegastSpeech
         /// <param name="text"></param>
         private void SayPrompt(string text)
         {
-            PromptStyle intro = new PromptStyle();
-            intro.Rate = voiceRate;
-            //intro.Volume = promptVol - 1;
-            intro.Emphasis = PromptEmphasis.Moderate;
+            PromptStyle intro = new PromptStyle
+            {
+                Rate = voiceRate,
+                //Volume = promptVol - 1;
+                Emphasis = PromptEmphasis.Moderate
+            };
             pb.StartStyle(intro);
             pb.StartSentence();
             pb.AppendText(text + ":");

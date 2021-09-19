@@ -296,10 +296,12 @@ namespace Radegast.Plugin.Alice
         {
             try
             {
-                Alice = new Bot();
-                Alice.isAcceptingUserInput = false;
+                Alice = new Bot
+                {
+                    isAcceptingUserInput = false
+                };
                 Alice.loadSettings();
-                AIMLbot.Utils.AIMLLoader loader = new AIMLbot.Utils.AIMLLoader(Alice);
+                var loader = new AIMLbot.Utils.AIMLLoader(Alice);
                 Alice.isAcceptingUserInput = false;
                 loader.loadAIML(Alice.PathToAIML);
                 Alice.isAcceptingUserInput = true;

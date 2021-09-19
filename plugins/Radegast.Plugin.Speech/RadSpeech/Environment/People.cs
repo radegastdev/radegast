@@ -83,9 +83,11 @@ namespace RadegastSpeech.Environment
             // Create an entry in the avatar information dictionary.
             if (visualParams.Count > 32)
             {
-                AvatarInfo info = new AvatarInfo();
-                info.gender = visualParams[31];
-                info.height = visualParams[32];
+                AvatarInfo info = new AvatarInfo
+                {
+                    gender = visualParams[31],
+                    height = visualParams[32]
+                };
                 // We are only getting 218 parameters.
 //                info.leglen = visualParams[691];
                 information[e.AvatarID] = info;

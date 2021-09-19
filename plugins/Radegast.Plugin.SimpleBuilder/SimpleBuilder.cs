@@ -273,9 +273,11 @@ namespace SimpleBuilderNamespace
             }
 
             string name = GetObjectName(prim);
-            var item = new ListViewItem(name);
-            item.Tag = prim;
-            item.Name = prim.ID.ToString();
+            var item = new ListViewItem(name)
+            {
+                Tag = prim,
+                Name = prim.ID.ToString()
+            };
             e.Item = item;
         }
 

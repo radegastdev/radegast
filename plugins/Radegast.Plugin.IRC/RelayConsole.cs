@@ -125,14 +125,16 @@ namespace Radegast.Plugin.IRC
 
             if (config == null)
             {
-                config = new OSDMap();
-                config["server"] = new OSDString("irc.freenode.net");
-                config["port"] = new OSDInteger(6667);
-                config["nick"] = new OSDString(string.Empty);
-                config["channel"] = new OSDString("#");
-                config["send_delay"] = new OSDInteger(200);
-                config["auto_reconnect"] = new OSDBoolean(true);
-                config["ctcp_version"] = new OSDString("Radegast IRC");
+                config = new OSDMap
+                {
+                    ["server"] = new OSDString("irc.freenode.net"),
+                    ["port"] = new OSDInteger(6667),
+                    ["nick"] = new OSDString(string.Empty),
+                    ["channel"] = new OSDString("#"),
+                    ["send_delay"] = new OSDInteger(200),
+                    ["auto_reconnect"] = new OSDBoolean(true),
+                    ["ctcp_version"] = new OSDString("Radegast IRC")
+                };
                 instance.GlobalSettings["plugin.irc"] = config;
             }
 
@@ -156,11 +158,13 @@ namespace Radegast.Plugin.IRC
             txtPort.Text = config["port"].AsString();
             txtServer.Text = config["server"].AsString();
 
-            irc = new IrcClient();
-            irc.SendDelay = config["send_delay"].AsInteger();
-            irc.AutoReconnect = config["auto_reconnect"].AsBoolean();
-            irc.CtcpVersion = config["ctcp_version"].AsString();
-            irc.Encoding = Encoding.UTF8;
+            irc = new IrcClient
+            {
+                SendDelay = config["send_delay"].AsInteger(),
+                AutoReconnect = config["auto_reconnect"].AsBoolean(),
+                CtcpVersion = config["ctcp_version"].AsString(),
+                Encoding = Encoding.UTF8
+            };
 
             TC.OnTabAdded += TC_OnTabAdded;
             TC.OnTabRemoved += TC_OnTabRemoved;
@@ -399,9 +403,11 @@ namespace Radegast.Plugin.IRC
 
             try
             {
-                Thread IRCConnection = new Thread(IrcThread);
-                IRCConnection.Name = "IRC Thread";
-                IRCConnection.IsBackground = true;
+                Thread IRCConnection = new Thread(IrcThread)
+                {
+                    Name = "IRC Thread",
+                    IsBackground = true
+                };
                 int port = 6667;
                 int.TryParse(txtPort.Text, out port);
                 IRCConnection.Start(new object[] { txtServer.Text, port, txtNick.Text, txtChan.Text });

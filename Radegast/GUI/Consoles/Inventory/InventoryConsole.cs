@@ -1923,14 +1923,12 @@ namespace Radegast
                         break;
 
                     case "animation_play":
-                        Dictionary<UUID, bool> anim = new Dictionary<UUID, bool>();
-                        anim.Add(item.AssetUUID, true);
+                        Dictionary<UUID, bool> anim = new Dictionary<UUID, bool> { { item.AssetUUID, true } };
                         Client.Self.Animate(anim, true);
                         break;
 
                     case "animation_stop":
-                        Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool>();
-                        animStop.Add(item.AssetUUID, false);
+                        Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool> { { item.AssetUUID, false } };
                         Client.Self.Animate(animStop, true);
                         break;
 
