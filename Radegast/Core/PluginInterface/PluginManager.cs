@@ -274,7 +274,7 @@ namespace Radegast
                 return true;
             }
 
-            var filename = Path.GetFileName(path)?.ToLower();
+            var filename = Path.GetFileName(path).ToLower();
             if (string.IsNullOrEmpty(filename))
             {
                 return true;

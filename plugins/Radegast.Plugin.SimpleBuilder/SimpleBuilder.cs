@@ -221,7 +221,7 @@ namespace SimpleBuilderNamespace
                                 e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
                                 if (string.IsNullOrEmpty(ownerName))
                                     ownerName = "Loading...";
-                                nameReceivedSignal?.Set();
+                                nameReceivedSignal.Set();
                             }
                         });
                     client.Groups.GroupNamesReply += cbGroupName;
