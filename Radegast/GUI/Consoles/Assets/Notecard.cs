@@ -272,7 +272,7 @@ namespace Radegast
         {
             if (Detached)
             {
-                FindForm().Close();
+                FindForm()?.Close();
             }
         }
 

@@ -122,7 +122,7 @@ namespace Radegast
             }
             else
             {
-                sl.GridID = (cbxGrid.SelectedItem as Grid).ID;
+                sl.GridID = (cbxGrid.SelectedItem as Grid)?.ID;
                 sl.CustomURI = string.Empty;
             }
 
@@ -459,7 +459,7 @@ namespace Radegast
                 netcom.LoginOptions.Grid = cbxGrid.SelectedItem as Grid;
             }
 
-            if (netcom.LoginOptions.Grid.Platform != "SecondLife")
+            if (netcom.LoginOptions.Grid?.Platform != "SecondLife")
             {
                 instance.Client.Settings.MULTIPLE_SIMS = true;
                 instance.Client.Settings.HTTP_INVENTORY = !instance.GlobalSettings["disable_http_inventory"];

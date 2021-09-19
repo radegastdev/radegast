@@ -291,6 +291,7 @@ namespace Radegast
             BeginInvoke(new MethodInvoker(delegate()
             {
                 // Supply the name based on the UUID.
+                if (p == null) return;
                 p.Name = instance.Names.Get(p.ID);
 
                 if (participants.Items.ContainsKey(p.ID.ToString()))
@@ -298,7 +299,7 @@ namespace Radegast
 
                 ListViewItem item = new ListViewItem(p.Name)
                 {
-                    Name = p.ID.ToString(), Tag = p, StateImageIndex = (int) TalkState.Idle
+                    Name = p.ID.ToString(), Tag = p, StateImageIndex = (int)TalkState.Idle
                 };
 
                 lock (participants)
@@ -309,7 +310,7 @@ namespace Radegast
         void session_OnParticipantRemoved(object sender, EventArgs e)
         {
             VoiceParticipant p = sender as VoiceParticipant;
-            if (p.Name == null) return;
+            if (p?.Name == null) return;
             BeginInvoke(new MethodInvoker(delegate()
             {
                 lock (participants)
@@ -324,7 +325,7 @@ namespace Radegast
         void session_OnParticipantUpdate(object sender, EventArgs e)
         {
             VoiceParticipant p = sender as VoiceParticipant;
-            if (p.Name == null) return;
+            if (p?.Name == null) return;
             BeginInvoke(new MethodInvoker(delegate()
             {
                 lock (participants)
@@ -366,8 +367,7 @@ namespace Radegast
         {
             foreach (ListViewItem i in participants.Items)
             {
-                VoiceParticipant p = i.Tag as VoiceParticipant;
-                if (p.ID != instance.Client.Self.AgentID)
+                if (i.Tag is VoiceParticipant p && p.ID != instance.Client.Self.AgentID)
                 {
                     p.IsMuted = false;
                     i.StateImageIndex = (int)TalkState.Idle;
@@ -384,8 +384,7 @@ namespace Radegast
         {
             foreach (ListViewItem i in participants.Items)
             {
-                VoiceParticipant p = i.Tag as VoiceParticipant;
-                if (p.ID != instance.Client.Self.AgentID)
+                if (i.Tag is VoiceParticipant p && p.ID != instance.Client.Self.AgentID)
                 {
                     p.IsMuted = true;
                     i.StateImageIndex = (int)TalkState.Muted;

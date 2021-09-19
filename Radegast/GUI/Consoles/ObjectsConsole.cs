@@ -249,9 +249,11 @@ namespace Radegast
             {
                 if (lstChildren.Items.ContainsKey(props.ObjectID.ToString()))
                 {
-                    Primitive prim = lstChildren.Items[props.ObjectID.ToString()].Tag as Primitive;
-                    prim.Properties = props;
-                    lstChildren.Items[props.ObjectID.ToString()].Text = prim.Properties.Name;
+                    if (lstChildren.Items[props.ObjectID.ToString()].Tag is Primitive prim)
+                    {
+                        prim.Properties = props;
+                        lstChildren.Items[props.ObjectID.ToString()].Text = prim.Properties.Name;
+                    }
                 }
             }
 
@@ -1368,7 +1370,7 @@ namespace Radegast
                 return 1;
             }
 
-            return String.CompareOrdinal(prim1.Properties.Name, prim2.Properties.Name);
+            return string.CompareOrdinal(prim1.Properties.Name, prim2.Properties.Name);
         }
         //this routine should return -1 if xy and 0 if x==y.
         // for our sample we'll just use string comparison

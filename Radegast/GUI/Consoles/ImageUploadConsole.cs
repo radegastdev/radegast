@@ -129,7 +129,7 @@ namespace Radegast
         {
             FileName = fname;
 
-            if (String.IsNullOrEmpty(FileName))
+            if (string.IsNullOrEmpty(FileName))
                 return;
 
             txtStatus.AppendText("Loading..." + Environment.NewLine);
@@ -162,6 +162,12 @@ namespace Radegast
                     default:
                         bitmap = Image.FromFile(FileName) as Bitmap;
                         break;
+                }
+
+                if (bitmap == null)
+                {
+                    txtStatus.AppendText("Failed to load image " + FileName + Environment.NewLine);
+                    return;
                 }
 
                 txtStatus.AppendText("Loaded image " + FileName + Environment.NewLine);

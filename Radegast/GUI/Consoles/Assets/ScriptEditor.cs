@@ -321,7 +321,7 @@ namespace Radegast
 
         private void tbtnExit_Click(object sender, EventArgs e)
         {
-            FindForm().Close();
+            FindForm()?.Close();
         }
 
         private void rtb_SelectionChanged(object sender, EventArgs e)

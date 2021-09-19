@@ -46,13 +46,15 @@ namespace Radegast.Rendering
 
         public attachment_point(XmlNode node)
         {
+            if (node.Attributes == null) { return; }
+
             name = node.Attributes.GetNamedItem("name").Value;
             joint = node.Attributes.GetNamedItem("joint").Value;
             location = node.Attributes.GetNamedItem("location").Value;
             position = VisualParamEx.XmlParseVector(node.Attributes.GetNamedItem("position").Value);
             rotation = VisualParamEx.XmlParseRotation(node.Attributes.GetNamedItem("rotation").Value);
             id = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
-            group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
+            @group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
         }
 
     }
@@ -527,7 +529,7 @@ namespace Radegast.Rendering
             // And load the skeleton file in to the bones class
 
             XmlNodeList skeleton = lad.GetElementsByTagName("skeleton");
-            string skeletonfilename = skeleton[0].Attributes.GetNamedItem("file_name").Value;
+            string skeletonfilename = skeleton[0].Attributes?.GetNamedItem("file_name").Value;
             Bone.loadbones(skeletonfilename);
 
             // Next read all the skeleton child nodes, we have attachment points and bone deform params
@@ -557,9 +559,9 @@ namespace Radegast.Rendering
             XmlNodeList meshes = lad.GetElementsByTagName("mesh");
             foreach (XmlNode meshNode in meshes)
             {
-                string type = meshNode.Attributes.GetNamedItem("type").Value;
-                int lod = Int32.Parse(meshNode.Attributes.GetNamedItem("lod").Value);
-                string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
+                string type = meshNode.Attributes?.GetNamedItem("type").Value;
+                int lod = Int32.Parse(meshNode.Attributes?.GetNamedItem("lod").Value);
+                string fileName = meshNode.Attributes?.GetNamedItem("file_name").Value;
 
                 GLMesh mesh = null;
                 lock (_defaultmeshes)

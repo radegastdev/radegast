@@ -32,6 +32,7 @@ namespace Radegast
     {
         public static void ImportFromFile(GridClient client)
         {
+            if (Form.ActiveForm == null) return;
             WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
             OpenFileDialog dlg = new OpenFileDialog
             {
@@ -44,7 +45,7 @@ namespace Radegast
             if (res == DialogResult.OK)
             {
 
-                Thread t = new Thread(new ThreadStart(delegate()
+                Thread t = new Thread(delegate()
                 {
                     try
                     {
@@ -53,7 +54,7 @@ namespace Radegast
                         d.CreateObjectFromXml(primsXmls);
                         d.CleanUp();
                         d = null;
-                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success",
+                        MessageBox.Show(mainWindow, $"Successfully imported {dlg.FileName}", "Success",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception excp)
@@ -61,7 +62,7 @@ namespace Radegast
                         MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                     }
-                })) {IsBackground = true};
+                }) {IsBackground = true};
 
                 t.Start();
 

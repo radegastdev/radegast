@@ -2258,7 +2258,7 @@ namespace Radegast
         private void invTree_ItemDrag(object sender, ItemDragEventArgs e)
         {
             invTree.SelectedNode = e.Item as TreeNode;
-            if (invTree.SelectedNode.Tag is InventoryFolder && ((InventoryFolder)invTree.SelectedNode.Tag).PreferredType != FolderType.None)
+            if (invTree.SelectedNode?.Tag is InventoryFolder folder && folder.PreferredType != FolderType.None)
             {
                 return;
             }
