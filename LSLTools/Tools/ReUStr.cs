@@ -12,12 +12,12 @@ namespace Tools
   {
     public ReUStr(TokensGen tks, string str)
     {
-      this.m_str = str;
-      for (int index = 0; index < str.Length; ++index)
-      {
-        tks.m_tokens.UsingChar(char.ToLower(str[index]));
-        tks.m_tokens.UsingChar(char.ToUpper(str[index]));
-      }
+        this.m_str = str;
+        foreach (var c in str)
+        {
+            tks.m_tokens.UsingChar(char.ToLower(c));
+            tks.m_tokens.UsingChar(char.ToUpper(c));
+        }
     }
 
     public ReUStr(TokensGen tks, char ch)
@@ -29,7 +29,7 @@ namespace Tools
 
     public override void Print(TextWriter s)
     {
-      s.Write(string.Format("(U\"{0}\")", (object) this.m_str));
+      s.Write($"(U\"{(object)this.m_str}\")");
     }
 
     public override int Match(string str, int pos, int max)

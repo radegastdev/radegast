@@ -63,9 +63,7 @@ namespace Radegast
 
         private void Swap(int left, int right)
         {
-            var temp = Items[left];
-            Items[left] = Items[right];
-            Items[right] = temp;
+            (Items[left], Items[right]) = (Items[right], Items[left]);
         }
     }
 }

@@ -169,7 +169,7 @@ namespace Radegast.Commands
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
-                        IRadegastCommand plug = (IRadegastCommand)c.Invoke(new object[0]);
+                        IRadegastCommand plug = (IRadegastCommand)c.Invoke(Array.Empty<object>());
                         LoadCommand(plug);
                         return true;
                     }
@@ -191,7 +191,7 @@ namespace Radegast.Commands
                     if (ci.GetParameters().Length > 0) continue;
                     try
                     {
-                        ICommandInterpreter plug = (ICommandInterpreter)ci.Invoke(new object[0]);
+                        ICommandInterpreter plug = (ICommandInterpreter)ci.Invoke(Array.Empty<object>());
                         LoadInterpreter(plug);
                         loadedType = true;
                         break;

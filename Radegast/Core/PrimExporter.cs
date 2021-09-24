@@ -269,24 +269,17 @@ namespace Radegast
 			{
 				lock (Textures)
 					Textures.Remove(asset.AssetID);
-				
-				if (state == TextureRequestState.Finished)
-				{
-					try
-					{
-						File.WriteAllBytes(Path.Combine(ExportDirectory,asset.AssetID + ".jp2"), asset.AssetData);
-						LogMessage("Successfully downloaded texture {0}",asset.AssetID.ToString());
-					}
-					catch (Exception ex)
-					{
-						LogMessage("Failed to download texture {0}\r\nReason: {1}",asset.AssetID.ToString(),ex.Message);
-					}
-				}
-				else
-				{
-					LogMessage("Failed to download texture {0}\r\nReason: {1}",asset.AssetID.ToString(),state);
-				}
-				lock (Textures)
+
+                try
+                {
+                    File.WriteAllBytes(Path.Combine(ExportDirectory,asset.AssetID + ".jp2"), asset.AssetData);
+                    LogMessage("Successfully downloaded texture {0}",asset.AssetID.ToString());
+                }
+                catch (Exception ex)
+                {
+                    LogMessage("Failed to download texture {0}\r\nReason: {1}",asset.AssetID.ToString(),ex.Message);
+                }
+                lock (Textures)
 				{
 					if (Textures.Count == 0)
 						LogMessage("Texture Download complete!");

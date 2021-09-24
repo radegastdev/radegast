@@ -153,11 +153,11 @@ namespace Radegast.Rendering
                 fetchingTerrainTexture = true;
                 ThreadPool.QueueUserWorkItem(sync =>
                 {
-                    Simulator sim = Client.Network.CurrentSim;
+                    Simulator currentSim = Client.Network.CurrentSim;
                     terrainImage = TerrainSplat.Splat(Instance, heightTable,
-                        new UUID[] { sim.TerrainDetail0, sim.TerrainDetail1, sim.TerrainDetail2, sim.TerrainDetail3 },
-                        new float[] { sim.TerrainStartHeight00, sim.TerrainStartHeight01, sim.TerrainStartHeight10, sim.TerrainStartHeight11 },
-                        new float[] { sim.TerrainHeightRange00, sim.TerrainHeightRange01, sim.TerrainHeightRange10, sim.TerrainHeightRange11 });
+                        new UUID[] { currentSim.TerrainDetail0, currentSim.TerrainDetail1, currentSim.TerrainDetail2, currentSim.TerrainDetail3 },
+                        new float[] { currentSim.TerrainStartHeight00, currentSim.TerrainStartHeight01, currentSim.TerrainStartHeight10, currentSim.TerrainStartHeight11 },
+                        new float[] { currentSim.TerrainHeightRange00, currentSim.TerrainHeightRange01, currentSim.TerrainHeightRange10, currentSim.TerrainHeightRange11 });
 
                     fetchingTerrainTexture = false;
                     terrainTextureNeedsUpdate = false;

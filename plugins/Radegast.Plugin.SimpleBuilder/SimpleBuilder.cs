@@ -221,7 +221,7 @@ namespace SimpleBuilderNamespace
                                 e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
                                 if (string.IsNullOrEmpty(ownerName))
                                     ownerName = "Loading...";
-                                nameReceivedSignal?.Set();
+                                nameReceivedSignal.Set();
                             }
                         });
                     client.Groups.GroupNamesReply += cbGroupName;
@@ -273,9 +273,11 @@ namespace SimpleBuilderNamespace
             }
 
             string name = GetObjectName(prim);
-            var item = new ListViewItem(name);
-            item.Tag = prim;
-            item.Name = prim.ID.ToString();
+            var item = new ListViewItem(name)
+            {
+                Tag = prim,
+                Name = prim.ID.ToString()
+            };
             e.Item = item;
         }
 

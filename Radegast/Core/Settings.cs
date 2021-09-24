@@ -363,8 +363,8 @@ namespace Radegast
 
     public class SettingsEventArgs : EventArgs
     {
-        public string Key = string.Empty;
-        public OSD Value = new OSD();
+        public string Key;
+        public OSD Value;
 
         public SettingsEventArgs(string key, OSD val)
         {

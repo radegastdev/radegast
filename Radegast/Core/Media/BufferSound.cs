@@ -178,7 +178,8 @@ namespace Radegast.Media
                 //                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
 
                 // Decode the Ogg Vorbis buffer.
-                AssetSound s = asset as AssetSound;
+                if (!(asset is AssetSound s)) return;
+
                 s.Decode();
                 var data = s.AssetData;
 
@@ -186,7 +187,7 @@ namespace Radegast.Media
                 extraInfo.length = (uint)data.Length;
                 extraInfo.cbsize = Marshal.SizeOf(extraInfo);
 
-                invoke(new SoundDelegate(delegate
+                invoke(delegate
                 {
                     try
                     {
@@ -231,8 +232,8 @@ namespace Radegast.Media
 
                         // Set attenuation limits.
                         FMODExec(sound.set3DMinMaxDistance(
-                                    1.2f,       // Any closer than this gets no louder
-                                    100.0f));     // Further than this gets no softer.
+                            1.2f, // Any closer than this gets no louder
+                            100.0f)); // Further than this gets no softer.
 
                         // Set the sound point of origin.  This is in SIM coordinates.
                         FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
@@ -244,7 +245,7 @@ namespace Radegast.Media
                     {
                         Logger.Log("Error playing sound: ", Helpers.LogLevel.Error, ex);
                     }
-                }));
+                });
             }
             else
             {
@@ -308,7 +309,7 @@ namespace Radegast.Media
                     allBuffers.Remove(ContainerId);
 
                 if (blocking)
-                    stopped.Set();
+                    stopped?.Set();
             }));
 
             if (blocking)

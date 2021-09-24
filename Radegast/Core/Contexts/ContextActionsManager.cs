@@ -307,7 +307,7 @@ namespace Radegast
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
-                        IContextAction plug = (IContextAction)c.Invoke(new object[0]);
+                        IContextAction plug = (IContextAction)c.Invoke(Array.Empty<object>());
                         RegisterContextAction(plug);
                         return true;
                     }

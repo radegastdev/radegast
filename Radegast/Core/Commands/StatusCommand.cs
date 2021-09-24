@@ -78,7 +78,7 @@ namespace Radegast.Commands
                             Client.Objects.RequestObjectPropertiesFamily(Client.Network.CurrentSim, seat.ID);
                             if (gotName.WaitOne(3000, false))
                             {
-                                sb.Append(sb.AppendFormat(" on object {0}", seat.Properties.Name));
+                                sb.Append(sb.AppendFormat(" on object {0}", seat.Properties != null ? seat.Properties.Name : ""));
                             }
 
                             Client.Objects.ObjectPropertiesFamily -= handler;

@@ -102,9 +102,11 @@ namespace RadegastSpeech.Talk
                 queue = new Queue<QueuedSpeech>();
 
                 // Start the background thread that does all the text-to-speech.
-                speakingThread = new Thread(new ThreadStart(SpeakLoop));
-                speakingThread.IsBackground = true;
-                speakingThread.Name = "SpeakingThread";
+                speakingThread = new Thread(SpeakLoop)
+                {
+                    IsBackground = true,
+                    Name = "SpeakingThread"
+                };
                 speakingThread.Start();
             }
         }

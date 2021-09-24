@@ -103,7 +103,7 @@ namespace Radegast
         {
             if (instance.MainForm.InvokeRequired)
             {
-                instance.MainForm.BeginInvoke(new MethodInvoker(() => Init2()));
+                instance.MainForm.BeginInvoke(new MethodInvoker(Init2));
                 return;
             }
 
@@ -1923,14 +1923,12 @@ namespace Radegast
                         break;
 
                     case "animation_play":
-                        Dictionary<UUID, bool> anim = new Dictionary<UUID, bool>();
-                        anim.Add(item.AssetUUID, true);
+                        Dictionary<UUID, bool> anim = new Dictionary<UUID, bool> { { item.AssetUUID, true } };
                         Client.Self.Animate(anim, true);
                         break;
 
                     case "animation_stop":
-                        Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool>();
-                        animStop.Add(item.AssetUUID, false);
+                        Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool> { { item.AssetUUID, false } };
                         Client.Self.Animate(animStop, true);
                         break;
 
@@ -2258,7 +2256,7 @@ namespace Radegast
         private void invTree_ItemDrag(object sender, ItemDragEventArgs e)
         {
             invTree.SelectedNode = e.Item as TreeNode;
-            if (invTree.SelectedNode.Tag is InventoryFolder && ((InventoryFolder)invTree.SelectedNode.Tag).PreferredType != FolderType.None)
+            if (invTree.SelectedNode?.Tag is InventoryFolder folder && folder.PreferredType != FolderType.None)
             {
                 return;
             }

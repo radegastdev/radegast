@@ -126,10 +126,10 @@ namespace Tools
       if (dfa.m_nfa.AtEnd)
         return (Dfa) null;
       dfa.Closure();
-      for (int index = 0; index < this.m_tks.states.Count; ++index)
+      foreach (var t in this.m_tks.states)
       {
-        if (((Dfa) this.m_tks.states[index]).SameAs(dfa))
-          return (Dfa) this.m_tks.states[index];
+          if (((Dfa) t).SameAs(dfa))
+              return (Dfa) t;
       }
       dfa.AddActions();
       return dfa;
@@ -143,12 +143,12 @@ namespace Tools
 
     private void ClosureAdd(NfaNode nfa)
     {
-      for (int index = 0; index < nfa.m_eps.Count; ++index)
-      {
-        NfaNode ep = (NfaNode) nfa.m_eps[index];
-        if (this.AddNfaNode(ep))
-          this.ClosureAdd(ep);
-      }
+        foreach (var t in nfa.m_eps)
+        {
+            NfaNode ep = (NfaNode) t;
+            if (this.AddNfaNode(ep))
+                this.ClosureAdd(ep);
+        }
     }
 
     internal bool SameAs(Dfa dfa)

@@ -159,7 +159,7 @@ namespace Tools
       catch (CSToolsStopException ex)
       {
         if (this.m_symbols.erh.throwExceptions)
-          throw ex;
+          throw;
         this.m_symbols.erh.Report((CSToolsException) ex);
       }
       return (SYMBOL) null;

@@ -78,10 +78,7 @@ namespace Radegast
         void UpdateDisplay()
         {
             if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    UpdateDisplay();
-                }));
+                Invoke(new MethodInvoker(UpdateDisplay));
                 return;
             }
             lastPrimName.Text = selectedPrim.Properties.Name;
@@ -91,10 +88,7 @@ namespace Radegast
         void UpdateLLUUID()
         {
             if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    UpdateLLUUID();
-                }));
+                Invoke(new MethodInvoker(UpdateLLUUID));
                 return;
             }
             lastPrimLLUUID.Text = selectedID.ToString();

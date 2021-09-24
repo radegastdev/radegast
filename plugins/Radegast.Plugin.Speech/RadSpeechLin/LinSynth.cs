@@ -54,9 +54,11 @@ namespace RadegastSpeech
 			OSDMap speech = pc.config["synthesizer"] as OSDMap;
             if (speech == null)
             {
-                speech = new OSDMap();
-                speech["server"] = new OSDString("localhost:1314");
-                speech["speed"] = new OSDInteger(0);
+                speech = new OSDMap
+                {
+                    ["server"] = new OSDString("localhost:1314"),
+                    ["speed"] = new OSDInteger(0)
+                };
                 pc.config["synthesizer"] = speech;
                 pc.SaveSpeechSettings();
             }

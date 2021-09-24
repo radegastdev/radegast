@@ -274,7 +274,7 @@ namespace Radegast
                 return true;
             }
 
-            var filename = Path.GetFileName(path)?.ToLower();
+            var filename = Path.GetFileName(path).ToLower();
             if (string.IsNullOrEmpty(filename))
             {
                 return true;
@@ -352,15 +352,9 @@ namespace Radegast
         {
             Assembly pluginAssembly = null;
             // We may try to load plugins from the currently running process. The assembly is already loaded.
-            var currentProcessPath = Assembly.GetEntryAssembly().Location;
-            if (Path.GetFileName(currentProcessPath) == Path.GetFileName(assemblyPath))
-            {
-                pluginAssembly = Assembly.GetEntryAssembly();
-            }
-            else
-            {
-                pluginAssembly = Assembly.LoadFile(assemblyPath);
-            }
+            var currentProcessPath = Assembly.GetEntryAssembly()?.Location;
+            pluginAssembly = Path.GetFileName(currentProcessPath) == Path.GetFileName(assemblyPath) 
+                ? Assembly.GetEntryAssembly() : Assembly.LoadFile(assemblyPath);
 
             return LoadPluginsFromAssembly(assemblyPath, pluginAssembly);
         }

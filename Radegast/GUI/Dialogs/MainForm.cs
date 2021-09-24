@@ -188,7 +188,7 @@ namespace Radegast
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             }
 
-            instance.CleanUp();
+            if (instance != null) instance.CleanUp();
         }
         #endregion
 
@@ -1623,7 +1623,7 @@ namespace Radegast
         private void InitUpdater()
         {
             var appcastUrl = "https://update.radegast.life/appcast.xml";
-            var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
+            var manifestModuleName = System.Reflection.Assembly.GetEntryAssembly()?.ManifestModule.FullyQualifiedName;
             var icon = Icon.ExtractAssociatedIcon(manifestModuleName);
             SparkleUpdater = new NetSparkleUpdater.SparkleUpdater(appcastUrl,
                 new Ed25519Checker(NetSparkleUpdater.Enums.SecurityMode.Strict, "YR4STztpPyLnlPwhOVwaL2F7ToCmyXZ53cTt/encBu8="))

@@ -39,12 +39,12 @@ namespace Tools
 
     public void AddTarget(char ch, Dfa next)
     {
-      for (int index = 0; index < this.m_arcs.Count; ++index)
-      {
-        Arc arc = (Arc) this.m_arcs[index];
-        if (arc.Match(ch))
-          next.AddNfaNode(arc.m_next);
-      }
+        foreach (var t in this.m_arcs)
+        {
+            Arc arc = (Arc) t;
+            if (arc.Match(ch))
+                next.AddNfaNode(arc.m_next);
+        }
     }
   }
 }

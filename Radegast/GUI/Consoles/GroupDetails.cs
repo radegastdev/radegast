@@ -141,7 +141,7 @@ namespace Radegast
 
             if (e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => { RefreshGroupInfo(); }));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
                 instance.TabConsole.DisplayNotificationInChat("Group member ejected.");
             }
             else
@@ -172,7 +172,7 @@ namespace Radegast
                 groupRolesMembersRequest = client.Groups.RequestGroupRolesMembers(group.ID);
                 if (roles == null) roles = e.Roles;
                 else lock (roles) roles = e.Roles;
-                BeginInvoke(new MethodInvoker(() => DisplayGroupRoles()));
+                BeginInvoke(new MethodInvoker(DisplayGroupRoles));
             }
         }
 
@@ -180,7 +180,7 @@ namespace Radegast
         {
             if (e.GroupID == group.ID && e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
             }
         }
 
@@ -188,7 +188,7 @@ namespace Radegast
         {
             if (e.GroupID == group.ID && e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+                BeginInvoke(new MethodInvoker(RefreshGroupInfo));
             }
         }
 
@@ -705,7 +705,7 @@ namespace Radegast
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            FindForm().Close();
+            FindForm()?.Close();
         }
 
         private void tcGroupDetails_SelectedIndexChanged(object sender, EventArgs e)
@@ -1369,9 +1369,9 @@ namespace Radegast
             switch (SortBy)
             {
                 case SortByColumn.Name:
-                    return CurrentOrder == SortOrder.Ascending ? String.CompareOrdinal(member1.Name, member2.Name) : String.CompareOrdinal(member2.Name, member1.Name);
+                    return CurrentOrder == SortOrder.Ascending ? string.CompareOrdinal(member1.Name, member2.Name) : string.CompareOrdinal(member2.Name, member1.Name);
                 case SortByColumn.Title:
-                    return CurrentOrder == SortOrder.Ascending ? String.CompareOrdinal(member1.Base.Title, member2.Base.Title) : String.CompareOrdinal(member2.Base.Title, member1.Base.Title);
+                    return CurrentOrder == SortOrder.Ascending ? string.CompareOrdinal(member1.Base.Title, member2.Base.Title) : string.CompareOrdinal(member2.Base.Title, member1.Base.Title);
                 case SortByColumn.LastOnline:
                     return CurrentOrder == SortOrder.Ascending ? DateTime.Compare(member1.LastOnline, member2.LastOnline) : DateTime.Compare(member2.LastOnline, member1.LastOnline);
                 case SortByColumn.Contribution:
