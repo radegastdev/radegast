@@ -462,13 +462,6 @@ namespace Radegast
             if (netcom.LoginOptions.Grid?.Platform != "SecondLife")
             {
                 instance.Client.Settings.MULTIPLE_SIMS = true;
-                instance.Client.Settings.HTTP_INVENTORY = !instance.GlobalSettings["disable_http_inventory"];
-            }
-            else
-            {
-                // UDP inventory is deprecated as of 2015-03-30 and no longer supported.
-                // https://community.secondlife.com/t5/Second-Life-Server/Deploy-for-the-week-of-2015-03-30/td-p/2919194
-                instance.Client.Settings.HTTP_INVENTORY = true;
             }
 
             netcom.Login();
