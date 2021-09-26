@@ -284,7 +284,6 @@ namespace Radegast
             client.Settings.ALWAYS_DECODE_OBJECTS = true;
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
-            client.Settings.FETCH_MISSING_INVENTORY = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
             client.Settings.STORE_LAND_PATCHES = true;
