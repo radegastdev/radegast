@@ -1017,7 +1017,7 @@ namespace Radegast.Rendering
             GL.MatrixMode(MatrixMode.Projection);
             GL.PushMatrix();
             GL.LoadIdentity();
-            GL.Ortho(0, glControl.Width, 0, glControl.Height, -5, 1);
+            GL.Ortho(0, glControl != null ? glControl.Width : 0, 0, glControl != null ? glControl.Height : 0, -5, 1);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
         }
