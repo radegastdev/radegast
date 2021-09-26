@@ -260,12 +260,15 @@ namespace Radegast
 
         private void ProcessIncomingChat(ChatEventArgs e)
         {
-            if (string.IsNullOrEmpty(e.Message)) return;
+            if (string.IsNullOrEmpty(e.Message)) { return; }
 
             // Check if the sender agent is muted
-            if (e.SourceType == ChatSourceType.Agent &&
-                null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.SourceID)
-                ) return;
+            if (e.SourceType == ChatSourceType.Agent
+                && client.Self.MuteList.Find(me => me.Type == MuteType.Resident 
+                                                   && me.ID == e.SourceID) != null)
+            {
+                return;
+            }
 
             // Check if it's script debug
             if (e.Type == ChatType.Debug && !instance.GlobalSettings["show_script_errors"])
@@ -276,12 +279,17 @@ namespace Radegast
             // Check if sender object is muted
             if (e.SourceType == ChatSourceType.Object &&
                 null != client.Self.MuteList.Find(me =>
-                    (me.Type == MuteType.Resident && me.ID == e.OwnerID) // Owner muted
-                    || (me.Type == MuteType.Object && me.ID == e.SourceID) // Object muted by ID
-                    || (me.Type == MuteType.ByName && me.Name == e.FromName) // Object muted by name
-                )) return;
+                        (me.Type == MuteType.Resident && me.ID == e.OwnerID) // Owner muted
+                        || (me.Type == MuteType.Object && me.ID == e.SourceID) // Object muted by ID
+                        || (me.Type == MuteType.ByName && me.Name == e.FromName) // Object muted by name
+                ))
+            {
+                return;
+            }
 
-            if (instance.RLV.Enabled && e.Message.StartsWith("@"))
+            if (instance.RLV.Enabled 
+                && e.SourceType == ChatSourceType.Object 
+                && e.Message.StartsWith("@"))
             {
                 instance.RLV.TryProcessCMD(e);
 #if !DEBUG
