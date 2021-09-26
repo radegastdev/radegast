@@ -78,7 +78,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InventoryConsole));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.invTree = new System.Windows.Forms.TreeView();
+            this.invTree = new Radegast.WinForms.BufferedTreeView();
             this.ctxInv = new Radegast.RadegastContextMenuStrip(this.components);
             this.tstripInventory = new System.Windows.Forms.ToolStrip();
             this.tlabelStatus = new System.Windows.Forms.ToolStripLabel();
@@ -824,7 +824,7 @@ namespace Radegast
         public System.Windows.Forms.RadioButton cbSrchWorn;
         public System.Windows.Forms.RadioButton cbSrchGestures;
         public System.Windows.Forms.GroupBox gbxPerms;
-        public System.Windows.Forms.TreeView invTree;
+        public Radegast.WinForms.BufferedTreeView invTree;
         public System.Windows.Forms.SplitContainer splitContainer1;
         public RadegastContextMenuStrip ctxInv;
         public System.Windows.Forms.Panel pnlItemProperties;

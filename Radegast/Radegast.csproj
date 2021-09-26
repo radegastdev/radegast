@@ -92,7 +92,6 @@
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="LibreMetaverse" Version="1.9.1.273" />
-    <PackageReference Include="LibreMetaverse.GUI" Version="1.9.1.273" />
     <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.1.273" />
     <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.1.273" />
     <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.1.273" />
@@ -129,29 +128,29 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Core\Types\AgentNameTextBox.cs" />
-    <Compile Update="Core\Types\ChatInputBox.cs" />
-    <Compile Update="Core\Types\DettachableControl.cs" />
-    <Compile Update="Core\Types\ExtendedRichTextBox.cs" />
-    <Compile Update="Core\Types\LineNumberPanel.cs" />
-    <Compile Update="Core\Types\ListBoxCustomSort.cs" />
-    <Compile Update="Core\Types\ListViewNoFlicker.cs" />
-    <Compile Update="Core\Types\MapControl.Designer.cs">
+    <Compile Update="GUI\Controls\AgentNameTextBox.cs" />
+    <Compile Update="GUI\Controls\ChatInputBox.cs" />
+    <Compile Update="GUI\Controls\DettachableControl.cs" />
+    <Compile Update="GUI\Controls\ExtendedRichTextBox.cs" />
+    <Compile Update="GUI\Controls\LineNumberPanel.cs" />
+    <Compile Update="GUI\Controls\ListBoxCustomSort.cs" />
+    <Compile Update="GUI\Controls\ListViewNoFlicker.cs" />
+    <Compile Update="GUI\Controls\MapControl.Designer.cs">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="Core\Types\MapControl.cs" />
-    <EmbeddedResource Update="Core\Types\MapControl.resx">
+    <Compile Update="GUI\Controls\MapControl.cs" />
+    <EmbeddedResource Update="GUI\Controls\MapControl.resx">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="Core\Types\RRichTextBox.cs" />
-    <Compile Update="Core\Types\RadegastContextMenu.cs" />
-    <Compile Update="Core\Types\RadegastForm.cs" />
-    <Compile Update="Core\Types\RadegastTabControl.cs" />
-    <Compile Update="Core\Types\ToolStripCheckBox.cs" />
-    <Compile Update="Core\Types\TransparentButton.cs" />
-    <Compile Update="Core\Types\TransparentLabel.cs" />
+    <Compile Update="GUI\Controls\RRichTextBox.cs" />
+    <Compile Update="GUI\Controls\RadegastContextMenu.cs" />
+    <Compile Update="GUI\Controls\RadegastForm.cs" />
+    <Compile Update="GUI\Controls\RadegastTabControl.cs" />
+    <Compile Update="GUI\Controls\ToolStripCheckBox.cs" />
+    <Compile Update="GUI\Controls\TransparentButton.cs" />
+    <Compile Update="GUI\Controls\TransparentLabel.cs" />
     <Compile Update="GUI\Consoles\AnimDetail.Designer.cs">
       <DependentUpon>AnimDetail.cs</DependentUpon>
       <SubType>Dependency</SubType>
