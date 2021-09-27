@@ -288,7 +288,7 @@ namespace Radegast
             }
 
             if (instance.RLV.Enabled 
-                && e.SourceType == ChatSourceType.Object 
+                && e.Type == ChatType.OwnerSay
                 && e.Message.StartsWith("@"))
             {
                 instance.RLV.TryProcessCMD(e);
