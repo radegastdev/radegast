@@ -19,6 +19,7 @@
  */
 
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Radegast
 {
@@ -28,14 +29,16 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            txtTitle.Text = Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version;
+            txtTitle.Text = $"{Properties.Resources.RadegastTitle} {Assembly.GetExecutingAssembly().GetName().Version}";
+            txtVersionInfo.Text = $"{RuntimeInformation.OSDescription} {RuntimeInformation.OSArchitecture} {RuntimeInformation.ProcessArchitecture}\n" +
+                                  $"{RuntimeInformation.FrameworkDescription}";
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void lblHomepage_Click(object sender, System.EventArgs e)
         {
-            Instance.MainForm.ProcessLink("https://www.radegast.life/");
+            Instance.MainForm.ProcessLink("https://radegast.life/");
         }
     }
 }

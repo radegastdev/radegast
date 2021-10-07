@@ -68,6 +68,7 @@ namespace Radegast
             this.lblHomepage = new System.Windows.Forms.Label();
             this.authorTxt = new System.Windows.Forms.TextBox();
             this.contributorsTxt2 = new System.Windows.Forms.TextBox();
+            this.txtVersionInfo = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -123,11 +124,11 @@ namespace Radegast
             // contributorsTxt
             // 
             this.contributorsTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.contributorsTxt.Location = new System.Drawing.Point(128, 49);
+            this.contributorsTxt.Location = new System.Drawing.Point(128, 73);
             this.contributorsTxt.Multiline = true;
             this.contributorsTxt.Name = "contributorsTxt";
             this.contributorsTxt.ReadOnly = true;
-            this.contributorsTxt.Size = new System.Drawing.Size(108, 121);
+            this.contributorsTxt.Size = new System.Drawing.Size(108, 97);
             this.contributorsTxt.TabIndex = 1;
             this.contributorsTxt.TabStop = false;
             this.contributorsTxt.Text = "with contributions from:\r\n- Cinder Roxley\r\n- Douglas R. Miles\r\n- Mojito Sorbet\r\n-" +
@@ -159,7 +160,7 @@ namespace Radegast
             // authorTxt
             // 
             this.authorTxt.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.authorTxt.Location = new System.Drawing.Point(128, 27);
+            this.authorTxt.Location = new System.Drawing.Point(12, 128);
             this.authorTxt.Multiline = true;
             this.authorTxt.Name = "authorTxt";
             this.authorTxt.ReadOnly = true;
@@ -171,14 +172,26 @@ namespace Radegast
             // contributorsTxt2
             // 
             this.contributorsTxt2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.contributorsTxt2.Location = new System.Drawing.Point(242, 61);
+            this.contributorsTxt2.Location = new System.Drawing.Point(242, 73);
             this.contributorsTxt2.Multiline = true;
             this.contributorsTxt2.Name = "contributorsTxt2";
             this.contributorsTxt2.ReadOnly = true;
-            this.contributorsTxt2.Size = new System.Drawing.Size(85, 109);
+            this.contributorsTxt2.Size = new System.Drawing.Size(85, 97);
             this.contributorsTxt2.TabIndex = 6;
             this.contributorsTxt2.TabStop = false;
-            this.contributorsTxt2.Text = "- nooperation\r\n- nopjmp\r\n- Madpeterz";
+            this.contributorsTxt2.Text = "\r\n- nooperation\r\n- nopjmp\r\n- Madpeterz";
+            // 
+            // txtVersionInfo
+            // 
+            this.txtVersionInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtVersionInfo.Location = new System.Drawing.Point(128, 27);
+            this.txtVersionInfo.Multiline = true;
+            this.txtVersionInfo.Name = "txtVersionInfo";
+            this.txtVersionInfo.ReadOnly = true;
+            this.txtVersionInfo.Size = new System.Drawing.Size(194, 40);
+            this.txtVersionInfo.TabIndex = 7;
+            this.txtVersionInfo.TabStop = false;
+            this.txtVersionInfo.Text = "Windows 10 x64\r\n.NET 4.8.0";
             // 
             // frmAbout
             // 
@@ -188,6 +201,7 @@ namespace Radegast
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(334, 391);
+            this.Controls.Add(this.txtVersionInfo);
             this.Controls.Add(this.contributorsTxt2);
             this.Controls.Add(this.authorTxt);
             this.Controls.Add(this.txtTitle);
@@ -223,5 +237,6 @@ namespace Radegast
         private System.Windows.Forms.Label lblHomepage;
         public System.Windows.Forms.TextBox authorTxt;
         public System.Windows.Forms.TextBox contributorsTxt2;
+        public System.Windows.Forms.TextBox txtVersionInfo;
     }
 }
