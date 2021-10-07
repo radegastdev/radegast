@@ -96,9 +96,9 @@
     </PropertyGroup>
   </Target>
   <Target Name="SignBundleEngine" DependsOnTargets="FindSignTool">
-    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /sm /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;@(SignBundleEngine)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;@(SignBundleEngine)&quot;" />
   </Target>
   <Target Name="SignBundle" DependsOnTargets="FindSignTool">
-    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /sm /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;@(SignBundle)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;@(SignBundle)&quot;" />
   </Target>
 </Project>
