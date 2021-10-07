@@ -195,28 +195,25 @@ namespace Radegast
             CleanupTimer.Elapsed += new System.Timers.ElapsedEventHandler(CleanupTimer_Elapsed);
         }
 
-        void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            List<UUID> objecs = new List<UUID>();
+            var objects = new List<UUID>();
             lock (rules)
             {
-                foreach (var rule in rules)
+                foreach (var rule in rules.Where(rule => !objects.Contains(rule.Sender)))
                 {
-                    if (!objecs.Contains(rule.Sender))
-                        objecs.Add(rule.Sender);
+                    objects.Add(rule.Sender);
                 }
             }
 
-            foreach (UUID obj in objecs)
+            foreach (var obj in objects.Where(obj => client.Network.CurrentSim.ObjectsPrimitives
+                                           .Find(p => p.ID == obj) == null))
             {
-                if (client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ID == obj) == null)
-                {
-                    Clear(obj);
-                }
+                Clear(obj);
             }
         }
 
-        void StopTimer()
+        private void StopTimer()
         {
             if (CleanupTimer != null)
             {
@@ -469,11 +466,11 @@ namespace Radegast
                     case "tpto":
                         if (rule.Param == "force")
                         {
+                            var coord = rule.Option.Split('/', ';');
                             try
                             {
-                                var coord = rule.Option.Split(new[] {'/',';'});
-
-                                if (coord.Length == 3) // 3 params is a global coordinate teleport: @tpto:<X>/<Y>/<Z>=force
+                                if (coord.Length ==
+                                    3) // 3 params is a global coordinate teleport: @tpto:<X>/<Y>/<Z>=force
                                 {
                                     float gx = float.Parse(coord[0], Utils.EnUsCulture);
                                     float gy = float.Parse(coord[1], Utils.EnUsCulture);
@@ -484,7 +481,10 @@ namespace Radegast
                                     ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
                                     client.Self.RequestTeleport(h, new Vector3(x, y, z));
                                 }
-                                else if (coord.Length == 4 || coord.Length == 5) // 4/5 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
+                                else if (
+                                    coord.Length == 4 ||
+                                    coord.Length ==
+                                    5) // 4/5 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
                                 {
                                     string n = coord[0];
                                     float x = float.Parse(coord[1], Utils.EnUsCulture);
@@ -497,9 +497,11 @@ namespace Radegast
                                     instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
                                     client.Self.RequestTeleport(r.RegionHandle, new Vector3(x, y, z));
                                 }
-
                             }
-                            catch (Exception) { }
+                            catch (FormatException ex)
+                            {
+                                instance.TabConsole.DisplayNotificationInChat($"Rlv teleport exception: {ex.Message}");
+                            }
                         }
 
                         break;
@@ -623,14 +625,7 @@ namespace Radegast
                                 {
                                     List<InventoryItem> allItems = new List<InventoryItem>();
                                     AllSubfolderWearables(folder, ref allItems);
-                                    List<InventoryItem> allSubfolderWorn = new List<InventoryItem>();
-                                    foreach (var n in allItems)
-                                    {
-                                        if (CurrentOutfitFolder.CanBeWorn(n))
-                                        {
-                                            allSubfolderWorn.Add(n);
-                                        }
-                                    }
+                                    List<InventoryItem> allSubfolderWorn = allItems.Where(n => CurrentOutfitFolder.CanBeWorn(n)).ToList();
                                     instance.COF.RemoveFromOutfit(allSubfolderWorn);
                                 }
                             }
@@ -847,7 +842,8 @@ namespace Radegast
         protected string GetWornIndicator(InventoryNode node)
         {
             var currentOutfit = new List<AppearanceManager.WearableData>(client.Appearance.GetWearables());
-            var currentAttachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
+            var currentAttachments = 
+                client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
             int myItemsCount = 0;
             int myItemsWornCount = 0;
 
@@ -856,15 +852,16 @@ namespace Radegast
                 if (CurrentOutfitFolder.CanBeWorn(n.Data) && !n.Data.Name.StartsWith("."))
                 {
                     myItemsCount++;
-                    if ((n.Data is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, (InventoryItem)n.Data)) ||
-                        CurrentOutfitFolder.IsAttached(currentAttachments, (InventoryItem)n.Data))
+                    if ((n.Data is InventoryWearable wearable 
+                            && CurrentOutfitFolder.IsWorn(currentOutfit, wearable))
+                        || CurrentOutfitFolder.IsAttached(currentAttachments, (InventoryItem)n.Data))
                     {
                         myItemsWornCount++;
                     }
                 }
             }
 
-            List<InventoryItem> allItems = new List<InventoryItem>();
+            var allItems = new List<InventoryItem>();
             foreach (var n in node.Nodes.Values)
             {
                 if (n.Data is InventoryFolder && !n.Data.Name.StartsWith("."))
@@ -876,16 +873,14 @@ namespace Radegast
             int allItemsCount = 0;
             int allItemsWornCount = 0;
 
-            foreach (var n in allItems)
+            foreach (var n in allItems.Where(n => 
+                CurrentOutfitFolder.CanBeWorn(n) && !n.Name.StartsWith(".")))
             {
-                if (CurrentOutfitFolder.CanBeWorn(n) && !n.Name.StartsWith("."))
+                allItemsCount++;
+                if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
+                    CurrentOutfitFolder.IsAttached(currentAttachments, n))
                 {
-                    allItemsCount++;
-                    if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
-                        CurrentOutfitFolder.IsAttached(currentAttachments, n))
-                    {
-                        allItemsWornCount++;
-                    }
+                    allItemsWornCount++;
                 }
             }
 
@@ -917,7 +912,8 @@ namespace Radegast
 
         public InventoryNode RLVRootFolder()
         {
-            return client.Inventory.Store.RootNode.Nodes.Values.FirstOrDefault(rn => rn.Data.Name == "#RLV" && rn.Data is InventoryFolder);
+            return client.Inventory.Store.RootNode.Nodes.Values.FirstOrDefault(
+                rn => rn.Data.Name == "#RLV" && rn.Data is InventoryFolder);
         }
 
         public string FindFullInventoryPath(InventoryNode input, string pathConstruct)
@@ -933,7 +929,8 @@ namespace Radegast
         public InventoryNode FindFolder(string path)
         {
             var root = RLVRootFolder();
-            return root == null ? null : FindFolderInternal(root, "/", "/" + Regex.Replace(path, @"^[/\s]*(.*)[/\s]*", @"$1").ToLower());
+            return root == null ? null : FindFolderInternal(root, "/", 
+                "/" + Regex.Replace(path, @"^[/\s]*(.*)[/\s]*", @"$1").ToLower());
         }
 
         protected InventoryNode FindFolderInternal(InventoryNode currentNode, string currentPath, string desiredPath)
@@ -943,13 +940,15 @@ namespace Radegast
                 return currentNode;
             }
             return currentNode.Nodes.Values.Select(
-                n => FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath))
+                n => FindFolderInternal(n, (currentPath == "/" 
+                    ? currentPath 
+                    : currentPath + "/") + n.Data.Name.ToLower(), desiredPath))
                 .FirstOrDefault(res => res != null);
         }
 
         public List<InventoryNode> FindFoldersKeyword(string[] keywords)
         {
-            List<InventoryNode> matchingNodes = new List<InventoryNode>();
+            var matchingNodes = new List<InventoryNode>();
 
             var root = RLVRootFolder();
             if (root != null)
@@ -960,7 +959,8 @@ namespace Radegast
             return matchingNodes;
         }
 
-        protected void FindFoldersKeywordsInternal(InventoryNode currentNode, string[] keywords, List<string> currentPathParts, ref List<InventoryNode> matchingNodes)
+        protected void FindFoldersKeywordsInternal(InventoryNode currentNode, string[] keywords, 
+            List<string> currentPathParts, ref List<InventoryNode> matchingNodes)
         {
             if (currentNode.Data is InventoryFolder &&
                 !currentNode.Data.Name.StartsWith(".") &&
@@ -1008,9 +1008,10 @@ namespace Radegast
         {
             List<string> ret = new List<string>();
 
-            foreach (var rule in rules.FindAll(r => r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option)))
+            foreach (var rule in rules.FindAll(r => r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option))
+                                      .Where(rule => !ret.Contains(rule.Option)))
             {
-                if (!ret.Contains(rule.Option)) ret.Add(rule.Option);
+                ret.Add(rule.Option);
             }
 
             return ret;
@@ -1027,10 +1028,10 @@ namespace Radegast
         {
             if (!Enabled || item == null) return true;
 
-            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
-            foreach (var att in myAtt)
+            List<Primitive> myAtt = 
+                client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
+            foreach (var att in myAtt.Where(att => CurrentOutfitFolder.GetAttachmentItem(att) == item.UUID))
             {
-                if (CurrentOutfitFolder.GetAttachmentItem(att) != item.UUID) continue;
                 if (rules.FindAll(r => r.Behaviour == "detach" && r.Sender == att.ID).Count > 0)
                 {
                     return false;

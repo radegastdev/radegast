@@ -47,7 +47,7 @@ namespace Radegast.GUI.Dialogs
         /// </summary>
         private void InitializeComponent()
         {
-            this.miniMap1 = new OpenMetaverse.GUI.MiniMap();
+            this.miniMap1 = new Radegast.WinForms.MiniMap();
             ((System.ComponentModel.ISupportInitialize)(this.miniMap1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -84,6 +84,6 @@ namespace Radegast.GUI.Dialogs
 
         #endregion
 
-        private OpenMetaverse.GUI.MiniMap miniMap1;
+        private Radegast.WinForms.MiniMap miniMap1;
     }
 }
