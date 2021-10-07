@@ -243,8 +243,8 @@ namespace Radegast
             // 
             // proLogin
             // 
-            this.proLogin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.proLogin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.proLogin.Location = new System.Drawing.Point(0, 62);
             this.proLogin.MarqueeAnimationSpeed = 50;
             this.proLogin.Name = "proLogin";
@@ -254,8 +254,8 @@ namespace Radegast
             // 
             // lblLoginStatus
             // 
-            this.lblLoginStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLoginStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLoginStatus.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblLoginStatus.Location = new System.Drawing.Point(3, 0);
             this.lblLoginStatus.Name = "lblLoginStatus";
@@ -282,9 +282,9 @@ namespace Radegast
             this.lblVersion.AutoSize = true;
             this.lblVersion.Location = new System.Drawing.Point(3, 3);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(94, 13);
+            this.lblVersion.Size = new System.Drawing.Size(94, 39);
             this.lblVersion.TabIndex = 18;
-            this.lblVersion.Text = "Radegast 2.0.000";
+            this.lblVersion.Text = "Radegast 2.0.000\r\n.NET 4.8\r\nWindows 10\r\n";
             // 
             // pnlSplash
             // 
@@ -320,9 +320,9 @@ namespace Radegast
             // 
             // txtTOS
             // 
-            this.txtTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTOS.Location = new System.Drawing.Point(0, 0);
             this.txtTOS.Multiline = true;
             this.txtTOS.Name = "txtTOS";
