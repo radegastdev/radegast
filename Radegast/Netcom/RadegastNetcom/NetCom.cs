@@ -249,6 +249,7 @@ namespace Radegast.Netcom
             }
 
             string startLocation = string.Empty;
+            string loginLocation = string.Empty;
 
             switch (loginOptions.StartLocation)
             {
@@ -256,10 +257,9 @@ namespace Radegast.Netcom
                 case StartLocationType.Last: startLocation = "last"; break;
 
                 case StartLocationType.Custom:
-                    startLocation = loginOptions.StartLocationCustom.Trim();
-
-                    StartLocationParser parser = new StartLocationParser(startLocation);
-                    startLocation = NetworkManager.StartLocation(parser.Sim, parser.X, parser.Y, parser.Z);
+                    StartLocationParser parser = new StartLocationParser(loginOptions.StartLocationCustom.Trim());
+                    startLocation = "last";
+                    loginLocation = $"{parser.Sim}/{parser.X}/{parser.Y}/{parser.Z}";
 
                     break;
             }
@@ -288,6 +288,7 @@ namespace Radegast.Netcom
 
             Grid = loginOptions.Grid;
             loginParams.Start = startLocation;
+            loginParams.LoginLocation = loginLocation;
             loginParams.AgreeToTos = AgreeToTos;
             loginParams.URI = Grid.LoginURI;
             loginParams.LastExecEvent = loginOptions.LastExecEvent;
