@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -300,7 +301,10 @@ namespace Radegast.Plugin.Alice
                 {
                     isAcceptingUserInput = false
                 };
-                Alice.loadSettings();
+                string configFile = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "aiml_config", "Settings.xml");
+                Alice.loadSettings(configFile);
                 var loader = new AIMLbot.Utils.AIMLLoader(Alice);
                 Alice.isAcceptingUserInput = false;
                 loader.loadAIML(Alice.PathToAIML);
