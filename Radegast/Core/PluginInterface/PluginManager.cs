@@ -39,10 +39,11 @@ namespace Radegast
         private static readonly List<string> PluginBlackList = new List<string>(new string[]
         {
             "AIMLbot.dll",
+            "Binaron.Serializer.dll",
             "C5.dll",
             "CommandLine.dll",
             "fmod.dll",
-            "IKVM.",
+            "IKVM.dll",
             "LibreMetaverse.PrimMesher.dll",
             "LibreMetaverse.Rendering.Meshmerizer.dll",
             "LibreMetaverse.StructuredData.dll",
@@ -52,27 +53,33 @@ namespace Radegast
             "Meebey.SmartIrc4net.dll",
             "Monobjc.Cocoa.dll",
             "Monobjc.dll",
+            "NSec.Cryptography.dll",
             "nvdacontrollerClient32.dll",
             "nvdacontrollerClient64.dll",
             "OpenCyc.dll",
             "openjpeg-dotnet.dll",
+            "OpenJpegDotNetNative.dll",
             "OpenMetaverse.Rendering.Meshmerizer.dll",
             "OpenMetaverse.StructuredData.dll",
             "OpenMetaverse.dll",
             "OpenMetaverseTypes.dll",
             "OpenTK",
             "OpenTK.GLControl.dll",
+            "ortp.dll",
             "PrimMesher.dll",
             "protobuf-net.dll",
             "RadSpeechLin.dll",
             "RadSpeechMac.dll",
             "RadSpeechWin.dll",
             "SmartThreadPool",
+            "SLVoice.exe",
             "Tao.OpenGl.dll",
             "Tao.Platform.Windows.dll",
             "UniversalSpeech.dll",
+            "vivoxsdk.dll",
             "XmlRpcCore.dll",
             "zlib.net.dll",
+            "zlib1.dll",
         });
 
         /// <summary>Collection of assemblies that are referenced when compiling scripts.</summary>
@@ -264,21 +271,12 @@ namespace Radegast
         private static bool IsBlacklisted(string path)
         {
             var extension = Path.GetExtension(path)?.ToLower();
-            if (string.IsNullOrEmpty(extension))
-            {
-                return true;
-            }
-
-            if (!AllowedPluginExtensions.Contains(extension))
-            {
-                return true;
-            }
+            if (string.IsNullOrEmpty(extension)) { return true; }
+            if (!AllowedPluginExtensions.Contains(extension)) { return true; }
 
             var filename = Path.GetFileName(path).ToLower();
-            if (string.IsNullOrEmpty(filename))
-            {
-                return true;
-            }
+            if (string.IsNullOrEmpty(filename)) { return true; }
+            if (filename.StartsWith("System.")) { return true; }
 
             return PluginBlackList.Any(blackListItem => filename.StartsWith(blackListItem.ToLower()));
         }
