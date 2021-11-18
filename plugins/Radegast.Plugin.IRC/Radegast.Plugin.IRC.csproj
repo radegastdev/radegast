@@ -66,8 +66,8 @@
     <PackageReference Include="LibreMetaverse" Version="1.9.3.293" />
     <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.3.293" />
     <PackageReference Include="LibreMetaverse.Types" Version="1.9.3.293" />
-    <PackageReference Include="log4net" Version="2.0.12" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
     <PackageReference Include="SmartIrc4net" Version="1.1.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
