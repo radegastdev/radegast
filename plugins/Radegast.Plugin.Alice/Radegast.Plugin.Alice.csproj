@@ -64,9 +64,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
-    <PackageReference Include="LibreMetaverse" Version="1.9.6.304" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.6.304" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.9.6.304" />
+    <PackageReference Include="LibreMetaverse" Version="1.9.7.307" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.7.307" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.9.7.307" />
     <PackageReference Include="log4net" Version="2.0.13" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
