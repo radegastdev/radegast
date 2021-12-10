@@ -54,38 +54,37 @@ namespace Radegast
 
         public NameMode Mode
         {
-            get
-            {
-                if (!client.Avatars.DisplayNamesAvailable())
-                    return NameMode.Standard;
-
-                return (NameMode)instance.GlobalSettings["display_name_mode"].AsInteger();
-            }
+            get => !client.Avatars.DisplayNamesAvailable() 
+                ? NameMode.Standard
+                : (NameMode)instance.GlobalSettings["display_name_mode"].AsInteger();
 
             set => instance.GlobalSettings["display_name_mode"] = (int)value;
         }
         #endregion public fields and properties
 
         #region private fields and properties
-        RadegastInstance instance;
-        GridClient client => instance.Client;
-        Timer requestTimer;
-        Timer cacheTimer;
-        string cacheFileName;
 
-        Queue<UUID> requests = new Queue<UUID>();
+        private readonly RadegastInstance instance;
+        private GridClient client => instance.Client;
+        private Timer requestTimer;
+        private Timer cacheTimer;
+        private string cacheFileName;
 
-        int MaxNameRequests = 80;
+        private readonly Queue<UUID> requests = new Queue<UUID>();
 
-        // Queue up name request for this many ms, and send a batch requst
-        const int REQUEST_DELAY = 100;
+        private readonly int MaxNameRequests = 80;
+
+        // Queue up name request for this many ms, and send a batch request
+        private const int REQUEST_DELAY = 100;
         // Save name cache after change to names after this many ms
-        const int CACHE_DELAY = 30000;
+        private const int CACHE_DELAY = 30000;
         // Consider request failed after this many ms
-        const int MAX_REQ_AGE = 15000;
+        private const int MAX_REQ_AGE = 15000;
 
-        Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
-        Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
+        private readonly DateTime UUIDNameOnly = new DateTime(1970, 9, 4, 10, 0, 0, DateTimeKind.Utc);
+
+        private readonly Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
+        private readonly Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
         #endregion private fields and properties
 
@@ -139,8 +138,6 @@ namespace Radegast
             c.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
-        DateTime UUIDNameOnly = new DateTime(1970, 9, 4, 10, 0, 0, DateTimeKind.Utc);
-
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
         {
             DeregisterEvents(e.OldClient);
@@ -155,16 +152,16 @@ namespace Radegast
                 names[e.DisplayName.ID] = e.DisplayName;
             }
 
-            Dictionary<UUID, string> ret = new Dictionary<UUID, string>
+            var ret = new Dictionary<UUID, string>
                 { {e.DisplayName.ID, FormatName(e.DisplayName)}};
             TriggerEvent(ret);
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
-            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
+            var ret = new Dictionary<UUID, string>();
 
-            foreach (KeyValuePair<UUID, string> kvp in e.Names)
+            foreach (var kvp in e.Names)
             {
                 // Remove from the list of active requests if in UUID only (standard mode)
                 if (Mode == NameMode.Standard)
@@ -189,11 +186,11 @@ namespace Radegast
 
                     names[kvp.Key].Updated = DateTime.Now;
 
-                    string[] parts = kvp.Value.Trim().Split(' ');
+                    var parts = kvp.Value.Trim().Split(' ');
                     if (parts.Length != 2) continue;
                     if (InvalidName(names[kvp.Key].DisplayName))
                     {
-                        names[kvp.Key].DisplayName = string.Format("{0} {1}", parts[0], parts[1]);
+                        names[kvp.Key].DisplayName = $"{parts[0]} {parts[1]}";
                     }
 
                     names[kvp.Key].LegacyFirstName = parts[0];
@@ -273,7 +270,7 @@ namespace Radegast
             }
 
 
-            if (req.Count <= 0) return;
+            if (req.Count <= 0) { return; }
             if (Mode == NameMode.Standard || (!client.Avatars.DisplayNamesAvailable()))
             {
                 client.Avatars.RequestAvatarNames(req);
@@ -387,20 +384,10 @@ namespace Radegast
             {
                 if (activeRequests.ContainsKey(agentID))
                 {
-                    // Logger.Log("Exiting is active " + agentID.ToString(), Helpers.LogLevel.Error);
                     if (Environment.TickCount - activeRequests[agentID] < MAX_REQ_AGE) // Not timeout yet
                     {
-                        // Logger.Log("Exiting is active " + agentID.ToString(), Helpers.LogLevel.Error);
                         return;
                     }
-                    else
-                    {
-                        // Logger.Log("Continuing, present but expired " + agentID.ToString(), Helpers.LogLevel.Error);
-                    }
-                }
-                else
-                {
-                    // Logger.Log("Not present " + agentID.ToString(), Helpers.LogLevel.Error);
                 }
 
                 // Record time of when we're making this request
@@ -410,20 +397,18 @@ namespace Radegast
 
             lock (requests)
             {
-                if (!requests.Contains(agentID))
-                {
-                    // Logger.Log("Enqueueing " + agentID.ToString(), Helpers.LogLevel.Error);
-                    requests.Enqueue(agentID);
+                if (requests.Contains(agentID)) { return; }
+                
+                requests.Enqueue(agentID);
 
-                    if (requests.Count >= MaxNameRequests && Mode != NameMode.Standard)
-                    {
-                        requestTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                        MakeRequest(this);
-                    }
-                    else
-                    {
-                        TriggerNameRequest();
-                    }
+                if (requests.Count >= MaxNameRequests && Mode != NameMode.Standard)
+                {
+                    requestTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                    MakeRequest(this);
+                }
+                else
+                {
+                    TriggerNameRequest();
                 }
             }
         }
@@ -453,7 +438,7 @@ namespace Radegast
         /// <returns></returns>
         public string GetLegacyName(UUID agentID)
         {
-            if (agentID == UUID.Zero) return "(???) (???)";
+            if (agentID == UUID.Zero) { return "(???) (???)"; }
 
             lock (names)
             {
@@ -474,7 +459,7 @@ namespace Radegast
         /// <returns></returns>
         public string GetUserName(UUID agentID)
         {
-            if (agentID == UUID.Zero) return "(???) (???)";
+            if (agentID == UUID.Zero) { return "(???) (???)"; }
 
             lock (names)
             {
@@ -495,7 +480,7 @@ namespace Radegast
         /// <returns></returns>
         public string GetDisplayName(UUID agentID)
         {
-            if (agentID == UUID.Zero) return "(???) (???)";
+            if (agentID == UUID.Zero) { return "(???) (???)"; }
 
             lock (names)
             {
@@ -516,29 +501,35 @@ namespace Radegast
         /// <returns>Avatar display name or "Loading..." if not in cache</returns>
         public string Get(UUID agentID)
         {
-            if (agentID == UUID.Zero) return "(???) (???)";
+            if (agentID == UUID.Zero) { return "(???) (???)"; }
+
+            string name = null;
+            bool requestName = true;
 
             lock (names)
             {
                 if (names.ContainsKey(agentID))
                 {
-                    if (Mode != NameMode.Standard && names[agentID].NextUpdate == UUIDNameOnly)
+                    if (Mode == NameMode.Standard || names[agentID].NextUpdate != UUIDNameOnly)
                     {
-                        QueueNameRequest(agentID);
+                        requestName = false;
                     }
-                    return FormatName(names[agentID]);
+                    name = FormatName(names[agentID]);
                 }
             }
 
-            QueueNameRequest(agentID);
-            return RadegastInstance.INCOMPLETE_NAME;
+            if (requestName)
+            {
+                QueueNameRequest(agentID);
+            }
+            return string.IsNullOrEmpty(name) ? RadegastInstance.INCOMPLETE_NAME : name;
         }
 
         /// <summary>
         /// Get avatar display name, or queue fetching of the name
         /// </summary>
         /// <param name="agentID">UUID of avatar to lookup</param>
-        /// <param name="blocking">If true, wait until name is recieved, otherwise return immediately</param>
+        /// <param name="blocking">If true, wait until name is received, otherwise return immediately</param>
         /// <returns>Avatar display name or "Loading..." if not in cache</returns>
         public string Get(UUID agentID, bool blocking)
         {
