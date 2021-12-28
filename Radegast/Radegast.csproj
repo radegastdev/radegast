@@ -3,18 +3,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
 	<UseWindowsForms>true</UseWindowsForms>
-    <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+	<MapFileExtensions>true</MapFileExtensions>
+	<Version>1.0.0</Version>
     <ApplicationVersion>1.0.0</ApplicationVersion>
+	<AssemblyVersion>1.0.0</AssemblyVersion>
+	<FileVersion>1.0.0</FileVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -23,9 +18,7 @@
     <Product>Radegast Metaverse Client</Product>
     <Description>Radegast-ng - https://radegast.life/</Description>
     <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, Sjofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
@@ -89,6 +82,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
+    <PackageReference Include="BugSplatDotNetStandard" Version="2.1.2" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="LibreMetaverse" Version="1.9.10.346" />

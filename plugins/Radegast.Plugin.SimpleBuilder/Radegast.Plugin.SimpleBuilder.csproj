@@ -6,8 +6,8 @@
     <Company>Radegast Development Team</Company>
     <Product>SimpleBuilder Plugin</Product>
     <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, SJofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
