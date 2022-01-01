@@ -121,7 +121,7 @@ namespace Radegast
             RadegastInstance instance = RadegastInstance.GlobalInstance;
 
             s_BugSplat = new BugSplatDotNetStandard.BugSplat(
-                "Radegast", "Radegast",
+                Generated.BugsplatDatabase, "Radegast",
                 Assembly.GetExecutingAssembly().GetName().Version.ToString())
             {
                 User = "cinder@cinderblocks.biz",
@@ -139,7 +139,7 @@ namespace Radegast
         {
             RadegastInstance.GlobalInstance.Client.Network.Logout();
             Exception ex = (Exception)exEventArgs.ExceptionObject;
-            s_BugSplat.Post(ex);
+            s_BugSplat?.Post(ex);
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ environment:
     appveyor_build_worker_image: Visual Studio 2019
     configuration: ReleaseWindows
 
+  BugsplatDatabase: sjofnllc
   PfxDownloadUrl:
     secure: 6zETilPjqhwgznp0rOyu2uOUI4whFbLT3QUXdaTQSH/FqOXIKwj/qz3d4Xo2rrgo
   PfxDownloadPasswd:
