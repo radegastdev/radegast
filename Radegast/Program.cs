@@ -177,7 +177,7 @@ namespace Radegast
 
                 OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
                 
-                s_BugSplat.Post(ex);
+                s_BugSplat?.Post(ex);
 
                 Environment.Exit(1);
             }
