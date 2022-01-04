@@ -8,11 +8,11 @@ environment:
   matrix:
   - job_name: Windows x64 Build
     platform: x64
-    appveyor_build_worker_image: Visual Studio 2019
+    appveyor_build_worker_image: Visual Studio 2022
     configuration: ReleaseWindows
   - job_name: Windows x86 Build
     platform: x86
-    appveyor_build_worker_image: Visual Studio 2019
+    appveyor_build_worker_image: Visual Studio 2022
     configuration: ReleaseWindows
 
   BugsplatDatabase: sjofnllc
@@ -47,8 +47,9 @@ dotnet_csproj:
   file_version: '{version}'
 
 before_build:
+  - ps: (New-Object Net.WebClient).DownloadFile('https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe', 'C:\wix311.exe')
+  - ps: cmd.exe --% /c start /wait 'C:\wix311.exe' /q
   - ps: util/InstallRemotePfx.ps1 -PfxDownloadUrl $env:PfxDownloadUrl -PfxDownloadUser AppVeyor -PfxDownloadPasswd $env:PfxDownloadPasswd -PfxPasswd $env:PfxPassword
-  - nuget restore radegast.sln
 
 after_build:
   - ps: New-Item -ItemType directory -Path .\$env:PLATFORM
