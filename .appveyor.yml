@@ -47,6 +47,7 @@ dotnet_csproj:
   file_version: '{version}'
 
 before_build:
+  - nuget restore radegast.sln
   - ps: util/InstallRemotePfx.ps1 -PfxDownloadUrl $env:PfxDownloadUrl -PfxDownloadUser AppVeyor -PfxDownloadPasswd $env:PfxDownloadPasswd -PfxPasswd $env:PfxPassword
 
 after_build:
