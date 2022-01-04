@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 	<Fragment>
         <DirectoryRef Id="TARGETDIR">
-            <Merge Id="VC_Redist" SourceFile="vcredist\Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
+            <Merge Id="VC_Redist120" SourceFile="vcredist\Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0" />
+            <Merge Id="VC_Redist140" SourceFile="vcredist\Microsoft_VC140_CRT_x86.msm" DiskId="1" Language="0" />
         </DirectoryRef>
     </Fragment>
 </Wix>
