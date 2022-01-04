@@ -47,8 +47,6 @@ dotnet_csproj:
   file_version: '{version}'
 
 before_build:
-  - ps: (New-Object Net.WebClient).DownloadFile('https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe', 'C:\wix311.exe')
-  - ps: cmd.exe --% /c start /wait 'C:\wix311.exe' /q
   - ps: util/InstallRemotePfx.ps1 -PfxDownloadUrl $env:PfxDownloadUrl -PfxDownloadUser AppVeyor -PfxDownloadPasswd $env:PfxDownloadPasswd -PfxPasswd $env:PfxPassword
 
 after_build:
