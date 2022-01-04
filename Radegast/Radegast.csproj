@@ -88,11 +88,12 @@
     <PackageReference Include="BugSplatDotNetStandard" Version="2.1.2" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.9.11.376" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.11.376" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.11.376" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.11.376" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.9.11.376" />
+    <PackageReference Include="LibreMetaverse" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.9.12.389" />
     <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
     <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.9" />
@@ -2065,9 +2066,6 @@
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LSLTools\LSLTools.csproj" />
   </ItemGroup>
   <Import Project="AutogenerateFiles.targets" />
   <Target Name="GenerateCode" BeforeTargets="BeforeBuild" Condition="'$(RoslynCodeTaskFactory)'!=''">
