@@ -88,12 +88,12 @@
     <PackageReference Include="BugSplatDotNetStandard" Version="2.1.2" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.9.12.389" />
-    <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.12.389" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.12.389" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.12.389" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.12.389" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.9.12.389" />
+    <PackageReference Include="LibreMetaverse" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.9.15.410" />
     <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
     <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.9" />
@@ -121,7 +121,7 @@
     <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.6" />
   </ItemGroup>
     <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
