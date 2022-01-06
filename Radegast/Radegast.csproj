@@ -21,22 +21,20 @@
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
+	<OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>radegast.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -44,7 +42,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMacOS|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -52,7 +49,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -65,35 +61,17 @@
   <PropertyGroup>
     <StartupObject>Radegast.MainProgram</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
     <PackageReference Include="BugSplatDotNetStandard" Version="2.1.2" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.9.15.410" />
-    <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.15.410" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.15.410" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.15.410" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.15.410" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.9.15.410" />
+    <PackageReference Include="LibreMetaverse" Version="1.9.16.420" />
+    <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.16.420" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.16.420" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.9.16.420" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.16.420" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.9.16.420" />
     <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
     <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.9" />
@@ -122,9 +100,6 @@
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="zlib.net-mutliplatform" Version="1.0.6" />
-  </ItemGroup>
-    <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="GUI\Controls\AgentNameTextBox.cs" />
