@@ -41,11 +41,10 @@ cache:
 
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj;**\*.props;**\*.wixproj'
+  file: '**\*.csproj'
   version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
-  product_version: '{version}'
 
 before_build:
   - nuget restore radegast.sln
