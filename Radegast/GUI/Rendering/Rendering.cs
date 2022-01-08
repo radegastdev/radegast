@@ -1045,10 +1045,10 @@ namespace Radegast.Rendering
             {
                 TextureLoadItem item = null;
 
-                if (!PendingTextures.TryDequeue(out item)) continue;
+                if (!PendingTextures.TryDequeue(out item)) { continue; }
 
                 // Already have this one loaded
-                if (item.Data.TextureInfo.TexturePointer != 0) continue;
+                if (item.Data.TextureInfo.TexturePointer != 0) { continue; }
 
                 byte[] imageBytes = null;
                 if (item.TGAData != null)
@@ -1061,6 +1061,7 @@ namespace Radegast.Rendering
                     {
                         item.TextureData = Client.Assets.Cache.GetCachedAssetBytes(item.Data.TextureInfo.TextureID);
                     }
+                    if (item.TextureData == null) { continue; }
                     
                     using (var reader = new OpenJpegDotNet.IO.Reader(item.TextureData))
                     {
