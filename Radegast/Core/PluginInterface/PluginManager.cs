@@ -42,6 +42,7 @@ namespace Radegast
             "Binaron.Serializer.dll",
             "C5.dll",
             "CommandLine.dll",
+            "DbgHelp.dll",
             "fmod.dll",
             "IKVM.dll",
             "log4net.dll",
