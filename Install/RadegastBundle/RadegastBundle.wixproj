@@ -6,7 +6,7 @@
 	<ProductVersion Condition=" '$(ProductVersion)' == '' ">3.1.0</ProductVersion>
     <ProjectGuid>cccc26b5-aa17-47d8-8d5d-707a78ec9a10</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>RadegastBundle_$(ProductVersion)_$(Platform)</OutputName>
+    <OutputName>RadegastBundle_$(Platform)</OutputName>
     <OutputType>Bundle</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">

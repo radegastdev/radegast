@@ -6,7 +6,7 @@
 	<ProductVersion Condition=" '$(ProductVersion)' == '' ">3.1.0</ProductVersion>
     <ProjectGuid>0f0271af-0841-45a5-8737-9239550839b7</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>RadegastSetup_$(ProductVersion)_$(Platform)</OutputName>
+    <OutputName>RadegastSetup_$(Platform)</OutputName>
     <OutputType>Package</OutputType>
     <Name>RadegastSetup</Name>
   </PropertyGroup>
