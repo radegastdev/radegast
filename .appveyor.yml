@@ -41,7 +41,7 @@ cache:
 
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: '**\*.csproj;**\*.props'
   version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'

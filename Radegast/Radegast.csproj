@@ -2,23 +2,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
-	<UseWindowsForms>true</UseWindowsForms>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-	<MapFileExtensions>true</MapFileExtensions>
-	<Version>1.0.0</Version>
-    <ApplicationVersion>1.0.0</ApplicationVersion>
-	<AssemblyVersion>1.0.0</AssemblyVersion>
-	<FileVersion>1.0.0</FileVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <AssemblyTitle>Radegast-ng</AssemblyTitle>
-    <Company>Radegast Development Team</Company>
-    <Product>Radegast Metaverse Client</Product>
-    <Description>Radegast-ng - https://radegast.life/</Description>
-    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, Sjofn, LLC. All rights reserved.</Copyright>
+	<AssemblyTitle>Radegast-ng</AssemblyTitle>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<UseWindowsForms>true</UseWindowsForms>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
 	<OutputPath>..\bin\$(Configuration)\</OutputPath>

@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyTitle>RadSpeechLin</AssemblyTitle>
-    <Company>Hewlett-Packard Company</Company>
-    <Product>RadSpeechLin</Product>
-    <Copyright>Copyright © Hewlett-Packard Company 2009, Copyright (c) 2016-2021, Sjofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>

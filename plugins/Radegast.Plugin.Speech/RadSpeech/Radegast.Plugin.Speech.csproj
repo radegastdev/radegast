@@ -2,13 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
 	<UseWindowsForms>true</UseWindowsForms>
-    <AssemblyTitle>RadegastSpeech</AssemblyTitle>
-    <Product>RadegastSpeech</Product>
-    <Description>Speech plugin for Radegast</Description>
-    <Copyright>Copyright (c) 2009, Mojito Sorbet. Copyright (c) 2019-2021, SJofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
