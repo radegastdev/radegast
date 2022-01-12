@@ -257,10 +257,8 @@ namespace Radegast.Netcom
                 case StartLocationType.Last: startLocation = "last"; break;
 
                 case StartLocationType.Custom:
-                    StartLocationParser parser = new StartLocationParser(loginOptions.StartLocationCustom.Trim());
-                    startLocation = "last";
-                    loginLocation = $"{parser.Sim}/{parser.X}/{parser.Y}/{parser.Z}";
-
+                    var parser = new LocationParser(loginOptions.StartLocationCustom.Trim());
+                    startLocation = parser.GetStartLocationUri();
                     break;
             }
 
