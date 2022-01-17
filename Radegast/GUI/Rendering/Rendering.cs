@@ -1672,7 +1672,7 @@ namespace Radegast.Rendering
                     continue;
                 }
 
-                Logger.Log("Requesting new animation asset " + anim.AnimationID, Helpers.LogLevel.Info);
+                Logger.Log($"Requesting new animation asset {anim.AnimationID}", Helpers.LogLevel.Debug);
 
                 Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, AnimRecievedCallback);
             }

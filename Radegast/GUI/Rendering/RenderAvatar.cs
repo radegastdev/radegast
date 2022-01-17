@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -1116,7 +1116,7 @@ namespace Radegast.Rendering
             {
                 b = new BinBVHAnimationReader(asset.AssetData);
                 mAnimationCache[asset.AssetID] = b;
-                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID, Helpers.LogLevel.Info);
+                Logger.Log($"Adding new decoded animaton known animations {asset.AssetID}", Helpers.LogLevel.Debug);
             }
 
             if (!av.glavatar.skel.mAnimationsWrapper.ContainsKey(animKey))
@@ -1654,7 +1654,7 @@ namespace Radegast.Rendering
             lock (mBones) mBones.Add(b.name, b);
             mIndexedBones.Add(boneaddindex++, b);
 
-            Logger.Log("Found bone " + b.name, Helpers.LogLevel.Info);
+            Logger.Log($"Found bone {b.name}", Helpers.LogLevel.Debug);
 
             foreach (XmlNode childbone in bone.ChildNodes)
             {
