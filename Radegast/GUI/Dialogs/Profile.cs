@@ -752,6 +752,11 @@ namespace Radegast
 
         private void interestsUpdated(object sender, EventArgs e)
         {
+            if (AgentID != client.Self.AgentID)
+            {
+                return;
+            }
+
             uint wantto = ((checkBoxBuild.Checked ? 1u << 0 : 0u)
                             | (checkBoxExplore.Checked ? 1u << 1 : 0u)
                             | (checkBoxMeet.Checked ? 1u << 2 : 0u)
