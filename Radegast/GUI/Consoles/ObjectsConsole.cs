@@ -670,7 +670,9 @@ namespace Radegast
             lock (Prims)
             {
                 string name = GetObjectName(prim);
-                if (!Prims.Contains(prim) && (txtSearch.Text.Length == 0 || name.ToLower().Contains(txtSearch.Text.ToLower())))
+                if (!Prims.Contains(prim) 
+                    && txtSearch.IsHandleCreated 
+                    && (txtSearch.Text.Length == 0 || name.ToLower().Contains(txtSearch.Text.ToLower())))
                 {
                     Prims.Add(prim);
                     if (prim.Properties == null)
