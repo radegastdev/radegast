@@ -120,16 +120,19 @@ namespace Radegast
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
 
-            s_BugSplat = new BugSplatDotNetStandard.BugSplat(
+            if (!string.IsNullOrEmpty(Generated.BugsplatDatabase))
+            {
+                s_BugSplat = new BugSplatDotNetStandard.BugSplat(
                 Generated.BugsplatDatabase, "Radegast",
                 Assembly.GetExecutingAssembly().GetName().Version.ToString())
-            {
-                User = "cinder@cinderblocks.biz",
-                ExceptionType = BugSplatDotNetStandard.BugSplat.ExceptionTypeId.DotNetStandard,
-            };
-            if (instance.GlobalLogFile != null)
-            {
-                s_BugSplat.Attachments.Add(new FileInfo(instance.GlobalLogFile));
+                {
+                    User = "cinder@cinderblocks.biz",
+                    ExceptionType = BugSplatDotNetStandard.BugSplat.ExceptionTypeId.DotNetStandard,
+                };
+                if (instance.GlobalLogFile != null)
+                {
+                    s_BugSplat.Attachments.Add(new FileInfo(instance.GlobalLogFile));
+                }
             }
 
             Application.Run(instance.MainForm);
