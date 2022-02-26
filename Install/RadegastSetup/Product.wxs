@@ -48,12 +48,16 @@
         <Feature Id="ProductFeature" Title="Radegast" Level="1">
             <ComponentGroupRef Id="ProductFilesComponentGroup" />
             <ComponentRef Id="ApplicationShortcut" />
+            <Feature Id="VCRedist140" Title="Visual C++ 2015 Runtime" 
+                     AllowAdvertise="no" Display="hidden" InstallDefault="followParent" Level="1">
+	            <MergeRef Id="VC_Redist140" />
+            </Feature>
 
             <Feature Id="VoiceFeature" Title="VoicePack" Level="1">
                 <ComponentGroupRef Id="VoicePackComponentGroup" />
-                <Feature Id="VCRedist" Title="Visual C++ 2013 Runtime" 
+                <Feature Id="VCRedist120" Title="Visual C++ 2013 Runtime" 
                          AllowAdvertise="no" Display="hidden" InstallDefault="followParent" Level="1">
-                    <MergeRef Id="VC_Redist" />
+                    <MergeRef Id="VC_Redist120" />
                 </Feature>
             </Feature>
         </Feature>

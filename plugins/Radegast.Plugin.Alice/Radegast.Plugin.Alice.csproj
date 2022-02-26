@@ -2,44 +2,36 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
 	<UseWindowsForms>true</UseWindowsForms>
-    <AssemblyTitle>Radegast.Plugin.Alice</AssemblyTitle>
-    <Company>Radegast Development Team</Company>
-    <Product>Radegast.Plugin.Alice</Product>
-    <Description>Chat AI for Radegast</Description>
-    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, SJofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMacOS|x86'">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|x86'">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -64,7 +56,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
-    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,7 @@ environment:
     appveyor_build_worker_image: Visual Studio 2019
     configuration: ReleaseWindows
 
+  BugsplatDatabase: sjofnllc
   PfxDownloadUrl:
     secure: 6zETilPjqhwgznp0rOyu2uOUI4whFbLT3QUXdaTQSH/FqOXIKwj/qz3d4Xo2rrgo
   PfxDownloadPasswd:
@@ -40,14 +41,14 @@ cache:
 
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: '**\*.csproj;**\*.props'
   version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
 
 before_build:
-  - ps: util/InstallRemotePfx.ps1 -PfxDownloadUrl $env:PfxDownloadUrl -PfxDownloadUser AppVeyor -PfxDownloadPasswd $env:PfxDownloadPasswd -PfxPasswd $env:PfxPassword
   - nuget restore radegast.sln
+  - ps: util/InstallRemotePfx.ps1 -PfxDownloadUrl $env:PfxDownloadUrl -PfxDownloadUser AppVeyor -PfxDownloadPasswd $env:PfxDownloadPasswd -PfxPasswd $env:PfxPassword
 
 after_build:
   - ps: New-Item -ItemType directory -Path .\$env:PLATFORM

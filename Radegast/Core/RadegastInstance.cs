@@ -383,7 +383,7 @@ namespace Radegast
         public void Reconnect()
         {
             TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
-            Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, Client);
+            Logger.Log("Attempting to reconnect", Helpers.LogLevel.Info, Client);
             GridClient oldClient = Client;
             Client = new GridClient();
             UnregisterClientEvents(oldClient);

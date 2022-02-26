@@ -2,101 +2,63 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
+	<AssemblyTitle>Radegast-ng</AssemblyTitle>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<UseWindowsForms>true</UseWindowsForms>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <AssemblyTitle>Radegast-ng</AssemblyTitle>
-    <Company>Radegast Development Team</Company>
-    <Product>Radegast Metaverse Client</Product>
-    <Description>Radegast-ng - https://radegast.life/</Description>
-    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, Sjofn, LLC. All rights reserved.</Copyright>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<Platforms>AnyCPU;x64;x86</Platforms>
+	<OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>radegast.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMacOS|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+	<BugsplatDatabase Condition="'$(BugsplatDatabase)' == ''"></BugsplatDatabase>
+  </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Radegast.MainProgram</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <OutputPath>..\bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
+    <PackageReference Include="BugSplatDotNetStandard" Version="2.1.3" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
-    <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.9" />
+    <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTK" Version="3.3.2" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
+    <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
     <PackageReference Include="System.Console" Version="4.3.1" />
@@ -117,10 +79,7 @@
     <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
-  </ItemGroup>
-    <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.6" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="GUI\Controls\AgentNameTextBox.cs" />
@@ -2065,14 +2024,24 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.GUI\LibreMetaverse.GUI.csproj" />
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse.LslTools\LibreMetaverse.LslTools.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.Rendering.Meshmerizer\LibreMetaverse.Rendering.Meshmerizer.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.Utilities\LibreMetaverse.Utilities.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.Types\LibreMetaverse.Types.csproj" />
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse.Voice\LibreMetaverse.Voice.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
     <ProjectReference Include="..\libremetaverse\PrimMesher\LibreMetaverse.PrimMesher.csproj" />
-    <ProjectReference Include="..\LSLTools\LSLTools.csproj" />
   </ItemGroup>
+  <Import Project="AutogenerateFiles.targets" />
+  <Target Name="GenerateCode" BeforeTargets="BeforeBuild" Condition="'$(RoslynCodeTaskFactory)'!=''">
+	<Message Text="------ Autogenerating source files ------" Importance="high" />
+	<MakeDir Directories="$(ProjectDir)Generated" Condition="!Exists('$(ProjectDir)Generated')" />
+	<GenerateFile Filename="$(ProjectDir)Generated\AutogeneratedStrings.cs" Condition="Exists('$(ProjectDir)Generated')" />
+	<ItemGroup>
+	  <Compile Include="$(ProjectDir)Generated\AutogeneratedStrings.cs" />
+	</ItemGroup>
+  </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /y &quot;$(ProjectDir)assemblies&quot; &quot;$(OutDir)dll&quot; /E/I" />
   </Target>

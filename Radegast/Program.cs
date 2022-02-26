@@ -60,7 +60,7 @@ namespace Radegast
             HelpText header = new HelpText(Properties.Resources.RadegastTitle)
             {
                 AdditionalNewLineAfterOption = true,
-                Copyright = new CopyrightInfo("Radegast Development Team, Cinderblocks Design", 2009, 2021)
+                Copyright = new CopyrightInfo("Radegast Development Team, Sjofn LLC", 2009, 2021)
             };
             header.AddPreOptionsLine("https://radegast.life/");
             return header;
@@ -73,6 +73,8 @@ namespace Radegast
         /// Parsed command line options
         /// </summary>
         public static CommandLineOptions s_CommandLineOpts;
+
+        public static BugSplatDotNetStandard.BugSplat s_BugSplat;
 
         static void RunRadegast(CommandLineOptions args)
         {
@@ -117,13 +119,30 @@ namespace Radegast
 
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
+
+            if (!string.IsNullOrEmpty(Generated.BugsplatDatabase))
+            {
+                s_BugSplat = new BugSplatDotNetStandard.BugSplat(
+                Generated.BugsplatDatabase, "Radegast",
+                Assembly.GetExecutingAssembly().GetName().Version.ToString())
+                {
+                    User = "cinder@cinderblocks.biz",
+                    ExceptionType = BugSplatDotNetStandard.BugSplat.ExceptionTypeId.DotNetStandard,
+                };
+                if (instance.GlobalLogFile != null)
+                {
+                    s_BugSplat.Attachments.Add(new FileInfo(instance.GlobalLogFile));
+                }
+            }
+
             Application.Run(instance.MainForm);
         }
 
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs exEventArgs)
         {
-            var instance = RadegastInstance.GlobalInstance;
-            instance.Client.Network.Logout();
+            RadegastInstance.GlobalInstance.Client.Network.Logout();
+            Exception ex = (Exception)exEventArgs.ExceptionObject;
+            s_BugSplat?.Post(ex);
         }
 
         /// <summary>
@@ -151,15 +170,17 @@ namespace Radegast
                         Console.WriteLine();
                     });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 if (System.Diagnostics.Debugger.IsAttached){ throw; }
 
-                string errMsg = "Unhandled " + e + ": " +
-                                e.Message + Environment.NewLine +
-                                e.StackTrace + Environment.NewLine;
+                string errMsg = "Unhandled " + ex + ": " +
+                                ex.Message + Environment.NewLine +
+                                ex.StackTrace + Environment.NewLine;
 
                 OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
+                
+                s_BugSplat?.Post(ex);
 
                 Environment.Exit(1);
             }

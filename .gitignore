@@ -13,4 +13,5 @@ compile.bat
 .idea
 libremetaverse/
 sparkle/
+Radegast/Generated/
 ProductInstallFiles.wxs

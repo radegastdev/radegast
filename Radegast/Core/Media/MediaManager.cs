@@ -266,7 +266,7 @@ namespace Radegast.Media
                 );
 
                 SoundSystemAvailable = true;
-                Logger.Log("Initialized FMOD Ex: " + outputType, Helpers.LogLevel.Debug);
+                Logger.Log("Initialized FMOD interface: " + outputType, Helpers.LogLevel.Info);
             }
             catch (Exception ex)
             {

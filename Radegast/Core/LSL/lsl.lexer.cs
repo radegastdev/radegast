@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -18,8 +18,9 @@
  * along with this program.If not, see<https://www.gnu.org/licenses/>.
  */
 
+using LibreMetaverse.LslTools;
 using System;
-using Tools;
+
 namespace Radegast.LSL
 {
     //%+STRING_CONSTANT+3

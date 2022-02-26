@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.10</ProductVersion>
+	<ProductVersion Condition=" '$(ProductVersion)' == '' ">3.1.0</ProductVersion>
     <ProjectGuid>cccc26b5-aa17-47d8-8d5d-707a78ec9a10</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>RadegastBundle_$(Platform)</OutputName>
@@ -39,7 +39,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Bundle.wxs" />
-    <Compile Include="NetCore31.wxs" />
     <Compile Include="NetFx472.wxs" />
     <Compile Include="NetFx48.wxs" />
   </ItemGroup>

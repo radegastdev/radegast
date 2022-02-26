@@ -391,7 +391,19 @@ namespace Radegast.Plugin.Alice
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (!Enabled || e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
+            if (!Enabled 
+                || e.SourceType != ChatSourceType.Agent 
+                || e.FromName == Client.Self.Name 
+                || e.Message.Trim().Length == 0) 
+            { 
+                return; 
+            }
+
+            // Ignore muted agents
+            if (Client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.SourceID) != null)
+            {
+                return;
+            }
 
             bool parseForResponse = Alice != null && Alice.isAcceptingUserInput && Enabled;
             if (parseForResponse && respondRange >= 0)
@@ -429,18 +441,18 @@ namespace Radegast.Plugin.Alice
                         var typingAnimationIsEnabled = !Instance.GlobalSettings["no_typing_anim"].AsBoolean();
 
                         Client.Self.Movement.TurnToward(e.Position);
-                        if (EnableRandomDelay) System.Threading.Thread.Sleep(1000 + 1000 * rand.Next(2));
+                        if (EnableRandomDelay) Thread.Sleep(1000 + 1000 * rand.Next(2));
                         if (!Instance.State.IsTyping && typingAnimationIsEnabled)
                         {
                             Instance.State.SetTyping(true);
                         }
                         if (EnableRandomDelay)
                         {
-                            System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(5));
+                            Thread.Sleep(2000 + 1000 * rand.Next(5));
                         }
                         else
                         {
-                            System.Threading.Thread.Sleep(1000);
+                            Thread.Sleep(1000);
                         }
                         if (typingAnimationIsEnabled)
                         {
@@ -482,7 +494,7 @@ namespace Radegast.Plugin.Alice
             {
                 Instance.MainForm.BeginInvoke(
                     new MethodInvoker(
-                        delegate()
+                        delegate ()
                         {
                             Self_IM(sender, e);
                         }
@@ -490,60 +502,69 @@ namespace Radegast.Plugin.Alice
                 return;
             }
 
-            // We need to filter out all sorts of things that come in as a instante message
-            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
+            // We need to filter out all sorts of things that come in as an instant message
+            if (!(e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
                 && !Instance.Groups.ContainsKey(e.IM.IMSessionID)  // Message is not group IM (sessionID == groupID)
                 && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
                 && e.IM.FromAgentName != "Second Life"             // Not a system message
                 && Alice.isAcceptingUserInput                    // Alice bot loaded successfully
-                )
+                ))
             {
-                ThreadPool.QueueUserWorkItem(sync =>
-                {
-                    lock (syncChat)
-                    {
-                        Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
-                        User user;
-                        if (AliceUsers.ContainsKey(e.IM.FromAgentName))
-                        {
-                            user = (User)AliceUsers[e.IM.FromAgentName];
-                        }
-                        else
-                        {
-                            user = new User(e.IM.FromAgentName, Alice);
-                            user.Predicates.removeSetting("name");
-                            user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
-                            AliceUsers[e.IM.FromAgentName] = user;
-                        }
-                        Request req = new Request(e.IM.Message, user, Alice);
-                        Result res = Alice.Chat(req);
-                        string msg = res.Output;
-                        if (msg.Length > 1000)
-                        {
-                            msg = msg.Substring(0, 1000);
-                        }
-                        if (EnableRandomDelay) System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(3));
-                        Instance.Netcom.SendIMStartTyping(e.IM.FromAgentID, e.IM.IMSessionID);
-                        if (EnableRandomDelay)
-                        {
-                            System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(5));
-                        }
-                        else
-                        {
-                            System.Threading.Thread.Sleep(1000);
-                        }
-                        Instance.Netcom.SendIMStopTyping(e.IM.FromAgentID, e.IM.IMSessionID);
-                        if (Instance.MainForm.InvokeRequired)
-                        {
-                            Instance.MainForm.BeginInvoke(new MethodInvoker(() => Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID)));
-                        }
-                        else
-                        {
-                            Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
-                        }
-                    }
-                });
+                return;
             }
+
+            // Ignore muted agents
+            if (Client.Self.MuteList.Find(muteEntry => muteEntry.Type == MuteType.Resident
+                && muteEntry.ID == e.IM.FromAgentID) != null)
+            {
+                return;
+            }
+
+            ThreadPool.QueueUserWorkItem(sync =>
+            {
+                lock (syncChat)
+                {
+                    Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
+                    User user;
+                    if (AliceUsers.ContainsKey(e.IM.FromAgentName))
+                    {
+                        user = (User)AliceUsers[e.IM.FromAgentName];
+                    }
+                    else
+                    {
+                        user = new User(e.IM.FromAgentName, Alice);
+                        user.Predicates.removeSetting("name");
+                        user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
+                        AliceUsers[e.IM.FromAgentName] = user;
+                    }
+                    Request req = new Request(e.IM.Message, user, Alice);
+                    Result res = Alice.Chat(req);
+                    string msg = res.Output;
+                    if (msg.Length > 1000)
+                    {
+                        msg = msg.Substring(0, 1000);
+                    }
+                    if (EnableRandomDelay) Thread.Sleep(2000 + 1000 * rand.Next(3));
+                    Instance.Netcom.SendIMStartTyping(e.IM.FromAgentID, e.IM.IMSessionID);
+                    if (EnableRandomDelay)
+                    {
+                        Thread.Sleep(2000 + 1000 * rand.Next(5));
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    Instance.Netcom.SendIMStopTyping(e.IM.FromAgentID, e.IM.IMSessionID);
+                    if (Instance.MainForm.InvokeRequired)
+                    {
+                        Instance.MainForm.BeginInvoke(new MethodInvoker(() => Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID)));
+                    }
+                    else
+                    {
+                        Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
+                    }
+                }
+            });
         }
 
         private string FirstName(string name)

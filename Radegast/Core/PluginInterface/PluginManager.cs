@@ -42,13 +42,9 @@ namespace Radegast
             "Binaron.Serializer.dll",
             "C5.dll",
             "CommandLine.dll",
+            "DbgHelp.dll",
             "fmod.dll",
             "IKVM.dll",
-            "LibreMetaverse.PrimMesher.dll",
-            "LibreMetaverse.Rendering.Meshmerizer.dll",
-            "LibreMetaverse.StructuredData.dll",
-            "LibreMetaverse.Types.dll",
-            "LibreMetaverse.dll",
             "log4net.dll",
             "Meebey.SmartIrc4net.dll",
             "Monobjc.Cocoa.dll",
@@ -59,10 +55,6 @@ namespace Radegast
             "OpenCyc.dll",
             "openjpeg-dotnet.dll",
             "OpenJpegDotNetNative.dll",
-            "OpenMetaverse.Rendering.Meshmerizer.dll",
-            "OpenMetaverse.StructuredData.dll",
-            "OpenMetaverse.dll",
-            "OpenMetaverseTypes.dll",
             "OpenTK",
             "OpenTK.GLControl.dll",
             "ortp.dll",
@@ -80,6 +72,10 @@ namespace Radegast
             "XmlRpcCore.dll",
             "zlib.net.dll",
             "zlib1.dll",
+            // Blacklist all of these
+            "OpenMetaverse.",
+            "LibreMetaverse.",
+            "System.",
         });
 
         /// <summary>Collection of assemblies that are referenced when compiling scripts.</summary>
