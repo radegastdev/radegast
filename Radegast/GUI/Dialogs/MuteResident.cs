@@ -28,7 +28,7 @@ namespace Radegast
     {
         AvatarPicker picker;
         RadegastInstance instance;
-        Netcom.RadegastNetcom netcom;
+        Radegast.Netcom netcom;
 
         public MuteResidentForm(RadegastInstance instance)
             :base(instance)
@@ -66,7 +66,7 @@ namespace Radegast
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            ((Netcom.RadegastNetcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            ((Radegast.Netcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 BeginInvoke(new MethodInvoker(Close));

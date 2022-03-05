@@ -20,7 +20,7 @@
 
 using OpenMetaverse;
 
-namespace Radegast.Netcom
+namespace Radegast
 {
     public class LoginOptions
     {
@@ -45,6 +45,10 @@ namespace Radegast.Netcom
         }
 
         public string Password { get; set; }
+
+        public string MfaToken { get; set; }
+
+        public string MfaHash { get; set; }
 
         public StartLocationType StartLocation { get; set; } = StartLocationType.Home;
 

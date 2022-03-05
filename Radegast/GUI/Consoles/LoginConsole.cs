@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -25,14 +25,14 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using Radegast.Netcom;
+using Radegast.GUI;
 
 namespace Radegast
 {
     public partial class LoginConsole : UserControl, IRadegastTabControl
     {
-        private RadegastInstance instance;
-        private RadegastNetcom netcom => instance.Netcom;
+        private readonly RadegastInstance instance;
+        private Netcom netcom => instance.Netcom;
 
         public LoginConsole(RadegastInstance instance)
         {
@@ -98,10 +98,8 @@ namespace Radegast
         {
             if (e.Key == "hide_login_graphics")
             {
-                if (e.Value.AsBoolean())
-                    pnlSplash.BackgroundImage = null;
-                else
-                    pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
+                pnlSplash.BackgroundImage = e.Value.AsBoolean() 
+                    ? null : Properties.Resources.radegast_main_screen2;
             }
         }
 
@@ -338,7 +336,7 @@ namespace Radegast
                     break;
 
                 case LoginStatus.Success:
-                    lblLoginStatus.Text = "Logged in as " + netcom.LoginOptions.FullName;
+                    lblLoginStatus.Text = $"Logged in as {netcom.LoginOptions.FullName}";
                     lblLoginStatus.ForeColor = Color.FromArgb(0, 128, 128, 255);
                     proLogin.Visible = false;
 
@@ -355,6 +353,12 @@ namespace Radegast
                         pnlTos.Visible = true;
                         txtTOS.Text = e.Message.Replace("\n", "\r\n");
                         btnLogin.Enabled = false;
+                    }
+                    else if (e.FailReason == "mfa_challenge")
+                    {
+                        var prompt = new MfaPrompt(instance);
+                        prompt.Show();
+                        btnLogin.Visible = true;
                     }
                     else
                     {
@@ -449,7 +453,8 @@ namespace Radegast
             {
                 if (txtCustomLoginUri.TextLength == 0 || txtCustomLoginUri.Text.Trim().Length == 0)
                 {
-                    MessageBox.Show("You must specify the Login Uri to connect to a custom grid.", Properties.Resources.ProgramName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("You must specify the Login Uri to connect to a custom grid.", 
+                        Properties.Resources.ProgramName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -474,8 +479,9 @@ namespace Radegast
         {
             switch (btnLogin.Text)
             {
-                case "Login": BeginLogin(); break;
-
+                case "Login": 
+                    BeginLogin();
+                    break;
                 case "Retry":
                     pnlLoginPrompt.Visible = true;
                     pnlLoggingIn.Visible = false;
@@ -525,28 +531,27 @@ namespace Radegast
             cbxUsername.SelectedIndexChanged -= cbxUsername_SelectedIndexChanged;
 
             if (cbxUsername.SelectedIndex > 0
-                && cbxUsername.SelectedItem is SavedLogin)
+                && cbxUsername.SelectedItem is SavedLogin savedLogin)
             {
-                SavedLogin sl = (SavedLogin)cbxUsername.SelectedItem;
-                cbxUsername.Text = sl.Username;
-                cbxUsername.Items[0] = sl.Username;
+                cbxUsername.Text = savedLogin.Username;
+                cbxUsername.Items[0] = savedLogin.Username;
                 cbxUsername.SelectedIndex = 0;
-                txtPassword.Text = sl.Password;
-                cbxLocation.SelectedIndex = sl.StartLocationType;
-                if (sl.StartLocationType == -1)
+                txtPassword.Text = savedLogin.Password;
+                cbxLocation.SelectedIndex = savedLogin.StartLocationType;
+                if (savedLogin.StartLocationType == -1)
                 {
-                    cbxLocation.Text = sl.CustomStartLocation;
+                    cbxLocation.Text = savedLogin.CustomStartLocation;
                 }
-                if (sl.GridID == "custom_login_uri")
+                if (savedLogin.GridID == "custom_login_uri")
                 {
                     cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
-                    txtCustomLoginUri.Text = sl.CustomURI;
+                    txtCustomLoginUri.Text = savedLogin.CustomURI;
                 }
                 else
                 {
                     foreach (var item in cbxGrid.Items)
                     {
-                        if (item is Grid grid && grid.ID == sl.GridID)
+                        if (item is Grid grid && grid.ID == savedLogin.GridID)
                         {
                             cbxGrid.SelectedItem = grid;
                             break;
@@ -584,24 +589,23 @@ namespace Radegast
 
         public static SavedLogin FromOSD(OSD data)
         {
-            if (!(data is OSDMap)) return null;
-            OSDMap map = (OSDMap)data;
+            if (!(data is OSDMap osd)) return null;
             SavedLogin ret = new SavedLogin
             {
-                Username = map["username"],
-                Password = map["password"],
-                GridID = map["grid"],
-                CustomURI = map["custom_url"]
+                Username = osd["username"],
+                Password = osd["password"],
+                GridID = osd["grid"],
+                CustomURI = osd["custom_url"]
             };
-            if (map.ContainsKey("location_type"))
+            if (osd.ContainsKey("location_type"))
             {
-                ret.StartLocationType = map["location_type"];
+                ret.StartLocationType = osd["location_type"];
             }
             else
             {
                 ret.StartLocationType = 1;
             }
-            ret.CustomStartLocation = map["custom_location"];
+            ret.CustomStartLocation = osd["custom_location"];
             return ret;
         }
 

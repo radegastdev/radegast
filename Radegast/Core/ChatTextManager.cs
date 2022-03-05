@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Reflection;
@@ -36,7 +36,7 @@ namespace Radegast
         public event EventHandler<ChatLineAddedArgs> ChatLineAdded;
 
         private RadegastInstance instance;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private GridClient client => instance.Client;
 
         private List<ChatBufferItem> textBuffer;

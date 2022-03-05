@@ -24,7 +24,7 @@ using System.ComponentModel;
 using System.Drawing;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using Radegast.Netcom;
+using Radegast;
 
 namespace Radegast
 {
@@ -86,7 +86,7 @@ namespace Radegast
         /// <summary>
         /// Instance of RadegastNetcom
         /// </summary>
-        protected RadegastNetcom Netcom => Instance.Netcom;
+        protected Radegast.Netcom Netcom => Instance.Netcom;
 
         private System.Threading.Timer SettingsTimer;
         private const int SettingsTimerTimeout = 500;

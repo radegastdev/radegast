@@ -26,7 +26,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Radegast.Commands;
-using Radegast.Netcom;
 using Radegast.Media;
 using OpenMetaverse;
 
@@ -250,7 +249,7 @@ namespace Radegast
             Keyboard = new Keyboard();
             Application.AddMessageFilter(Keyboard);
 
-            Netcom = new RadegastNetcom(this);
+            Netcom = new Netcom(this);
             State = new StateManager(this);
             MediaManager = new MediaManager(this);
             CommandsManager = new CommandsManager(this);
@@ -584,7 +583,7 @@ namespace Radegast
         }
 
         public GridClient Client { get; private set; }
-        public RadegastNetcom Netcom { get; private set; }
+        public Netcom Netcom { get; private set; }
         public StateManager State { get; private set; }
         public frmMain MainForm { get; }
         public TabsConsole TabConsole => MainForm.TabConsole;

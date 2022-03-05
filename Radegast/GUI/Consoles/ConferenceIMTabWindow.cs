@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 namespace Radegast
@@ -30,7 +30,7 @@ namespace Radegast
     public partial class ConferenceIMTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private Radegast.Netcom netcom;
         private GridClient client;
         private List<UUID> participants = new List<UUID>();
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);

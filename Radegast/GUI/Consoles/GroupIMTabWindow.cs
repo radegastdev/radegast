@@ -23,7 +23,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 namespace Radegast
@@ -32,7 +32,7 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private GridClient client => instance.Client;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private object AvatarListSyncRoot = new object();
         private List<string> chatHistory = new List<string>();
         private int chatPointer;

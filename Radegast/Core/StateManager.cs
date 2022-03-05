@@ -26,7 +26,7 @@ using System.Threading;
 using OpenMetaverse;
 
 using Radegast.Automation;
-using Radegast.Netcom;
+using Radegast;
 
 namespace Radegast
 {
@@ -55,7 +55,7 @@ namespace Radegast
 
         private RadegastInstance instance;
         private GridClient Client => instance.Client;
-        private RadegastNetcom Netcom => instance.Netcom;
+        private Radegast.Netcom Netcom => instance.Netcom;
 
         private bool away = false;
         private bool flying = false;

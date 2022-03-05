@@ -18,7 +18,7 @@
  * along with this program.If not, see<https://www.gnu.org/licenses/>.
  */
 
-namespace Radegast.Netcom
+namespace Radegast
 {
     public enum StartLocationType
     {

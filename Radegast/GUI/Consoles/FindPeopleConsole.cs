@@ -22,14 +22,14 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
-using Radegast.Netcom;
+using Radegast;
 
 namespace Radegast
 {
     public partial class FindPeopleConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private Radegast.Netcom netcom;
         private GridClient client;
 
         public event EventHandler SelectedIndexChanged;
