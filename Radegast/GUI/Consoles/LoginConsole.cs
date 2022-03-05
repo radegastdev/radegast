@@ -357,8 +357,12 @@ namespace Radegast
                     else if (e.FailReason == "mfa_challenge")
                     {
                         var prompt = new MfaPrompt(instance);
-                        prompt.Show();
-                        btnLogin.Visible = true;
+                        if (prompt.ShowDialog() != DialogResult.OK)
+                        {
+                            lblLoginStatus.Text = e.Message;
+                            btnLogin.Enabled = true;
+                        }
+                        prompt.Dispose();
                     }
                     else
                     {

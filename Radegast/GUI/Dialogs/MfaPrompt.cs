@@ -39,6 +39,7 @@ namespace Radegast.GUI
         {
             Netcom.LoginOptions.MfaToken = tokenBox.Text;
             Netcom.Login();
+            DialogResult = DialogResult.OK;
             Close();
         }
     }
