@@ -363,6 +363,7 @@ namespace Radegast
                     else
                     {
                         lblLoginStatus.Text = e.Message;
+                        netcom.loginOptions.MfaToken = string.Empty;
                         btnLogin.Enabled = true;
                     }
                     proLogin.Visible = false;
