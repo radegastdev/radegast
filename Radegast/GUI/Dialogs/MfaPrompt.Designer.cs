@@ -45,6 +45,7 @@ namespace Radegast.GUI
             this.tokenBox.Name = "tokenBox";
             this.tokenBox.Size = new System.Drawing.Size(277, 62);
             this.tokenBox.TabIndex = 0;
+            this.tokenBox.AcceptsReturn = true;
             // 
             // btnSubmit
             // 

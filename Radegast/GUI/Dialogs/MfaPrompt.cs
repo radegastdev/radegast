@@ -30,6 +30,8 @@ namespace Radegast.GUI
         {
             Instance = instance;
             InitializeComponent();
+
+            AcceptButton = btnSubmit;
             GuiHelpers.ApplyGuiFixes(this);
         }
 
