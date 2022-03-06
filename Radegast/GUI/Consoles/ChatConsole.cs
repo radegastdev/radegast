@@ -24,7 +24,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 using Radegast.Core;
 
@@ -33,7 +33,7 @@ namespace Radegast
     public partial class ChatConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private GridClient client => instance.Client;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;

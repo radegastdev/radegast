@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using System.Resources;
 using System.IO;
 using System.Web;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 using NetSparkleUpdater.SignatureVerifiers;
 
@@ -77,7 +77,7 @@ namespace Radegast
         #region Private members
         private RadegastInstance instance;
         private GridClient client => instance.Client;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
         private bool AutoPilotActive = false;

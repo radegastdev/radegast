@@ -20,7 +20,7 @@
 
 using System;
 
-namespace Radegast.Netcom
+namespace Radegast
 {
     public class OverrideEventArgs : EventArgs
     {

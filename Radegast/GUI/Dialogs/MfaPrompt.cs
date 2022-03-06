@@ -1,7 +1,6 @@
-/**
+﻿/**
  * Radegast Metaverse Client
- * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -18,20 +17,30 @@
  * along with this program.If not, see<https://www.gnu.org/licenses/>.
  */
 
-using OpenMetaverse;
+using System.Windows.Forms;
 
-namespace Radegast
+namespace Radegast.GUI
 {
-    public class TeleportingEventArgs : OverrideEventArgs
+    public partial class MfaPrompt : Form
     {
-        public TeleportingEventArgs(string sim, Vector3 coordinates)
+        private readonly RadegastInstance Instance;
+        private Netcom Netcom => Instance.Netcom;
+
+        public MfaPrompt(RadegastInstance instance)
         {
-            SimName = sim;
-            Coordinates = coordinates;
+            Instance = instance;
+            InitializeComponent();
+
+            AcceptButton = btnSubmit;
+            GuiHelpers.ApplyGuiFixes(this);
         }
 
-        public string SimName { get; }
-
-        public Vector3 Coordinates { get; }
+        private void btnSubmit_Click(object sender, System.EventArgs e)
+        {
+            Netcom.LoginOptions.MfaToken = tokenBox.Text;
+            Netcom.Login();
+            DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 }

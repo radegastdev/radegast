@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 namespace Radegast
@@ -96,7 +96,7 @@ namespace Radegast
 
         private RadegastInstance instance;
         private GridClient client => instance.Client;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         public ChatTextManager MainChatManger { get; private set; }
 
         public Dictionary<string, RadegastTab> Tabs { get; } = new Dictionary<string, RadegastTab>();

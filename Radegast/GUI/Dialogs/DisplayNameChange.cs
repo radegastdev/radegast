@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -55,14 +55,9 @@ namespace Radegast
 
         void Self_SetDisplayNameReply(object sender, SetDisplayNameReplyEventArgs e)
         {
-            if (e.Status == 200)
-            {
-                UpdateStatus("Name successfully changed to: " + e.DisplayName.DisplayName);
-            }
-            else
-            {
-                UpdateStatus("Update failed: " + e.Reason);
-            }
+            UpdateStatus(e.Status == 200
+                ? $"Name successfully changed to: {e.DisplayName.DisplayName}"
+                : $"Update failed: {e.Reason}");
         }
 
         private void UpdateStatus(string msg)
@@ -90,7 +85,7 @@ namespace Radegast
                         {
                             if (!success || names.Length < 1)
                             {
-                                UpdateStatus("Failed to get curret name");
+                                UpdateStatus("Failed to get current name");
                             }
                             else
                             {

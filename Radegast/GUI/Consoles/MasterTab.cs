@@ -24,7 +24,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 namespace Radegast
@@ -33,7 +33,7 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private GridClient client => instance.Client;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private Avatar avatar;
         public UUID selectedID;
         public Primitive selectedPrim;

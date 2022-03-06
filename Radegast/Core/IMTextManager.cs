@@ -23,7 +23,7 @@ using System.Collections;
 using System.Drawing;
 using System.Text;
 using System.IO;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace Radegast
         public bool DingOnAllIncoming = false;
 
         RadegastInstance instance;
-        RadegastNetcom netcom => instance.Netcom;
+        Radegast.Netcom netcom => instance.Netcom;
         IMTextManagerType Type;
         string sessionName;
         bool AutoResponseSent = false;

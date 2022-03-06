@@ -21,7 +21,7 @@
 using System;
 using OpenMetaverse;
 
-namespace Radegast.Netcom
+namespace Radegast
 {
     public class ChatSentEventArgs : EventArgs
     {

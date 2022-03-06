@@ -21,9 +21,9 @@
 using System;
 using OpenMetaverse;
 
-namespace Radegast.Netcom
+namespace Radegast
 {
-    public partial class RadegastNetcom
+    public partial class Netcom
     {
         // For the NetcomSync stuff
         private delegate void OnClientLoginRaise(LoginProgressEventArgs e);

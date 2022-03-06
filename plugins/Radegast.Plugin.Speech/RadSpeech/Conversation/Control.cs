@@ -98,7 +98,7 @@ namespace RadegastSpeech.Conversation
                 new EventHandler<SimChangedEventArgs>(Network_SimChanged);
 
             control.instance.Netcom.ClientLoggingIn +=
-                new EventHandler<Radegast.Netcom.OverrideEventArgs>(Netcom_ClientLoggingIn);
+                new EventHandler<Radegast.OverrideEventArgs>(Netcom_ClientLoggingIn);
             // Watch the coming and going of main window tabs.
             control.instance.TabConsole.OnTabAdded +=
                 new TabsConsole.TabCallback(TabConsole_OnTabAdded);
@@ -114,7 +114,7 @@ namespace RadegastSpeech.Conversation
                 new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
 
             // Outgoing IMs
-            control.instance.Netcom.InstantMessageSent += new EventHandler<Radegast.Netcom.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
+            control.instance.Netcom.InstantMessageSent += new EventHandler<Radegast.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
 
             // Watch for global keys
             control.instance.MainForm.KeyUp += new KeyEventHandler(MainForm_KeyUp);
@@ -153,7 +153,7 @@ namespace RadegastSpeech.Conversation
         }
 
 
-        void Netcom_ClientLoggingIn(object sender, Radegast.Netcom.OverrideEventArgs e)
+        void Netcom_ClientLoggingIn(object sender, Radegast.OverrideEventArgs e)
         {
             Talker.SayMore("Logging in.  Please wait.");
         }
@@ -367,7 +367,7 @@ namespace RadegastSpeech.Conversation
                 new EventHandler<SimChangedEventArgs>(Network_SimChanged);
 
             control.instance.Netcom.ClientLoggingIn -=
-                new EventHandler<Radegast.Netcom.OverrideEventArgs>(Netcom_ClientLoggingIn);
+                new EventHandler<Radegast.OverrideEventArgs>(Netcom_ClientLoggingIn);
             // Watch the coming and going of main window tabs.
             control.instance.TabConsole.OnTabAdded -=
                 new TabsConsole.TabCallback(TabConsole_OnTabAdded);
@@ -383,7 +383,7 @@ namespace RadegastSpeech.Conversation
                 new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
 
             // Outgoing IMs
-            control.instance.Netcom.InstantMessageSent -= new EventHandler<Radegast.Netcom.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
+            control.instance.Netcom.InstantMessageSent -= new EventHandler<Radegast.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
 
             // System notifications in chat
             control.instance.TabConsole.OnChatNotification -= new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
@@ -685,7 +685,7 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Netcom_InstantMessageSent(object sender, Radegast.Netcom.InstantMessageSentEventArgs e)
+        void Netcom_InstantMessageSent(object sender, Radegast.InstantMessageSentEventArgs e)
         {
             // Message to an individual
             IMSession sess = (IMSession)control.converse.GetConversation(control.instance.Names.Get(e.TargetID, true));

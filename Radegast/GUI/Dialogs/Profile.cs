@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 
@@ -31,7 +31,7 @@ namespace Radegast
     public partial class frmProfile : RadegastForm
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private Radegast.Netcom netcom;
         private readonly GridClient client;
         private readonly string fullName;
 

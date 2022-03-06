@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -22,15 +22,15 @@ using System;
 using System.Windows.Forms;
 using OpenMetaverse;
 
-namespace Radegast.Netcom
+namespace Radegast
 {
     /// <summary>
     /// RadegastNetcom is a class built on top of libsecondlife that provides a way to
     /// raise events on the proper thread (for GUI apps especially).
     /// </summary>
-    public partial class RadegastNetcom : IDisposable
+    public partial class Netcom : IDisposable
     {
-        private RadegastInstance instance;
+        private readonly RadegastInstance instance;
         private GridClient client => instance.Client;
         public LoginOptions loginOptions;
 
@@ -68,7 +68,7 @@ namespace Radegast.Netcom
         }
         #endregion ClientConnected event
 
-        public RadegastNetcom(RadegastInstance instance)
+        public Netcom(RadegastInstance instance)
         {
             this.instance = instance;
             loginOptions = new LoginOptions();
@@ -270,14 +270,9 @@ namespace Radegast.Netcom
             }
             else
             {
-                if (loginOptions.Password.Length > 16)
-                {
-                    password = Utils.MD5(loginOptions.Password.Substring(0, 16));
-                }
-                else
-                {
-                    password = Utils.MD5(loginOptions.Password);
-                }
+                password = Utils.MD5(loginOptions.Password.Length > 16
+                    ? loginOptions.Password.Substring(0, 16) 
+                    : loginOptions.Password);
             }
 
             LoginParams loginParams = client.Network.DefaultLoginParams(
@@ -290,6 +285,10 @@ namespace Radegast.Netcom
             loginParams.AgreeToTos = AgreeToTos;
             loginParams.URI = Grid.LoginURI;
             loginParams.LastExecEvent = loginOptions.LastExecEvent;
+            loginParams.MfaEnabled = true;
+            loginParams.MfaHash = loginOptions.MfaHash;
+            loginParams.Token = loginOptions.MfaToken;
+
             client.Network.BeginLogin(loginParams);
         }
 

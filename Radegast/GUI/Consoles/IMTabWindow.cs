@@ -21,7 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Radegast.Netcom;
+using Radegast;
 using OpenMetaverse;
 
 namespace Radegast
@@ -29,7 +29,7 @@ namespace Radegast
     public partial class IMTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom => instance.Netcom;
+        private Radegast.Netcom netcom => instance.Netcom;
         private UUID target;
         private bool typing = false;
         private List<string> chatHistory = new List<string>();
