@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2022, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -29,12 +29,13 @@ namespace Radegast
     public class CurrentOutfitFolder : IDisposable
     {
         #region Fields
-        GridClient Client;
-        RadegastInstance Instance;
-        bool InitiCOF = false;
-        bool AppearanceSent = false;
-        bool COFReady = false;
-        bool InitialUpdateDone = false;
+
+        private GridClient Client;
+        private readonly RadegastInstance Instance;
+        private bool InitiCOF = false;
+        private bool AppearanceSent = false;
+        private bool COFReady = false;
+        private bool InitialUpdateDone = false;
         public Dictionary<UUID, InventoryItem> Content = new Dictionary<UUID, InventoryItem>();
         public InventoryFolder COF;
 
@@ -45,41 +46,42 @@ namespace Radegast
         {
             Instance = instance;
             Client = instance.Client;
-            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            Instance.ClientChanged += instance_ClientChanged;
             RegisterClientEvents(Client);
         }
 
         public void Dispose()
         {
             UnregisterClientEvents(Client);
-            Instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            Instance.ClientChanged -= instance_ClientChanged;
         }
         #endregion Construction and disposal
 
         #region Event handling
-        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+
+        private void instance_ClientChanged(object sender, ClientChangedEventArgs e)
         {
             UnregisterClientEvents(Client);
             Client = e.Client;
             RegisterClientEvents(Client);
         }
 
-        void RegisterClientEvents(GridClient client)
+        private void RegisterClientEvents(GridClient client)
         {
-            client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
-            client.Inventory.FolderUpdated += new EventHandler<FolderUpdatedEventArgs>(Inventory_FolderUpdated);
-            client.Inventory.ItemReceived += new EventHandler<ItemReceivedEventArgs>(Inventory_ItemReceived);
-            client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
-            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Network.EventQueueRunning += Network_EventQueueRunning;
+            client.Inventory.FolderUpdated += Inventory_FolderUpdated;
+            client.Inventory.ItemReceived += Inventory_ItemReceived;
+            client.Appearance.AppearanceSet += Appearance_AppearanceSet;
+            client.Objects.KillObject += Objects_KillObject;
         }
 
-        void UnregisterClientEvents(GridClient client)
+        private void UnregisterClientEvents(GridClient client)
         {
-            client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
-            client.Inventory.FolderUpdated -= new EventHandler<FolderUpdatedEventArgs>(Inventory_FolderUpdated);
-            client.Inventory.ItemReceived -= new EventHandler<ItemReceivedEventArgs>(Inventory_ItemReceived);
-            client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
-            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Network.EventQueueRunning -= Network_EventQueueRunning;
+            client.Inventory.FolderUpdated -= Inventory_FolderUpdated;
+            client.Inventory.ItemReceived -= Inventory_ItemReceived;
+            client.Appearance.AppearanceSet -= Appearance_AppearanceSet;
+            client.Objects.KillObject -= Objects_KillObject;
             lock (Content) Content.Clear();
             InitiCOF = false;
             AppearanceSent = false;
@@ -87,7 +89,7 @@ namespace Radegast
             InitialUpdateDone = false;
         }
 
-        void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
+        private void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
         {
             AppearanceSent = true;
             if (COFReady)
@@ -96,7 +98,7 @@ namespace Radegast
             }
         }
 
-        void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
+        private void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
         {
             var links = ContentLinks();
             bool partOfCOF = links.Any(cofItem => cofItem.AssetUUID == e.Item.UUID);
@@ -117,22 +119,17 @@ namespace Radegast
             }
             lock (Content)
             {
-                foreach (InventoryItem link in Content.Values)
-                {
-                    if (link.InventoryType == InventoryType.Wearable)
-                    {
-                        InventoryWearable w = (InventoryWearable)link;
-                        InventoryItem lk = links.Find(l => l.AssetUUID == w.UUID);
-                        // Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
-                    }
-                }
-
+                foreach (var lk in from link in Content.Values 
+                         where link.InventoryType == InventoryType.Wearable 
+                         select (InventoryWearable)link into w 
+                         select links.Find(l => l.AssetUUID == w.UUID))
+                { }
             }
         }
 
-        object FolderSync = new object();
+        private readonly object FolderSync = new object();
 
-        void Inventory_FolderUpdated(object sender, FolderUpdatedEventArgs e)
+        private void Inventory_FolderUpdated(object sender, FolderUpdatedEventArgs e)
         {
             if (COF == null) return;
 
@@ -165,7 +162,7 @@ namespace Radegast
             }
         }
 
-        void Objects_KillObject(object sender, KillObjectEventArgs e)
+        private void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
             if (Client.Network.CurrentSim != e.Simulator) return;
 
@@ -180,7 +177,7 @@ namespace Radegast
             }
         }
 
-        void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
+        private void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
         {
             if (e.Simulator == Client.Network.CurrentSim && !InitiCOF)
             {
@@ -191,20 +188,20 @@ namespace Radegast
         #endregion Event handling
 
         #region Private methods
-        void RequestDescendants(UUID folderID)
+
+        private void RequestDescendants(UUID folderID)
         {
             Client.Inventory.RequestFolderContents(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
         }
 
-        void InitCOF()
+        private void InitCOF()
         {
             var rootContent = Client.Inventory.Store.GetContents(Client.Inventory.Store.RootFolder.UUID);
-            foreach (InventoryBase baseItem in rootContent)
+            foreach (var baseItem in rootContent)
             {
-                if (baseItem is InventoryFolder 
-                    && ((InventoryFolder)baseItem).PreferredType == FolderType.CurrentOutfit)
+                if (baseItem is InventoryFolder folder && folder.PreferredType == FolderType.CurrentOutfit)
                 {
-                    COF = (InventoryFolder)baseItem;
+                    COF = folder;
                     break;
                 }
             }
@@ -219,12 +216,12 @@ namespace Radegast
             }
         }
 
-        void CreateCOF()
+        private void CreateCOF()
         {
             UUID cofID = Client.Inventory.CreateFolder(Client.Inventory.Store.RootFolder.UUID, "Current Outfit", FolderType.CurrentOutfit);
-            if (Client.Inventory.Store.Items.ContainsKey(cofID) && Client.Inventory.Store.Items[cofID].Data is InventoryFolder)
+            if (Client.Inventory.Store.Items.ContainsKey(cofID) && Client.Inventory.Store.Items[cofID].Data is InventoryFolder folder)
             {
-                COF = (InventoryFolder)Client.Inventory.Store.Items[cofID].Data;
+                COF = folder;
                 COFReady = true;
                 if (AppearanceSent)
                 {
@@ -233,7 +230,7 @@ namespace Radegast
             }
         }
 
-        void InitialUpdate()
+        private void InitialUpdate()
         {
             if (InitialUpdateDone) return;
             InitialUpdateDone = true;
@@ -241,15 +238,11 @@ namespace Radegast
             {
                 var myAtt = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == Client.Self.LocalID);
 
-                foreach (InventoryItem item in Content.Values)
+                foreach (var item in Content.Values
+                             .Where(item => item is InventoryObject || item is InventoryAttachment)
+                             .Where(item => !IsAttached(myAtt, item)))
                 {
-                    if (item is InventoryObject || item is InventoryAttachment)
-                    {
-                        if (!IsAttached(myAtt, item))
-                        {
-                            Client.Appearance.Attach(item, AttachmentPoint.Default, false);
-                        }
-                    }
+                    Client.Appearance.Attach(item, AttachmentPoint.Default, false);
                 }
             }
         }
@@ -281,7 +274,7 @@ namespace Radegast
         {
             if (prim.NameValues == null) return UUID.Zero;
 
-            for (int i = 0; i < prim.NameValues.Length; i++)
+            for (var i = 0; i < prim.NameValues.Length; i++)
             {
                 if (prim.NameValues[i].Name == "AttachItemID")
                 {
@@ -299,15 +292,7 @@ namespace Radegast
         /// <returns>True if the inventory item is attached to avatar</returns>
         public static bool IsAttached(List<Primitive> attachments, InventoryItem item)
         {
-            foreach (var prim in attachments)
-            {
-                if (GetAttachmentItem(prim) == item.UUID)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return attachments.Any(prim => GetAttachmentItem(prim) == item.UUID);
         }
 
         /// <summary>
@@ -404,15 +389,11 @@ namespace Radegast
         {
             if (COF == null) return;
 
-            var toRemove = new List<UUID>();
-
-            foreach (var itemID in itemIDs)
+            foreach (var links in itemIDs.Select(itemID => ContentLinks()
+                         .FindAll(itemLink => itemLink.AssetUUID == itemID)))
             {
-                var links = ContentLinks().FindAll(itemLink => itemLink.AssetUUID == itemID);
-                links.ForEach(item => toRemove.Add(item.UUID));
+                links.ForEach(item => Client.Inventory.RemoveItem(item.UUID));
             }
-
-            Client.Inventory.Remove(toRemove, null);
         }
 
         /// <summary>
@@ -453,9 +434,10 @@ namespace Radegast
         /// <returns></returns>
         public InventoryItem RealInventoryItem(InventoryItem item)
         {
-            if (item.IsLink() && Client.Inventory.Store.Contains(item.AssetUUID) && Client.Inventory.Store[item.AssetUUID] is InventoryItem)
+            if (item.IsLink() && Client.Inventory.Store.Contains(item.AssetUUID)
+                              && Client.Inventory.Store[item.AssetUUID] is InventoryItem invItem)
             {
-                return (InventoryItem)Client.Inventory.Store[item.AssetUUID];
+                return invItem;
             }
 
             return item;
@@ -468,11 +450,7 @@ namespace Radegast
         public void ReplaceOutfit(List<InventoryItem> newOutfit)
         {
             // Resolve inventory links
-            var outfit = new List<InventoryItem>();
-            foreach (var item in newOutfit)
-            {
-                outfit.Add(RealInventoryItem(item));
-            }
+            var outfit = newOutfit.Select(RealInventoryItem).ToList();
 
             // Remove links to all exiting items
             var toRemove = new List<UUID>();
@@ -495,7 +473,10 @@ namespace Radegast
                 }
             });
 
-            Client.Inventory.Remove(toRemove, null);
+            foreach (var item in toRemove)
+            {
+                Client.Inventory.RemoveItem(item);
+            }
 
             // Add links to new items
             var newItems = outfit.FindAll(CanBeWorn);
@@ -560,7 +541,11 @@ namespace Radegast
 
                 outfit.Add(realItem);
             }
-            Client.Inventory.Remove(toRemove, null);
+
+            foreach (var item in toRemove)
+            {
+                Client.Inventory.RemoveItem(item);
+            }
 
             // Add links to new items
             var newItems = outfit.FindAll(CanBeWorn);
