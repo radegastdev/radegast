@@ -105,10 +105,11 @@ namespace Radegast
 
         private void SaveConfig()
         {
-            Settings s = instance.GlobalSettings;
-            SavedLogin sl = new SavedLogin();
+            var globalSettings = instance.GlobalSettings;
+            var savedLogin = new SavedLogin();
 
-            string username = cbxUsername.Text;
+            var username = cbxUsername.Text;
+            var passTxt = txtPassword.Text;
 
             if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin login)
             {
@@ -117,61 +118,57 @@ namespace Radegast
 
             if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
             {
-                sl.GridID = "custom_login_uri";
-                sl.CustomURI = txtCustomLoginUri.Text;
+                savedLogin.GridID = "custom_login_uri";
+                savedLogin.CustomURI = txtCustomLoginUri.Text;
             }
             else
             {
-                sl.GridID = (cbxGrid.SelectedItem as Grid)?.ID;
-                sl.CustomURI = string.Empty;
+                savedLogin.GridID = (cbxGrid.SelectedItem as Grid)?.ID;
+                savedLogin.CustomURI = string.Empty;
             }
 
-            string savedLoginsKey = $"{username}%{sl.GridID}";
+            var savedLoginsKey = $"{username}%{savedLogin.GridID}";
 
-            if (!(s["saved_logins"] is OSDMap))
+            if (!(globalSettings["saved_logins"] is OSDMap))
             {
-                s["saved_logins"] = new OSDMap();
+                globalSettings["saved_logins"] = new OSDMap();
             }
 
             if (cbRemember.Checked)
             {
 
-                sl.Username = s["username"] = username;
+                savedLogin.Username = globalSettings["username"] = username;
 
-                if (LoginOptions.IsPasswordMD5(txtPassword.Text))
+                if (LoginOptions.IsPasswordMD5(passTxt))
                 {
-                    sl.Password = txtPassword.Text;
-                    s["password"] = txtPassword.Text;
+                    savedLogin.Password = passTxt;
+                    globalSettings["password"] = passTxt;
                 }
                 else
                 {
-                    if (txtPassword.Text.Length > 16)
-                    {
-                        sl.Password = Utils.MD5(txtPassword.Text.Substring(0, 16));
-                        s["password"] = Utils.MD5(txtPassword.Text.Substring(0, 16));
-                    }
-                    else
-                    {
-                        sl.Password = Utils.MD5(txtPassword.Text);
-                        s["password"] = Utils.MD5(txtPassword.Text);
-                    }
+                    var passwd = Utils.MD5(passTxt.Length > 16 
+                        ? passTxt.Substring(0, 16) : passTxt);
+                    savedLogin.Password = passwd;
+                    globalSettings["password"] = passwd;
                 }
-                sl.CustomStartLocation = cbxLocation.SelectedIndex == -1 
+
+                savedLogin.CustomStartLocation = cbxLocation.SelectedIndex == -1 
                     ? cbxLocation.Text : string.Empty;
-                sl.StartLocationType = cbxLocation.SelectedIndex;
-                ((OSDMap)s["saved_logins"])[savedLoginsKey] = sl.ToOSD();
+                savedLogin.StartLocationType = cbxLocation.SelectedIndex;
+
+                ((OSDMap)globalSettings["saved_logins"])[savedLoginsKey] = savedLogin.ToOSD();
             }
-            else if (((OSDMap)s["saved_logins"]).ContainsKey(savedLoginsKey))
+            else if (((OSDMap)globalSettings["saved_logins"]).ContainsKey(savedLoginsKey))
             {
-                ((OSDMap)s["saved_logins"]).Remove(savedLoginsKey);
+                ((OSDMap)globalSettings["saved_logins"]).Remove(savedLoginsKey);
             }
 
-            s["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
-            s["login_location"] = OSD.FromString(cbxLocation.Text);
+            globalSettings["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
+            globalSettings["login_location"] = OSD.FromString(cbxLocation.Text);
 
-            s["login_grid"] = OSD.FromInteger(cbxGrid.SelectedIndex);
-            s["login_uri"] = OSD.FromString(txtCustomLoginUri.Text);
-            s["remember_login"] = cbRemember.Checked;
+            globalSettings["login_grid"] = OSD.FromInteger(cbxGrid.SelectedIndex);
+            globalSettings["login_uri"] = OSD.FromString(txtCustomLoginUri.Text);
+            globalSettings["remember_login"] = cbRemember.Checked;
         }
 
         private void ClearConfig()
@@ -183,11 +180,11 @@ namespace Radegast
 
         private void InitializeConfig()
         {
-            // Initilize grid dropdown
-            int gridIx = -1;
+            // Initialize grid dropdown
+            var gridIx = -1;
 
             cbxGrid.Items.Clear();
-            for (int i = 0; i < instance.GridManger.Count; i++)
+            for (var i = 0; i < instance.GridManger.Count; i++)
             {
                 cbxGrid.Items.Add(instance.GridManger[i]);
                 if (MainProgram.s_CommandLineOpts.Grid == instance.GridManger[i].ID)
@@ -223,7 +220,7 @@ namespace Radegast
                 if (s["saved_logins"] is OSDMap)
                 {
                     OSDMap savedLogins = (OSDMap)s["saved_logins"];
-                    foreach (string loginKey in savedLogins.Keys)
+                    foreach (var loginKey in savedLogins.Keys)
                     {
                         SavedLogin sl = SavedLogin.FromOSD(savedLogins[loginKey]);
                         cbxUsername.Items.Add(sl);
@@ -573,6 +570,7 @@ namespace Radegast
     {
         public string Username;
         public string Password;
+        public string MfaHash;
         public string GridID;
         public string CustomURI;
         public int StartLocationType;
@@ -584,6 +582,7 @@ namespace Radegast
             {
                 ["username"] = Username,
                 ["password"] = Password,
+                ["mfa_hash"] = MfaHash,
                 ["grid"] = GridID,
                 ["custom_url"] = CustomURI,
                 ["location_type"] = StartLocationType,
@@ -602,6 +601,10 @@ namespace Radegast
                 GridID = osd["grid"],
                 CustomURI = osd["custom_url"]
             };
+            if (osd.ContainsKey("mfa_hash"))
+            {
+                ret.MfaHash = osd["mfa_hash"];
+            }
             if (osd.ContainsKey("location_type"))
             {
                 ret.StartLocationType = osd["location_type"];
