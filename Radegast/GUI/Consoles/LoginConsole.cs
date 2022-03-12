@@ -33,11 +33,12 @@ namespace Radegast
     {
         private readonly RadegastInstance instance;
         private Netcom netcom => instance.Netcom;
+        private GridClient client => instance.Client;
 
         public LoginConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(MainConsole_Disposed);
+            Disposed += MainConsole_Disposed;
 
             this.instance = instance;
             AddNetcomEvents();
@@ -50,19 +51,19 @@ namespace Radegast
                 instance.GlobalSettings["remember_login"] = true;
             }
 
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            instance.GlobalSettings.OnSettingChanged += GlobalSettings_OnSettingChanged;
 
             lblVersion.Text = $"{Properties.Resources.RadegastTitle} {Assembly.GetExecutingAssembly().GetName().Version}\n" +
                               $"{RuntimeInformation.FrameworkDescription}";
 
-            Load += new EventHandler(LoginConsole_Load);
+            Load += LoginConsole_Load;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void MainConsole_Disposed(object sender, EventArgs e)
         {
-            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            instance.GlobalSettings.OnSettingChanged -= GlobalSettings_OnSettingChanged;
             RemoveNetcomEvents();
         }
 
@@ -80,18 +81,20 @@ namespace Radegast
 
         private void AddNetcomEvents()
         {
-            netcom.ClientLoggingIn += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggingOut += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientLoggingIn += netcom_ClientLoggingIn;
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientLoggingOut += netcom_ClientLoggingOut;
+            netcom.ClientLoggedOut += netcom_ClientLoggedOut;
+            client.Network.RegisterLoginResponseCallback(network_OnLoginResponseCallback);
         }
 
         private void RemoveNetcomEvents()
         {
-            netcom.ClientLoggingIn -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggingOut -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientLoggingIn -= netcom_ClientLoggingIn;
+            netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+            netcom.ClientLoggingOut -= netcom_ClientLoggingOut;
+            netcom.ClientLoggedOut -= netcom_ClientLoggedOut;
+            client.Network.UnregisterLoginResponseCallback(network_OnLoginResponseCallback);
         }
 
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
@@ -136,7 +139,6 @@ namespace Radegast
 
             if (cbRemember.Checked)
             {
-
                 savedLogin.Username = globalSettings["username"] = username;
 
                 if (LoginOptions.IsPasswordMD5(passTxt))
@@ -155,7 +157,15 @@ namespace Radegast
                 savedLogin.CustomStartLocation = cbxLocation.SelectedIndex == -1 
                     ? cbxLocation.Text : string.Empty;
                 savedLogin.StartLocationType = cbxLocation.SelectedIndex;
-
+                var savedLogins = (OSDMap)globalSettings["saved_logins"];
+                if (savedLogins.ContainsKey(savedLoginsKey))
+                {
+                    var sl = SavedLogin.FromOSD(savedLogins[savedLoginsKey]);
+                    if (!string.IsNullOrWhiteSpace(sl.MfaHash))
+                    {
+                        savedLogin.MfaHash = sl.MfaHash;
+                    }
+                }
                 ((OSDMap)globalSettings["saved_logins"])[savedLoginsKey] = savedLogin.ToOSD();
             }
             else if (((OSDMap)globalSettings["saved_logins"]).ContainsKey(savedLoginsKey))
@@ -166,7 +176,8 @@ namespace Radegast
             globalSettings["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
             globalSettings["login_location"] = OSD.FromString(cbxLocation.Text);
 
-            globalSettings["login_grid"] = OSD.FromInteger(cbxGrid.SelectedIndex);
+            globalSettings["login_grid"] = OSD.FromString(savedLogin.GridID);
+            globalSettings["login_grid_idx"] = OSD.FromInteger(cbxGrid.SelectedIndex);
             globalSettings["login_uri"] = OSD.FromString(txtCustomLoginUri.Text);
             globalSettings["remember_login"] = cbRemember.Checked;
         }
@@ -279,7 +290,7 @@ namespace Radegast
             // Set grid dropdown to last used, or override from command line
             if (string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.Grid))
             {
-                cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
+                cbxGrid.SelectedIndex = s["login_grid_idx"].AsInteger();
             }
             else if (gridIx == -1) // --grid specified but not found
             {
@@ -408,6 +419,31 @@ namespace Radegast
             btnLogin.Enabled = false;
         }
 
+        private void network_OnLoginResponseCallback(bool loginSuccess, bool redirect, string message, string reason, LoginResponseData replyData)
+        {
+            if (!loginSuccess || redirect) { return; }
+
+            if (!string.IsNullOrWhiteSpace(replyData.MfaHash))
+            {
+                var settings = instance.GlobalSettings;
+                if (settings.ContainsKey("saved_logins") 
+                    && settings.ContainsKey("username") 
+                    && settings.ContainsKey("login_grid"))
+                {
+                    string username = settings["username"];
+                    string grid = settings["login_grid"];
+                    var savedLoginsKey = $"{username}%{grid}";
+
+                    var loginsMap = (OSDMap)settings["saved_logins"];
+                    if (loginsMap.ContainsKey(savedLoginsKey))
+                    {
+                        var sl = (OSDMap)loginsMap[savedLoginsKey];
+                        sl["mfa_hash"] = replyData.MfaHash;
+                    }
+                }
+            }
+        }
+
         private void BeginLogin()
         {
             string username = cbxUsername.Text;
@@ -415,6 +451,7 @@ namespace Radegast
             if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin login)
             {
                 username = login.Username;
+                netcom.loginOptions.MfaHash = login.MfaHash;
             }
 
             string[] parts = System.Text.RegularExpressions.Regex.Split(username.Trim(), @"[. ]+");
@@ -466,6 +503,19 @@ namespace Radegast
             else
             {
                 netcom.LoginOptions.Grid = cbxGrid.SelectedItem as Grid;
+            }
+
+            if (instance.GlobalSettings.ContainsKey("saved_logins"))
+            {
+                var logins = (OSDMap)instance.GlobalSettings["saved_logins"];
+                var gridId = cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1 
+                    ? "custom_login_uri" : (cbxGrid.SelectedItem as Grid)?.ID;
+                var savedLoginsKey = $"{username}%{gridId}";
+                if (logins.ContainsKey(savedLoginsKey))
+                {
+                    var sl = SavedLogin.FromOSD(logins[savedLoginsKey]);
+                    netcom.LoginOptions.MfaHash = sl.MfaHash;
+                }
             }
 
             if (netcom.LoginOptions.Grid?.Platform != "SecondLife")
