@@ -888,23 +888,23 @@ namespace Radegast
         {
             sitting = sit;
 
-            if (sitting)
+            if (!instance.RLV.RestictionActive("unsit"))
             {
-                Client.Self.RequestSit(target, Vector3.Zero);
-                Client.Self.Sit();
-            }
-            else
-            {
-                if (!instance.RLV.RestictionActive("unsit"))
+                if (sitting)
                 {
-                    Client.Self.Stand();
+                    Client.Self.RequestSit(target, Vector3.Zero);
+                    Client.Self.Sit();
                 }
                 else
                 {
-                    instance.TabConsole.DisplayNotificationInChat("Unsit prevented by RLV");
-                    sitting = true;
-                    return;
+                    Client.Self.Stand();
                 }
+            }
+            else
+            {
+                instance.TabConsole.DisplayNotificationInChat("Unsit prevented by RLV");
+                sitting = true;
+                return;
             }
 
             SitStateChanged?.Invoke(this, new SitEventArgs(sitting));
