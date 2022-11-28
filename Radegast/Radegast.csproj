@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 	<AssemblyTitle>Radegast-ng</AssemblyTitle>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<UseWindowsForms>true</UseWindowsForms>

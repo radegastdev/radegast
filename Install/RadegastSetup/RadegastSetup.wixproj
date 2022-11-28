@@ -45,7 +45,6 @@
     <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NetFx472.wxs" />
     <Compile Include="NetFx48.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />
