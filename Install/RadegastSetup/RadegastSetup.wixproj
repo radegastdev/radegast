@@ -118,9 +118,9 @@
     </PropertyGroup>
   </Target>
   <Target Name="SignCabs" DependsOnTargets="FindSignTool">
-    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 4FC4D098D5CF0C88769B0CE1ED45ABE6B9A8F879 /t http://timestamp.comodoca.com/authenticode &quot;%(SignCabs.FullPath)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 688eef6260f0fff81e1d46e2605c8039833a92bb /t http://timestamp.comodoca.com/authenticode &quot;%(SignCabs.FullPath)&quot;" />
   </Target>
   <Target Name="SignMsi" DependsOnTargets="FindSignTool">
-    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 4FC4D098D5CF0C88769B0CE1ED45ABE6B9A8F879 /t http://timestamp.comodoca.com/authenticode &quot;%(SignMsi.FullPath)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /sm /sha1 688eef6260f0fff81e1d46e2605c8039833a92bb /t http://timestamp.comodoca.com/authenticode &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
 </Project>

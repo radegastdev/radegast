@@ -17,9 +17,9 @@ environment:
 
   BugsplatDatabase: sjofnllc
   PfxDownloadUrl:
-    secure: 6zETilPjqhwgznp0rOyu2uOUI4whFbLT3QUXdaTQSH/FqOXIKwj/qz3d4Xo2rrgo
+    secure: T8uKu+tTR2G7LDE1zPGNOi+prl4YaKXP6DOC5eU6A14FEQkd8PFR3nQ1WMwryphJ
   PfxDownloadPasswd:
-    secure: qzHJldnavMFT8+Cm2eXndg==
+    secure: nAIqrjhaoamhiuAcae/xNw==
   PfxPassword:
     secure: +vWSGzLkiBGVIxfPb+iRtD+/maQjI2d92hN4PoNAxMc=
 
