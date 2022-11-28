@@ -49,9 +49,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
-    <PackageReference Include="BugSplatDotNetStandard" Version="2.1.3" />
+    <PackageReference Include="BugSplatDotNetStandard" Version="3.1.0" />
     <PackageReference Include="C5" Version="2.5.3" />
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="LibreMetaverse" Version="1.9.20.450" />
     <PackageReference Include="LibreMetaverse.LslTools" Version="1.9.20.450" />
     <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.9.20.450" />
@@ -59,11 +59,11 @@
     <PackageReference Include="LibreMetaverse.StructuredData" Version="1.9.20.450" />
     <PackageReference Include="LibreMetaverse.Types" Version="1.9.20.450" />
     <PackageReference Include="LibreMetaverse.Voice" Version="1.9.20.450" />
-    <PackageReference Include="log4net" Version="2.0.14" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
-    <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.0.12" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OpenTK" Version="3.3.2" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.1" />
+    <PackageReference Include="NetSparkleUpdater.UI.WinForms.NetFramework" Version="2.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="OpenTK" Version="3.3.3" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
     <PackageReference Include="RoslynCodeTaskFactory" Version="2.0.7" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
