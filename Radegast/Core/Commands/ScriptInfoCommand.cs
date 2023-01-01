@@ -61,7 +61,7 @@ namespace Radegast.Commands
         {
             WriteLine("Requesting script resources information...");
             UUID currectParcel = Client.Parcels.RequestRemoteParcelID(Client.Self.SimPosition, Client.Network.CurrentSim.Handle, Client.Network.CurrentSim.ID);
-            Client.Parcels.GetParcelResouces(currectParcel, true, (success, info) =>
+            Client.Parcels.GetParcelResources(currectParcel, true, (success, info) =>
             {
                 if (!success || info == null) return;
 
