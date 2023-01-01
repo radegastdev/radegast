@@ -1,7 +1,7 @@
-﻿/**
+﻿/*
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -35,7 +35,6 @@ namespace Radegast
     {
         RadegastInstance Instance;
         GridClient Client => Instance.Client;
-        ParallelDownloader downloader;
         Color background;
         float zoom;
         Font textFont;
@@ -53,6 +52,7 @@ namespace Radegast
         string targetParcelName = null;
         System.Threading.Timer repaint;
         bool needRepaint = false;
+        CancellationTokenSource mapTileCts = new CancellationTokenSource();
 
         public bool UseExternalTiles = false;
         public event EventHandler<MapTargetChangedEventArgs> MapTargetChanged;
@@ -66,8 +66,6 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(MapControl_Disposed);
             Instance = instance;
-
-            downloader = new ParallelDownloader();
 
             background = Color.FromArgb(4, 4, 75);
             textFont = new Font(FontFamily.GenericSansSerif, 8.0f, FontStyle.Bold);
@@ -92,12 +90,6 @@ namespace Radegast
             {
                 repaint.Dispose();
                 repaint = null;
-            }
-
-            if (downloader != null)
-            {
-                downloader.Dispose();
-                downloader = null;
             }
 
             if (regionTiles != null)
@@ -333,12 +325,8 @@ namespace Radegast
                 }
                 else
                 {
-                    downloader.QueueDownlad(
-                        new Uri($"{url}/?texture_id={imageID}"),
-                        30 * 1000,
-                        "image/x-j2c",
-                        null,
-                        (request, response, responseData, error) =>
+                    Client.HttpCapsClient.GetRequestAsync(new Uri($"{url}/?texture_id={imageID}"), mapTileCts.Token,
+                        (response, responseData, error) =>
                         {
                             if (error == null && responseData != null)
                             {
@@ -438,12 +426,9 @@ namespace Radegast
                 regY /= regionSize;
                 int zoomlevel = 1;
 
-                downloader.QueueDownlad(
-                    new Uri($"http://map.secondlife.com/map-{zoomlevel}-{regX}-{regY}-objects.jpg"),
-                    20 * 1000,
-                    null,
-                    null,
-                    (request, response, responseData, error) =>
+                Client.HttpCapsClient.GetRequestAsync(
+                    new Uri($"http://map.secondlife.com/map-{zoomlevel}-{regX}-{regY}-objects.jpg"), mapTileCts.Token,
+                    (response, responseData, error) =>
                     {
                         if (error == null && responseData != null)
                         {
@@ -662,9 +647,8 @@ namespace Radegast
                         {
                             foreach (MapItem i in regionMapItems[handle])
                             {
-                                if (i is MapAgentLocation)
+                                if (i is MapAgentLocation loc)
                                 {
-                                    MapAgentLocation loc = (MapAgentLocation)i;
                                     if (loc.AvatarCount == 0) continue;
                                     int dotX = pixX + (int)((float)loc.LocalX * ratio);
                                     int dotY = pixY - (int)((float)loc.LocalY * ratio);
@@ -843,127 +827,5 @@ namespace Radegast
             LocalX = x;
             LocalY = y;
         }
-    }
-
-    public class ParallelDownloader : IDisposable
-    {
-        Queue<QueuedItem> queue = new Queue<QueuedItem>();
-        List<HttpWebRequest> activeDownloads = new List<HttpWebRequest>();
-
-        public int ParallelDownloads { get; set; } = 15;
-
-        public X509Certificate2 ClientCert { get; set; }
-
-        public virtual void Dispose()
-        {
-            lock (activeDownloads)
-            {
-                foreach (var download in activeDownloads)
-                {
-                    try
-                    {
-                        download.Abort();
-                    }
-                    catch { }
-                }
-            }
-        }
-
-        protected virtual HttpWebRequest SetupRequest(Uri address, string acceptHeader)
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(address);
-            request.Method = "GET";
-
-            if (!string.IsNullOrEmpty(acceptHeader))
-                request.Accept = acceptHeader;
-
-            // Add the client certificate to the request if one was given
-            if (ClientCert != null)
-                request.ClientCertificates.Add(ClientCert);
-
-            // Leave idle connections to this endpoint open for up to 60 seconds
-            request.ServicePoint.MaxIdleTime = 0;
-            // Disable stupid Expect-100: Continue header
-            request.ServicePoint.Expect100Continue = false;
-            // Crank up the max number of connections per endpoint (default is 2!)
-            request.ServicePoint.ConnectionLimit = Math.Max(request.ServicePoint.ConnectionLimit, 128);
-            // Caps requests are never sent as trickles of data, so Nagle's
-            // coalescing algorithm won't help us
-            request.ServicePoint.UseNagleAlgorithm = false;
-
-            return request;
-        }
-
-        private void EnqueuePending()
-        {
-            lock (queue)
-            {
-                if (queue.Count > 0)
-                {
-                    int nr = 0;
-                    lock (activeDownloads) nr = activeDownloads.Count;
-
-                    for (int i = nr; i < ParallelDownloads && queue.Count > 0; i++)
-                    {
-                        QueuedItem item = queue.Dequeue();
-                        Logger.DebugLog("Requesting " + item.address);
-                        HttpWebRequest req = SetupRequest(item.address, item.contentType);
-                        CapsBase.DownloadDataAsync(
-                            req,
-                            item.millisecondsTimeout,
-                            item.downloadProgressCallback,
-                            (request, response, responseData, error) =>
-                            {
-                                lock (activeDownloads) activeDownloads.Remove(request);
-                                item.completedCallback(request, response, responseData, error);
-                                EnqueuePending();
-                            }
-                        );
-
-                        lock (activeDownloads) activeDownloads.Add(req);
-                    }
-                }
-            }
-        }
-
-        public void QueueDownlad(Uri address, int millisecondsTimeout,
-            string contentType,
-            CapsBase.DownloadProgressEventHandler downloadProgressCallback,
-            CapsBase.RequestCompletedEventHandler completedCallback)
-        {
-            lock (queue)
-            {
-                queue.Enqueue(new QueuedItem(
-                    address,
-                    millisecondsTimeout,
-                    contentType,
-                    downloadProgressCallback,
-                    completedCallback
-                    ));
-            }
-            EnqueuePending();
-        }
-
-        public class QueuedItem
-        {
-            public Uri address;
-            public int millisecondsTimeout;
-            public CapsBase.DownloadProgressEventHandler downloadProgressCallback;
-            public CapsBase.RequestCompletedEventHandler completedCallback;
-            public string contentType;
-
-            public QueuedItem(Uri address, int millisecondsTimeout,
-                string contentType,
-                CapsBase.DownloadProgressEventHandler downloadProgressCallback,
-                CapsBase.RequestCompletedEventHandler completedCallback)
-            {
-                this.address = address;
-                this.millisecondsTimeout = millisecondsTimeout;
-                this.downloadProgressCallback = downloadProgressCallback;
-                this.completedCallback = completedCallback;
-                this.contentType = contentType;
-            }
-        }
-
     }
 }
