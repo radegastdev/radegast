@@ -1,7 +1,7 @@
-/**
+/*
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -102,7 +102,6 @@ namespace Radegast
         /// Radegast media manager for playing streams and in world sounds
         /// </summary>
         public MediaManager MediaManager { get; private set; }
-
 
         /// <summary>
         /// Radegast command manager for executing textual console commands
@@ -222,7 +221,6 @@ namespace Radegast
             remove { lock (m_InventoryClipboardUpdatedLock) { m_InventoryClipboardUpdated -= value; } }
         }
         #endregion InventoryClipboardUpdated event
-
 
         #endregion Events
 
@@ -502,7 +500,6 @@ namespace Radegast
             }
         }
 
-
         /// <summary>
         /// Fetches avatar name
         /// </summary>
@@ -538,20 +535,22 @@ namespace Radegast
 
         public string ChatFileName(string session)
         {
-            string fileName = Path.GetInvalidFileNameChars().Aggregate(session, (current, lDisallowed) => current.Replace(lDisallowed.ToString(), "_"));
-            return Path.Combine(ClientDir, fileName);
+            string dir = GlobalSettings["chat_log_dir"] && !string.IsNullOrWhiteSpace(GlobalSettings["chat_log_dir"].AsString())
+                ? GlobalSettings["chat_log_dir"].AsString() : ClientDir;
+            string fileName = SafeFileName(session);
+            return Path.Combine(dir, fileName);
         }
 
-        public void LogClientMessage(string sessioName, string message)
+        public void LogClientMessage(string sessionName, string message)
         {
             if (GlobalSettings["disable_chat_im_log"]) return;
 
-            lock (this)
+            lock (_lockChatLog)
             {
                 try
                 {
-                    File.AppendAllText(ChatFileName(sessioName),
-                        DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message + Environment.NewLine);
+                    File.AppendAllText(ChatFileName(sessionName),
+                        DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss] ") + message + Environment.NewLine);
                 }
                 catch (Exception) { }
             }
@@ -579,7 +578,7 @@ namespace Radegast
 
             GlobalLogFile = Path.Combine(UserDir, Properties.Resources.ProgramName + ".log");
             GlobalSettings = new Settings(Path.Combine(UserDir, "settings.xml"));
-            frmSettings.InitSettigs(GlobalSettings, MonoRuntime);
+            frmSettings.InitSettings(GlobalSettings);
         }
 
         public GridClient Client { get; private set; }
@@ -599,11 +598,12 @@ namespace Radegast
 
         #region Crash reporting
         FileStream MarkerLock = null;
+        private readonly object _lockChatLog = new object();
 
         public bool AnotherInstanceRunning()
         {
             // We have successfuly obtained lock
-            if (MarkerLock != null && MarkerLock.CanWrite)
+            if (MarkerLock?.CanWrite == true)
             {
                 Logger.Log("No other instances detected, marker file already locked", Helpers.LogLevel.Debug);
                 return MonoRuntime;

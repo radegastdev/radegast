@@ -1,6 +1,4 @@
 ﻿
-using Microsoft.Collections.Extensions;
-
 namespace Radegast.GUI
 {
     partial class MfaPrompt

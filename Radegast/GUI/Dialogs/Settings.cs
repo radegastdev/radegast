@@ -1,7 +1,7 @@
-﻿/**
+﻿/*
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ namespace Radegast
         private Settings.FontSetting currentlySelectedFontSetting = null;
         Dictionary<string, Settings.FontSetting> chatFontSettings;
 
-        public static void InitSettigs(Settings s, bool mono)
+        public static void InitSettings(Settings s)
         {
             if (s["im_timestamps"].Type == OSDType.Unknown)
             {
@@ -53,22 +53,22 @@ namespace Radegast
 
             if (s["rlv_enabled"].Type == OSDType.Unknown)
             {
-                s["rlv_enabled"] = new OSDBoolean(false);
+                s["rlv_enabled"] = OSD.FromBoolean(false);
             }
 
             if (s["rlv_debugcommands"].Type == OSDType.Unknown)
             {
-                s["rlv_debugcommands"] = new OSDBoolean(false);
+                s["rlv_debugcommands"] = OSD.FromBoolean(false);
             }
 
             if (s["mu_emotes"].Type == OSDType.Unknown)
             {
-                s["mu_emotes"] = new OSDBoolean(false);
+                s["mu_emotes"] = OSD.FromBoolean(false);
             }
 
             if (s["friends_notification_highlight"].Type == OSDType.Unknown)
             {
-                s["friends_notification_highlight"] = new OSDBoolean(true);
+                s["friends_notification_highlight"] = OSD.FromBoolean(true);
             }
 
             if (!s.ContainsKey("no_typing_anim")) s["no_typing_anim"] = OSD.FromBoolean(false);
@@ -127,14 +127,14 @@ namespace Radegast
 
             if (!s.ContainsKey("av_name_link")) s["av_name_link"] = false;
 
-            if (!s.ContainsKey("disable_http_inventory"))
-            {
-                s["disable_http_inventory"] = false;
-            }
-
             if (!s.ContainsKey("on_script_question"))
             {
                 s["on_script_question"] = "Ask";
+            }
+
+            if (!s.ContainsKey("chat_log_dir"))
+            {
+                s["chat_log_dir"] = OSD.FromString("");
             }
         }
 
@@ -192,7 +192,7 @@ namespace Radegast
                 item.Value.Name = item.Key;
                 lbxColorItems.Items.Add(item.Value);
             }
-            if(chatFontSettings.Count > 0)
+            if (chatFontSettings.Count > 0)
             {
                 lbxColorItems.SetSelected(0, true);
             }
@@ -203,7 +203,7 @@ namespace Radegast
         {
             if (settingInitialized)
             {
-                InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
+                InitSettings(instance.GlobalSettings);
             }
 
             InitializeComponent();
@@ -220,7 +220,7 @@ namespace Radegast
             cbIMTimeStamps.CheckedChanged += new EventHandler(cbIMTimeStamps_CheckedChanged);
 
             cbTrasactDialog.Checked = s["transaction_notification_dialog"].AsBoolean();
-            cbTrasactChat.Checked = s["transaction_notification_chat"].AsBoolean();
+            cbTransactChat.Checked = s["transaction_notification_chat"].AsBoolean();
 
             cbFriendsNotifications.Checked = s["show_friends_online_notifications"].AsBoolean();
             cbFriendsNotifications.CheckedChanged += new EventHandler(cbFriendsNotifications_CheckedChanged);
@@ -258,7 +258,6 @@ namespace Radegast
             {
                 s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
             };
-
 
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
             cbNoTyping.CheckedChanged += (sender, e) =>
@@ -374,17 +373,13 @@ namespace Radegast
                 };
             }
 
-            cbDisableHTTPInventory.Checked = s["disable_http_inventory"];
-            cbDisableHTTPInventory.CheckedChanged += (sender, e) =>
-            {
-                s["disable_http_inventory"] = cbDisableHTTPInventory.Checked;
-            };
-
             cbShowScriptErrors.Checked = s["show_script_errors"];
             cbShowScriptErrors.CheckedChanged += (sender, e) =>
             {
                 s["show_script_errors"] = cbShowScriptErrors.Checked;
             };
+
+            txtChatLogDir.Text = s["chat_log_dir"];
 
             autoSitPrefsUpdate();
             pseudoHomePrefsUpdated();
@@ -446,7 +441,7 @@ namespace Radegast
 
         private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
         {
-            s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
+            s["transaction_notification_chat"] = OSD.FromBoolean(cbTransactChat.Checked);
         }
 
         private void rbAutobusy_CheckedChanged(object sender, EventArgs e)
@@ -700,7 +695,7 @@ namespace Radegast
 
             Instance.State.LSLHelper.LoadSettings();
             tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwners);
-            cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
+            cbLSLHelperEnabled.CheckedChanged -= new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
         }
@@ -726,7 +721,7 @@ namespace Radegast
                 var owner = line.Trim().ToLower();
                 if (!UUID.TryParse(owner, out _))
                 {
-                    warnings.AppendLine($"Invalid owner UUID: {line}");
+                    warnings.Append("Invalid owner UUID: ").AppendLine(line);
                 }
                 else
                 {
@@ -784,7 +779,7 @@ namespace Radegast
 
                     e.DrawBackground();
 
-                    if(e.State == DrawItemState.Selected)
+                    if (e.State == DrawItemState.Selected)
                     {
                         graphics.DrawRectangle(SystemPens.Highlight, bounds);
                     }
@@ -818,7 +813,7 @@ namespace Radegast
 
                 e.DrawBackground();
 
-                graphics.DrawRectangle(e.State == DrawItemState.Selected 
+                graphics.DrawRectangle(e.State == DrawItemState.Selected
                         ? SystemPens.Highlight : SystemPens.Window,
                     bounds);
 
@@ -827,7 +822,6 @@ namespace Radegast
                     SystemBrushes.ControlText,
                     bounds.X,
                     bounds.Top);
-
             }
         }
 
@@ -839,33 +833,34 @@ namespace Radegast
             Color foreColor = SystemColors.ControlText;
             FontStyle style = FontStyle.Regular;
 
-            if(cbxFontSize.SelectedItem is float)
+            if (cbxFontSize.SelectedItem is float item)
             {
-                fontSize = (float)cbxFontSize.SelectedItem;
+                fontSize = item;
             }
-            if(cbxFont.SelectedItem is string)
+            if (cbxFont.SelectedItem is string selectedItem)
             {
-                fontName = (string)cbxFont.SelectedItem;
+                fontName = selectedItem;
             }
-            if(cbxForeground.SelectedItem is Color)
+            if (cbxForeground.SelectedItem is Color color)
             {
-                foreColor = (Color)cbxForeground.SelectedItem;
+                foreColor = color;
             }
-            if(cbxBackground.SelectedItem is Color)
+            if (cbxBackground.SelectedItem is Color backgroundSelectedItem)
             {
-                backColor = (Color)cbxBackground.SelectedItem;
+                backColor = backgroundSelectedItem;
             }
 
-            if(cbxBold.Checked)
+            if (cbxBold.Checked)
             {
                 style |= FontStyle.Bold;
             }
-            if(cbxItalic.Checked)
+            if (cbxItalic.Checked)
             {
                 style |= FontStyle.Italic;
             }
 
-            var previewFontSettings = new Settings.FontSetting(){
+            var previewFontSettings = new Settings.FontSetting()
+            {
                 Name = string.Empty,
                 Font = new Font(fontName, fontSize, style),
                 ForeColor = foreColor,
@@ -897,7 +892,7 @@ namespace Radegast
 
         private void SaveCurrentFontSetting()
         {
-            if(currentlySelectedFontSetting != null)
+            if (currentlySelectedFontSetting != null)
             {
                 try
                 {
@@ -954,7 +949,7 @@ namespace Radegast
         private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
         {
             var sourceListbox = sender as ListBox;
-            if(sourceListbox?.SelectedItem is Settings.FontSetting fontSettings)
+            if (sourceListbox?.SelectedItem is Settings.FontSetting fontSettings)
             {
                 UpdateSelection(fontSettings);
             }
@@ -962,14 +957,14 @@ namespace Radegast
 
         private void lbxColorItems_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.None)
+            if (e.Button != MouseButtons.None)
             {
-                if(sender is ListBox sourceListbox)
+                if (sender is ListBox sourceListbox)
                 {
                     int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
-                    if(itemIndex != -1)
+                    if (itemIndex != -1)
                     {
-                        if(sourceListbox.Items[itemIndex] is Settings.FontSetting selectedItem 
+                        if (sourceListbox.Items[itemIndex] is Settings.FontSetting selectedItem
                            && selectedItem != currentlySelectedFontSetting)
                         {
                             UpdateSelection(selectedItem);
@@ -992,7 +987,8 @@ namespace Radegast
 
         private void btnResetFontSettings_Click(object sender, EventArgs e)
         {
-            if(MessageBox.Show("Reset all color settings to the default values?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            if (MessageBox.Show("Reset all color settings to the default values?", "Confirmation",
+                   MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
                 ResetFontSettings();
             }
@@ -1002,7 +998,20 @@ namespace Radegast
         {
             LSLHelperPrefsSave();
         }
+
+        private void btnChatLogDir_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDlg = new FolderBrowserDialog
+            {
+                ShowNewFolderButton = true
+            };
+            // Show the FolderBrowserDialog.  
+            DialogResult result = folderDlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                txtChatLogDir.Text = folderDlg.SelectedPath;
+                s["chat_log_dir"] = folderDlg.SelectedPath;
+            }
+        }
     }
-
-
 }

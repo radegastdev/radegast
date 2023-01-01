@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -211,7 +211,7 @@ namespace Radegast
             }
             catch
             {
-                Logger.DebugLog("Failed openning setting file: " + fileName);
+                Logger.DebugLog("Failed opening Settings file: " + fileName);
                 SettingsData = new OSDMap();
                 Save();
             }
@@ -225,7 +225,7 @@ namespace Radegast
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed saving settings", Helpers.LogLevel.Warning, ex);
+                Logger.Log("Failed to save settings", Helpers.LogLevel.Warning, ex);
             }
         }
 
