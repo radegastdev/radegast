@@ -306,7 +306,7 @@ namespace Radegast
                 ? instance.Names.Get(e.SourceID, e.FromName) 
                 : e.FromName;
 
-            bool isEmote = e.Message.ToLower().StartsWith("/me ");
+            bool isEmote = e.Message.StartsWith("/me ", StringComparison.OrdinalIgnoreCase);
 
             if (!isEmote)
             {
@@ -325,18 +325,28 @@ namespace Radegast
 
             if (isEmote)
             {
-                if (e.SourceType == ChatSourceType.Agent && instance.RLV.RestictionActive("recvemote", e.SourceID.ToString()))
+                if (e.SourceType == ChatSourceType.Agent &&
+                    instance.RLV.RestictionActive("recvemote", e.SourceID.ToString()))
+                {
                     sb.Append(" ...");
+                }
                 else
+                {
                     sb.Append(e.Message.Substring(3));
+                }
             }
             else
             {
                 sb.Append(": ");
-                if (e.SourceType == ChatSourceType.Agent && !e.Message.StartsWith("/") && instance.RLV.RestictionActive("recvchat", e.SourceID.ToString()))
+                if (e.SourceType == ChatSourceType.Agent && !e.Message.StartsWith("/") &&
+                    instance.RLV.RestictionActive("recvchat", e.SourceID.ToString()))
+                {
                     sb.Append("...");
+                }
                 else
+                {
                     sb.Append(e.Message);
+                }
             }
 
             item.Timestamp = DateTime.Now;
@@ -363,24 +373,20 @@ namespace Radegast
                     }
                     break;
                 case ChatSourceType.Object:
-                    if (e.Type == ChatType.OwnerSay)
+                    switch (e.Type)
                     {
-                        if(isEmote)
-                        {
+                        case ChatType.OwnerSay when isEmote:
                             item.Style = ChatBufferTextStyle.Emote;
-                        }
-                        else
-                        {
+                            break;
+                        case ChatType.OwnerSay:
                             item.Style = ChatBufferTextStyle.OwnerSay;
-                        }
-                    }
-                    else if (e.Type == ChatType.Debug)
-                    {
-                        item.Style = ChatBufferTextStyle.Error;
-                    }
-                    else
-                    {
-                        item.Style = ChatBufferTextStyle.ObjectChat;
+                            break;
+                        case ChatType.Debug:
+                            item.Style = ChatBufferTextStyle.Error;
+                            break;
+                        default:
+                            item.Style = ChatBufferTextStyle.ObjectChat;
+                            break;
                     }
                     break;
             }
