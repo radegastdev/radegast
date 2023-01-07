@@ -536,7 +536,9 @@ namespace Radegast
         public string ChatFileName(string session)
         {
             string dir = GlobalSettings["chat_log_dir"] && !string.IsNullOrWhiteSpace(GlobalSettings["chat_log_dir"].AsString())
-                ? GlobalSettings["chat_log_dir"].AsString() : ClientDir;
+                ? Path.Combine(GlobalSettings["chat_log_dir"].AsString(), !string.IsNullOrEmpty(Client?.Self?.Name)
+                    ? Path.Combine(UserDir, Client.Self.Name) : Environment.CurrentDirectory) 
+                : ClientDir;
             string fileName = SafeFileName(session);
             return Path.Combine(dir, fileName);
         }
