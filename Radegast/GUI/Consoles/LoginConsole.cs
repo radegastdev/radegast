@@ -518,11 +518,6 @@ namespace Radegast
                 }
             }
 
-            if (netcom.LoginOptions.Grid?.Platform != "SecondLife")
-            {
-                instance.Client.Settings.MULTIPLE_SIMS = true;
-            }
-
             netcom.Login();
             SaveConfig();
         }
