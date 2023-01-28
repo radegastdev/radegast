@@ -38,12 +38,12 @@ namespace Radegast
             : base (NotificationType.InventoryOffer)
         {
             InitializeComponent();
-            Disposed += new EventHandler(ntfInventoryOffer_Disposed);
+            Disposed += ntfInventoryOffer_Disposed;
 
             this.instance = instance;
             this.msg = msg;
 
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += Avatars_UUIDNameReply;
 
             if (msg.BinaryBucket.Length > 0)
             {
@@ -81,14 +81,14 @@ namespace Radegast
 
         void ntfInventoryOffer_Disposed(object sender, EventArgs e)
         {
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= Avatars_UUIDNameReply;
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (e.Names.Keys.Contains(msg.FromAgentID))
             {
-                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+                instance.Names.NameUpdated -= Avatars_UUIDNameReply;
                 BeginInvoke(new MethodInvoker(() => txtInfo.Text = objectOfferText()));
             }
         }

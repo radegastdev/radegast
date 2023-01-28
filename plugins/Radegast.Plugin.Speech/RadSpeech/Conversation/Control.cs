@@ -80,47 +80,47 @@ namespace RadegastSpeech.Conversation
 
             // Automatically handle notifications (blue dialogs)
             Notification.OnNotificationDisplayed +=
-                new Notification.NotificationCallback(OnNotificationDisplayed);
+                OnNotificationDisplayed;
             //            Notification.OnNotificationClosed +=
             //                new Notification.NotificationCallback(OnNotificationClosed);
 
             // Announce connect and disconnect.
             control.instance.Netcom.ClientConnected +=
-                new EventHandler<EventArgs>(Network_ClientConnected);
+                Network_ClientConnected;
             control.instance.Netcom.ClientDisconnected +=
-                new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
+                Network_Disconnected;
 
             control.instance.Netcom.ClientLoginStatus +=
-                new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+                netcom_ClientLoginStatus;
 
             // Notice arrival in a new sim
             control.instance.Client.Network.SimChanged +=
-                new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+                Network_SimChanged;
 
             control.instance.Netcom.ClientLoggingIn +=
-                new EventHandler<Radegast.OverrideEventArgs>(Netcom_ClientLoggingIn);
+                Netcom_ClientLoggingIn;
             // Watch the coming and going of main window tabs.
             control.instance.TabConsole.OnTabAdded +=
-                new TabsConsole.TabCallback(TabConsole_OnTabAdded);
+                TabConsole_OnTabAdded;
             control.instance.TabConsole.OnTabRemoved +=
-                new TabsConsole.TabCallback(TabConsole_OnTabRemoved);
+                TabConsole_OnTabRemoved;
 
             // Notice when the active tab changes on the graphics user interface.
             control.instance.TabConsole.OnTabSelected +=
-                new TabsConsole.TabCallback(OnTabChange);
+                OnTabChange;
 
             // Handle Instant Messages too
             control.instance.Client.Self.IM +=
-                new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
+                OnInstantMessage;
 
             // Outgoing IMs
-            control.instance.Netcom.InstantMessageSent += new EventHandler<Radegast.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
+            control.instance.Netcom.InstantMessageSent += Netcom_InstantMessageSent;
 
             // Watch for global keys
-            control.instance.MainForm.KeyUp += new KeyEventHandler(MainForm_KeyUp);
+            control.instance.MainForm.KeyUp += MainForm_KeyUp;
 
             // System messages in chat window
-            control.instance.TabConsole.OnChatNotification += new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
+            control.instance.TabConsole.OnChatNotification += TabConsole_OnChatNotification;
 
             control.listener.ActivateGrammar(CONVGRAMMAR);
 
@@ -351,42 +351,42 @@ namespace RadegastSpeech.Conversation
 
             // Automatically handle notifications (blue dialogs)
             Notification.OnNotificationDisplayed -=
-                new Notification.NotificationCallback(OnNotificationDisplayed);
+                OnNotificationDisplayed;
 
             // Announce connect and disconnect.
             control.instance.Netcom.ClientConnected -=
-                new EventHandler<EventArgs>(Network_ClientConnected);
+                Network_ClientConnected;
             control.instance.Netcom.ClientDisconnected -=
-                new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
+                Network_Disconnected;
 
             control.instance.Netcom.ClientLoginStatus -=
-                new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+                netcom_ClientLoginStatus;
 
             // Notice arrival in a new sim
             control.instance.Client.Network.SimChanged -=
-                new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+                Network_SimChanged;
 
             control.instance.Netcom.ClientLoggingIn -=
-                new EventHandler<Radegast.OverrideEventArgs>(Netcom_ClientLoggingIn);
+                Netcom_ClientLoggingIn;
             // Watch the coming and going of main window tabs.
             control.instance.TabConsole.OnTabAdded -=
-                new TabsConsole.TabCallback(TabConsole_OnTabAdded);
+                TabConsole_OnTabAdded;
             control.instance.TabConsole.OnTabRemoved -=
-                new TabsConsole.TabCallback(TabConsole_OnTabRemoved);
+                TabConsole_OnTabRemoved;
 
             // Notice when the active tab changes on the graphics user interface.
             control.instance.TabConsole.OnTabSelected -=
-                new TabsConsole.TabCallback(OnTabChange);
+                OnTabChange;
 
             // Handle Instant Messages too
             control.instance.Client.Self.IM -=
-                new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
+                OnInstantMessage;
 
             // Outgoing IMs
-            control.instance.Netcom.InstantMessageSent -= new EventHandler<Radegast.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
+            control.instance.Netcom.InstantMessageSent -= Netcom_InstantMessageSent;
 
             // System notifications in chat
-            control.instance.TabConsole.OnChatNotification -= new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
+            control.instance.TabConsole.OnChatNotification -= TabConsole_OnChatNotification;
 
             control.listener.DeactivateGrammar(CONVGRAMMAR);
 

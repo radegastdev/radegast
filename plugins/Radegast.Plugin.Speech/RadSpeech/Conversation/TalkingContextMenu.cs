@@ -93,7 +93,7 @@ namespace RadegastSpeech.Conversation
 
         private ToolStripMenuItem MakeSpeechAction()
         {
-            return new ToolStripMenuItem("Speech...", null, new EventHandler(OnSpeechMenu));
+            return new ToolStripMenuItem("Speech...", null, OnSpeechMenu);
         }
 
         /// <summary>

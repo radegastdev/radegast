@@ -37,7 +37,7 @@ namespace Radegast
         public AttachmentDetail(RadegastInstance instance, Avatar av, Primitive attachment)
         {
             InitializeComponent();
-            Disposed += new EventHandler(AttachmentDetail_Disposed);
+            Disposed += AttachmentDetail_Disposed;
 
             this.instance = instance;
             this.av = av;
@@ -51,14 +51,14 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Objects.ObjectProperties += Objects_ObjectProperties;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AttachmentDetail_Disposed(object sender, EventArgs e)
         {
-            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Objects.ObjectProperties -= Objects_ObjectProperties;
         }
 
         private void AttachmentDetail_Load(object sender, EventArgs e)

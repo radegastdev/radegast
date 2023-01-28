@@ -33,12 +33,12 @@ namespace RadegastSpeech.Listen
         {
             if (control.osLayer == null) return;
             control.osLayer.RecogStart();
-            control.osLayer.OnRecognition += new SpeechEventHandler(OnRecognition);
+            control.osLayer.OnRecognition += OnRecognition;
         }
         internal void Stop()
         {
             if (control.osLayer == null) return;
-            control.osLayer.OnRecognition -= new SpeechEventHandler(OnRecognition);
+            control.osLayer.OnRecognition -= OnRecognition;
             control.osLayer.RecogStop();
         }
         protected void OnRecognition(string message)

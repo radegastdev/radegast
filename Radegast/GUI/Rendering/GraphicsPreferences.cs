@@ -63,7 +63,7 @@ namespace Radegast.Rendering
         {
             Instance = instance;
             InitializeComponent();
-            Disposed += new EventHandler(GraphicsPreferences_Disposed);
+            Disposed += GraphicsPreferences_Disposed;
 
             Text = "Graphics preferences";
             cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];

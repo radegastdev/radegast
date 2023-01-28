@@ -54,21 +54,21 @@ namespace Radegast
         void Init(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(Landmark_Disposed);
+            Disposed += Landmark_Disposed;
 
             this.instance = instance;
 
             // Callbacks
-            client.Grid.RegionHandleReply += new EventHandler<RegionHandleReplyEventArgs>(Grid_RegionHandleReply);
-            client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
+            client.Grid.RegionHandleReply += Grid_RegionHandleReply;
+            client.Parcels.ParcelInfoReply += Parcels_ParcelInfoReply;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)
         {
-            client.Grid.RegionHandleReply -= new EventHandler<RegionHandleReplyEventArgs>(Grid_RegionHandleReply);
-            client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
+            client.Grid.RegionHandleReply -= Grid_RegionHandleReply;
+            client.Parcels.ParcelInfoReply -= Parcels_ParcelInfoReply;
         }
 
         void Parcels_ParcelInfoReply(object sender, ParcelInfoReplyEventArgs e)

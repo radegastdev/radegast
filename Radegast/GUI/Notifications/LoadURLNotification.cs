@@ -32,12 +32,12 @@ namespace Radegast
         public ntfLoadURL(RadegastInstance instance, LoadUrlEventArgs e)
         {
             InitializeComponent();
-            Disposed += new EventHandler(ntfLoadURL_Disposed);
+            Disposed += ntfLoadURL_Disposed;
             
             ev = e;
             this.instance = instance;
 
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += Avatars_UUIDNameReply;
 
             SetText();
 
@@ -52,14 +52,14 @@ namespace Radegast
 
         void ntfLoadURL_Disposed(object sender, EventArgs e)
         {
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= Avatars_UUIDNameReply;
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (!e.Names.ContainsKey(ev.OwnerID)) return;
 
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= Avatars_UUIDNameReply;
 
             if (InvokeRequired)
             {

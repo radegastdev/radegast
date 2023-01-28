@@ -38,9 +38,9 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(MuteList_Disposed);
+            Disposed += MuteList_Disposed;
             RegisterClientEvents(client);
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged += instance_ClientChanged;
             RefreshMuteList();
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
@@ -60,13 +60,13 @@ namespace Radegast
         void RegisterClientEvents(GridClient client)
         {
             if (null == client) return;
-            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
+            client.Self.MuteListUpdated += Self_MuteListUpdated;
         }
 
         void UnregisterClientEvents(GridClient client)
         {
             if (null == client) return;
-            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
+            client.Self.MuteListUpdated -= Self_MuteListUpdated;
         }
 
         void Self_MuteListUpdated(object sender, EventArgs e)

@@ -58,14 +58,14 @@ namespace Radegast
             {
                 if (rtb != null)
                 {
-                    rtb.VScroll -= new EventHandler(rtb_InvalidateNumbers);
-                    rtb.TextChanged -= new EventHandler(rtb_InvalidateNumbers);
-                    rtb.Resize -= new EventHandler(rtb_InvalidateNumbers);
+                    rtb.VScroll -= rtb_InvalidateNumbers;
+                    rtb.TextChanged -= rtb_InvalidateNumbers;
+                    rtb.Resize -= rtb_InvalidateNumbers;
                 }
                 rtb = value;
-                rtb.VScroll += new EventHandler(rtb_InvalidateNumbers);
-                rtb.TextChanged += new EventHandler(rtb_InvalidateNumbers);
-                rtb.Resize += new EventHandler(rtb_InvalidateNumbers);
+                rtb.VScroll += rtb_InvalidateNumbers;
+                rtb.TextChanged += rtb_InvalidateNumbers;
+                rtb.Resize += rtb_InvalidateNumbers;
             }
         }
 

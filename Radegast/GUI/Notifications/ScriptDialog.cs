@@ -68,7 +68,7 @@ namespace Radegast
                             btnsPanel.Size.Height - (i / 3) * (btnHeight + 5) - (btnHeight + 5)),
                         Name = i.ToString()
                     };
-                    b.Click += new EventHandler(b_Click);
+                    b.Click += b_Click;
                     b.UseVisualStyleBackColor = true;
                     b.Margin = new Padding(0, 3, 0, 3);
                     b.Padding = new Padding(0);

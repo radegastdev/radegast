@@ -51,14 +51,14 @@ namespace Radegast
         public VoiceConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(VoiceConsole_Disposed);
+            Disposed += VoiceConsole_Disposed;
 
             this.instance = instance;
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
 
-            this.instance.MainForm.Load += new EventHandler(MainForm_Load);
+            this.instance.MainForm.Load += MainForm_Load;
 
             config = instance.GlobalSettings["voice"] as OSDMap;
             if (config == null)
@@ -136,35 +136,35 @@ namespace Radegast
 
         private void RegisterClientEvents()
         {
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            instance.Names.NameUpdated += Names_NameUpdated;
 
             // Voice hooks
             gateway.OnSessionCreate +=
-                new EventHandler(gateway_OnSessionCreate);
+                gateway_OnSessionCreate;
             gateway.OnSessionRemove +=
-                new EventHandler(gateway_OnSessionRemove);
+                gateway_OnSessionRemove;
             gateway.OnVoiceConnectionChange +=
-                new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
+                gateway_OnVoiceConnectionChange;
             gateway.OnAuxGetCaptureDevicesResponse +=
-                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetCaptureDevicesResponse);
+                gateway_OnAuxGetCaptureDevicesResponse;
             gateway.OnAuxGetRenderDevicesResponse +=
-                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetRenderDevicesResponse);
+                gateway_OnAuxGetRenderDevicesResponse;
         }
 
         private void UnregisterClientEvents()
         {
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            instance.Names.NameUpdated -= Names_NameUpdated;
 
             gateway.OnSessionCreate -=
-               new EventHandler(gateway_OnSessionCreate);
+               gateway_OnSessionCreate;
             gateway.OnSessionRemove -=
-                new EventHandler(gateway_OnSessionRemove);
+                gateway_OnSessionRemove;
             gateway.OnVoiceConnectionChange -=
-                new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
+                gateway_OnVoiceConnectionChange;
             gateway.OnAuxGetCaptureDevicesResponse -=
-                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetCaptureDevicesResponse);
+                gateway_OnAuxGetCaptureDevicesResponse;
             gateway.OnAuxGetRenderDevicesResponse -=
-                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetRenderDevicesResponse);
+                gateway_OnAuxGetRenderDevicesResponse;
         }
 
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
@@ -242,9 +242,9 @@ namespace Radegast
                  // There could theoretically be more than one session active
                  // at a time, but the current implementation in SL seems to be limited to one.
                  session = s;
-                 session.OnParticipantAdded += new EventHandler(session_OnParticipantAdded);
-                 session.OnParticipantRemoved += new EventHandler(session_OnParticipantRemoved);
-                 session.OnParticipantUpdate += new EventHandler(session_OnParticipantUpdate);
+                 session.OnParticipantAdded += session_OnParticipantAdded;
+                 session.OnParticipantRemoved += session_OnParticipantRemoved;
+                 session.OnParticipantUpdate += session_OnParticipantUpdate;
                  participants.Clear();
 
                  // Default Mic off and Spkr on
@@ -262,9 +262,9 @@ namespace Radegast
             VoiceSession s = sender as VoiceSession;
             if (s == null) return;
 
-            s.OnParticipantAdded -= new EventHandler(session_OnParticipantAdded);
-            s.OnParticipantRemoved -= new EventHandler(session_OnParticipantRemoved);
-            s.OnParticipantUpdate -= new EventHandler(session_OnParticipantUpdate);
+            s.OnParticipantAdded -= session_OnParticipantAdded;
+            s.OnParticipantRemoved -= session_OnParticipantRemoved;
+            s.OnParticipantUpdate -= session_OnParticipantUpdate;
 
             if (session != s) return;
 
@@ -408,7 +408,7 @@ namespace Radegast
         {
             try
             {
-                netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+                netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
                 if (gateway != null)
                 {
                     UnregisterClientEvents();

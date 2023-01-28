@@ -41,7 +41,7 @@ namespace Radegast
             :base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmDetachedTab_Disposed);
+            Disposed += frmDetachedTab_Disposed;
 
             this.instance = instance;
             this.tab = tab;
@@ -49,10 +49,10 @@ namespace Radegast
             Controls.Add(tab.Control);
             tab.Control.Visible = true;
             tab.Control.BringToFront();
-            tab.Control.TextChanged += new EventHandler(Control_TextChanged);
+            tab.Control.TextChanged += Control_TextChanged;
             SettingsKeyBase = "tab_window_" + tab.Control.GetType().Name;
             AutoSavePosition = true;
-            instance.MainForm.Move += new EventHandler(MainForm_ResizeEnd);
+            instance.MainForm.Move += MainForm_ResizeEnd;
             SaveMainFormPos();
             if (tab.Floater)
             {
@@ -69,7 +69,7 @@ namespace Radegast
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
         {
-            instance.MainForm.Move -= new EventHandler(MainForm_ResizeEnd);
+            instance.MainForm.Move -= MainForm_ResizeEnd;
         }
 
         void SaveMainFormPos()
@@ -91,7 +91,7 @@ namespace Radegast
 
         private void frmDetachedTab_FormClosing(object sender, FormClosingEventArgs e)
         {
-            tab.Control.TextChanged -= new EventHandler(Control_TextChanged);
+            tab.Control.TextChanged -= Control_TextChanged;
             if (tab.Detached)
             {
                 if (tab.CloseOnDetachedClose)

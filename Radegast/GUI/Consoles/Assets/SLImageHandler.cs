@@ -87,7 +87,7 @@ namespace Radegast
 
         public void Init(RadegastInstance instance, UUID image, string label)
         {
-            Disposed += new EventHandler(SLImageHandler_Disposed);
+            Disposed += SLImageHandler_Disposed;
             pictureBox1.AllowDrop = true;
 
             this.instance = instance;
@@ -104,7 +104,7 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Assets.ImageReceiveProgress += new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
+            client.Assets.ImageReceiveProgress += Assets_ImageReceiveProgress;
             UpdateImage(imageID);
         }
 
@@ -136,7 +136,7 @@ namespace Radegast
 
         void SLImageHandler_Disposed(object sender, EventArgs e)
         {
-            client.Assets.ImageReceiveProgress -= new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
+            client.Assets.ImageReceiveProgress -= Assets_ImageReceiveProgress;
         }
 
         void Assets_ImageReceiveProgress(object sender, ImageReceiveProgressEventArgs e)

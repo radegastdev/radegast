@@ -37,20 +37,20 @@ namespace Radegast
         public AnimTab(RadegastInstance instance, Avatar av)
         {
             InitializeComponent();
-            Disposed += new EventHandler(AnimTab_Disposed);
+            Disposed += AnimTab_Disposed;
             this.instance = instance;
             this.av = av;
             client = instance.Client;
 
             // Callbacks
-            client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(Avatars_AvatarAnimation);
+            client.Avatars.AvatarAnimation += Avatars_AvatarAnimation;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AnimTab_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(Avatars_AvatarAnimation);
+            client.Avatars.AvatarAnimation -= Avatars_AvatarAnimation;
         }
 
         void Avatars_AvatarAnimation(object sender, AvatarAnimationEventArgs e)

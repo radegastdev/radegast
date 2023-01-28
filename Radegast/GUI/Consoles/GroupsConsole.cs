@@ -34,13 +34,13 @@ namespace Radegast
         public GroupsConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(GroupsDialog_Disposed);
+            Disposed += GroupsDialog_Disposed;
             client = instance.Client;
             this.instance = instance;
-            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupCreatedReply += new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
-            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
-            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
+            client.Groups.CurrentGroups += Groups_CurrentGroups;
+            client.Groups.GroupCreatedReply += Groups_GroupCreatedReply;
+            client.Groups.GroupRoleDataReply += Groups_GroupRoleDataReply;
+            client.Self.MuteListUpdated += Self_MuteListUpdated;
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
 
@@ -49,10 +49,10 @@ namespace Radegast
 
         void GroupsDialog_Disposed(object sender, EventArgs e)
         {
-            client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupCreatedReply -= new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
-            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
-            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
+            client.Groups.CurrentGroups -= Groups_CurrentGroups;
+            client.Groups.GroupCreatedReply -= Groups_GroupCreatedReply;
+            client.Groups.GroupRoleDataReply += Groups_GroupRoleDataReply;
+            client.Self.MuteListUpdated -= Self_MuteListUpdated;
         }
 
         void Groups_GroupRoleDataReply(object sender, GroupRolesDataReplyEventArgs e)

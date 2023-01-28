@@ -103,8 +103,8 @@ namespace SimpleBuilderNamespace
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(DemoTab_Disposed);
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            Disposed += DemoTab_Disposed;
+            instance.ClientChanged += instance_ClientChanged;
             RegisterClientEvents(client);
 
             selectedPrim = null;
@@ -121,7 +121,7 @@ namespace SimpleBuilderNamespace
         void DemoTab_Disposed(object sender, EventArgs e)
         {
             UnregisterClientEvents(client);
-            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged -= instance_ClientChanged;
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace SimpleBuilderNamespace
             instance = inst;
 
             propRequester = new PropertiesQueue(instance);
-            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
+            propRequester.OnTick += propRequester_OnTick;
 
             ActivateTabButton = new ToolStripMenuItem(tabLabel, null, MenuButtonClicked);
             instance.MainForm.PluginsMenu.DropDownItems.Add(ActivateTabButton);
@@ -213,17 +213,16 @@ namespace SimpleBuilderNamespace
                     UUID.Zero != prim.Properties.GroupID)
                 {
                     System.Threading.AutoResetEvent nameReceivedSignal = new System.Threading.AutoResetEvent(false);
-                    EventHandler<GroupNamesEventArgs> cbGroupName = new EventHandler<GroupNamesEventArgs>(
-                        delegate(object sender, GroupNamesEventArgs e)
+                    EventHandler<GroupNamesEventArgs> cbGroupName = delegate(object sender, GroupNamesEventArgs e)
+                    {
+                        if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
                         {
-                            if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
-                            {
-                                e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
-                                if (string.IsNullOrEmpty(ownerName))
-                                    ownerName = "Loading...";
-                                nameReceivedSignal.Set();
-                            }
-                        });
+                            e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
+                            if (string.IsNullOrEmpty(ownerName))
+                                ownerName = "Loading...";
+                            nameReceivedSignal.Set();
+                        }
+                    };
                     client.Groups.GroupNamesReply += cbGroupName;
                     client.Groups.RequestGroupName(prim.Properties.GroupID);
                     nameReceivedSignal.WaitOne(5000, false);
@@ -300,7 +299,7 @@ namespace SimpleBuilderNamespace
         /// <param name="client"></param>
         void RegisterClientEvents(GridClient client)
         {
-            client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Self.ChatFromSimulator += Self_ChatFromSimulator;
         }
 
         /// <summary>
@@ -311,7 +310,7 @@ namespace SimpleBuilderNamespace
         void UnregisterClientEvents(GridClient client)
         {
             if (client == null) return;
-            client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Self.ChatFromSimulator -= Self_ChatFromSimulator;
         }
 
         /// <summary>
@@ -371,7 +370,7 @@ namespace SimpleBuilderNamespace
             rezpos = client.Self.SimPosition + rezpos * client.Self.Movement.BodyRotation;
 
             ObjectName = txt_ObjectName.Text;
-            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_OnNewPrim);
+            client.Objects.ObjectUpdate += Objects_OnNewPrim;
             client.Objects.AddPrim(client.Network.CurrentSim, primData, UUID.Zero, rezpos, new Vector3(size), Quaternion.Identity);
             if (!primDone.WaitOne(10000, false))
                 throw new Exception("Rez failed, timed out while creating the prim.");

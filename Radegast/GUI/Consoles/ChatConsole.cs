@@ -48,7 +48,7 @@ namespace Radegast
         public ChatConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(ChatConsole_Disposed);
+            Disposed += ChatConsole_Disposed;
 
             if (!instance.advancedDebugging)
             {
@@ -57,19 +57,19 @@ namespace Radegast
             }
 
             this.instance = instance;
-            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            this.instance.ClientChanged += instance_ClientChanged;
 
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            instance.GlobalSettings.OnSettingChanged += GlobalSettings_OnSettingChanged;
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientLoggedOut += netcom_ClientLoggedOut;
             RegisterClientEvents(client);
 
             ChatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
             ChatManager.PrintStartupMessage();
 
-            this.instance.MainForm.Load += new EventHandler(MainForm_Load);
+            this.instance.MainForm.Load += MainForm_Load;
 
             lvwObjects.ListViewItemSorter = new SorterClass(instance);
             cbChatType.SelectedIndex = 1;
@@ -79,16 +79,16 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Grid.CoarseLocationUpdate += new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
-            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.SimDisconnected += new EventHandler<SimDisconnectedEventArgs>(Network_SimDisconnected);
+            client.Grid.CoarseLocationUpdate += Grid_CoarseLocationUpdate;
+            client.Self.TeleportProgress += Self_TeleportProgress;
+            client.Network.SimDisconnected += Network_SimDisconnected;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Grid.CoarseLocationUpdate -= new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
-            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.SimDisconnected -= new EventHandler<SimDisconnectedEventArgs>(Network_SimDisconnected);
+            client.Grid.CoarseLocationUpdate -= Grid_CoarseLocationUpdate;
+            client.Self.TeleportProgress -= Self_TeleportProgress;
+            client.Network.SimDisconnected -= Network_SimDisconnected;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -99,9 +99,9 @@ namespace Radegast
 
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
-            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            instance.ClientChanged -= instance_ClientChanged;
+            netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+            netcom.ClientLoggedOut -= netcom_ClientLoggedOut;
             UnregisterClientEvents(client);
             ChatManager.Dispose();
             ChatManager = null;

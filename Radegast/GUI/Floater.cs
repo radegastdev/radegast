@@ -45,13 +45,13 @@ namespace Radegast
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Text = Control.Text;
             
-            TrackedControl.ParentChanged += new EventHandler(Control_ParentChanged);
-            Control.TextChanged += new EventHandler(Control_TextChanged);
-            Activated += new EventHandler(Floater_Activated);
-            Deactivate += new EventHandler(Floater_Deactivate);
-            ResizeEnd += new EventHandler(Floater_ResizeEnd);
-            Shown += new EventHandler(Floater_Shown);
-            Load += new EventHandler(Floater_Load);
+            TrackedControl.ParentChanged += Control_ParentChanged;
+            Control.TextChanged += Control_TextChanged;
+            Activated += Floater_Activated;
+            Deactivate += Floater_Deactivate;
+            ResizeEnd += Floater_ResizeEnd;
+            Shown += Floater_Shown;
+            Load += Floater_Load;
 
         }
 
@@ -61,7 +61,7 @@ namespace Radegast
             ClientSize = Control.Size;
             Controls.Add(Control);
             SaveMainFormPos();
-            parentForm.Move += new EventHandler(parentForm_Move);
+            parentForm.Move += parentForm_Move;
         }
 
         void Floater_Shown(object sender, EventArgs e)
@@ -107,14 +107,14 @@ namespace Radegast
         {
             if (parentForm != null)
             {
-                parentForm.Move -= new EventHandler(parentForm_Move);
+                parentForm.Move -= parentForm_Move;
 
             }
             SaveMainFormPos();
             if (parentForm != null)
             {
                 Owner = parentForm;
-                parentForm.Move += new EventHandler(parentForm_Move);
+                parentForm.Move += parentForm_Move;
                 UpdatePos();
             }
         }

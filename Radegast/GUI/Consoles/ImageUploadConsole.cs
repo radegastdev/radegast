@@ -48,10 +48,10 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Disposed += new EventHandler(ImageUploadConsole_Disposed);
-            instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
-            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            client.Assets.AssetUploaded += new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
+            Disposed += ImageUploadConsole_Disposed;
+            instance.Netcom.ClientConnected += Netcom_ClientConnected;
+            instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
+            client.Assets.AssetUploaded += Assets_AssetUploaded;
             UpdateButtons();
             OriginalCapsTimeout = client.Settings.CAPS_TIMEOUT;
 
@@ -60,7 +60,7 @@ namespace Radegast
 
         void ImageUploadConsole_Disposed(object sender, EventArgs e)
         {
-            client.Assets.AssetUploaded -= new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
+            client.Assets.AssetUploaded -= Assets_AssetUploaded;
         }
 
         void Assets_AssetUploaded(object sender, AssetUploadEventArgs e)

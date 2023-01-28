@@ -54,16 +54,16 @@ namespace Radegast
             InitializeConfig();
 
             // Callbacks
-            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
-            netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+            netcom.ChatReceived += netcom_ChatReceived;
+            netcom.ChatSent += netcom_ChatSent;
+            netcom.AlertMessageReceived += netcom_AlertMessageReceived;
         }
 
         public void Dispose()
         {
-            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
-            netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+            netcom.ChatReceived -= netcom_ChatReceived;
+            netcom.ChatSent -= netcom_ChatSent;
+            netcom.AlertMessageReceived -= netcom_AlertMessageReceived;
         }
 
         private void InitializeConfig()
@@ -97,7 +97,7 @@ namespace Radegast
 
             showTimestamps = s["chat_timestamps"].AsBoolean();
 
-            s.OnSettingChanged += new Settings.SettingChangedCallback(s_OnSettingChanged);
+            s.OnSettingChanged += s_OnSettingChanged;
         }
 
         void s_OnSettingChanged(object sender, SettingsEventArgs e)

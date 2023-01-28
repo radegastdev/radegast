@@ -48,9 +48,9 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Disposed += new EventHandler(MeshUploadConsole_Disposed);
-            instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
-            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            Disposed += MeshUploadConsole_Disposed;
+            instance.Netcom.ClientConnected += Netcom_ClientConnected;
+            instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
             UpdateButtons();
 
             uploadCancelToken = new CancellationTokenSource();
@@ -193,7 +193,7 @@ namespace Radegast
                 }
             }
 
-            Task uploadTask = Task.Run(new Action(PerformUpload), uploadCancelToken.Token);
+            Task uploadTask = Task.Run(PerformUpload, uploadCancelToken.Token);
 
             txtUploadLog.Clear();
         }

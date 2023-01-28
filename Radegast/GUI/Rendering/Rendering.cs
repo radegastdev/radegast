@@ -200,18 +200,18 @@ namespace Radegast.Rendering
             DrawDistance = Instance.GlobalSettings["draw_distance"];
             pnlDebug.Visible = Instance.GlobalSettings["scene_viewer_debug_panel"];
 
-            Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.AvatarUpdate += new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
+            Client.Objects.TerseObjectUpdate += Objects_TerseObjectUpdate;
+            Client.Objects.ObjectUpdate += Objects_ObjectUpdate;
+            Client.Objects.AvatarUpdate += Objects_AvatarUpdate;
 
             Client.Network.RegisterCallback(PacketType.KillObject, KillObjectHandler);
-            Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
-            Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
-            Client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
-            Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            Application.Idle += new EventHandler(Application_Idle);
+            Client.Network.SimChanged += Network_SimChanged;
+            Client.Terrain.LandPatchReceived += Terrain_LandPatchReceived;
+            Client.Avatars.AvatarAnimation += AvatarAnimationChanged;
+            Client.Avatars.AvatarAppearance += Avatars_AvatarAppearance;
+            Client.Appearance.AppearanceSet += Appearance_AppearanceSet;
+            Instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
+            Application.Idle += Application_Idle;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -219,7 +219,7 @@ namespace Radegast.Rendering
         void DisposeInternal()
         {
             RenderingEnabled = false;
-            Application.Idle -= new EventHandler(Application_Idle);
+            Application.Idle -= Application_Idle;
             Instance.State.CameraTracksOwnAvatar = true;
             Instance.State.SetDefaultCamera();
             
@@ -239,15 +239,15 @@ namespace Radegast.Rendering
                 textRendering = null;
             }
 
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.AvatarUpdate -= new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
+            Client.Objects.TerseObjectUpdate -= Objects_TerseObjectUpdate;
+            Client.Objects.ObjectUpdate -= Objects_ObjectUpdate;
+            Client.Objects.AvatarUpdate -= Objects_AvatarUpdate;
             Client.Network.UnregisterCallback(PacketType.KillObject, KillObjectHandler);
-            Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
-            Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
-            Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
+            Client.Network.SimChanged -= Network_SimChanged;
+            Client.Terrain.LandPatchReceived -= Terrain_LandPatchReceived;
+            Client.Avatars.AvatarAnimation -= AvatarAnimationChanged;
+            Client.Avatars.AvatarAppearance -= Avatars_AvatarAppearance;
+            Client.Appearance.AppearanceSet -= Appearance_AppearanceSet;
 
             if (cancellationTokenSource != null)
             {
@@ -264,7 +264,7 @@ namespace Radegast.Rendering
 
             if (instance.Netcom != null)
             {
-                Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+                Instance.Netcom.ClientDisconnected -= Netcom_ClientDisconnected;
             }
 
             lock (sculptCache)
@@ -332,16 +332,16 @@ namespace Radegast.Rendering
         #region Tab Events
         public void RegisterTabEvents()
         {
-            RadegastTab.TabAttached += new EventHandler(RadegastTab_TabAttached);
-            RadegastTab.TabDetached += new EventHandler(RadegastTab_TabDetached);
-            RadegastTab.TabClosed += new EventHandler(RadegastTab_TabClosed);
+            RadegastTab.TabAttached += RadegastTab_TabAttached;
+            RadegastTab.TabDetached += RadegastTab_TabDetached;
+            RadegastTab.TabClosed += RadegastTab_TabClosed;
         }
 
         public void UnregisterTabEvents()
         {
-            RadegastTab.TabAttached -= new EventHandler(RadegastTab_TabAttached);
-            RadegastTab.TabDetached -= new EventHandler(RadegastTab_TabDetached);
-            RadegastTab.TabClosed -= new EventHandler(RadegastTab_TabClosed);
+            RadegastTab.TabAttached -= RadegastTab_TabAttached;
+            RadegastTab.TabDetached -= RadegastTab_TabDetached;
+            RadegastTab.TabClosed -= RadegastTab_TabClosed;
         }
 
         void RadegastTab_TabDetached(object sender, EventArgs e)
@@ -623,8 +623,8 @@ namespace Radegast.Rendering
             glControl.MouseUp += glControl_MouseUp;
             glControl.MouseMove += glControl_MouseMove;
             glControl.MouseWheel += glControl_MouseWheel;
-            glControl.Load += new EventHandler(glControl_Load);
-            glControl.Disposed += new EventHandler(glControl_Disposed);
+            glControl.Load += glControl_Load;
+            glControl.Disposed += glControl_Disposed;
             glControl.Dock = DockStyle.Fill;
             glControl.VSync = false;
             Controls.Add(glControl);
@@ -639,7 +639,7 @@ namespace Radegast.Rendering
             glControl.MouseUp -= glControl_MouseUp;
             glControl.MouseMove -= glControl_MouseMove;
             glControl.MouseWheel -= glControl_MouseWheel;
-            glControl.Load -= new EventHandler(glControl_Load);
+            glControl.Load -= glControl_Load;
             glControl.Disposed -= glControl_Disposed;
 
         }

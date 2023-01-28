@@ -52,7 +52,7 @@ namespace Radegast.Commands
                        }
                    });
             commandWorkerCancelToken = new CancellationTokenSource();
-            Task task = Task.Factory.StartNew(new Action(CommandWorker), 
+            Task task = Task.Factory.StartNew(CommandWorker, 
                 commandWorkerCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 

@@ -90,7 +90,7 @@ namespace Radegast
 
             ShowTimestamps = s["im_timestamps"].AsBoolean();
 
-            s.OnSettingChanged += new Settings.SettingChangedCallback(s_OnSettingChanged);
+            s.OnSettingChanged += s_OnSettingChanged;
         }
 
         void s_OnSettingChanged(object sender, SettingsEventArgs e)
@@ -116,8 +116,8 @@ namespace Radegast
 
         private void AddNetcomEvents()
         {
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
-            netcom.InstantMessageSent += new EventHandler<InstantMessageSentEventArgs>(netcom_InstantMessageSent);
+            netcom.InstantMessageReceived += netcom_InstantMessageReceived;
+            netcom.InstantMessageSent += netcom_InstantMessageSent;
         }
 
         private void RemoveNetcomEvents()

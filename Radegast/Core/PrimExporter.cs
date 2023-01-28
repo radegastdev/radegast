@@ -51,14 +51,14 @@ namespace Radegast
 		public PrimExporter(GridClient client)
 		{
 			Client = client;
-			Client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_OnObjectPropertiesFamily);
-			Client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_OnObjectProperties);
+			Client.Objects.ObjectPropertiesFamily += Objects_OnObjectPropertiesFamily;
+			Client.Objects.ObjectProperties += Objects_OnObjectProperties;
 		}
 		
 		public void CleanUp()
 		{
-			Client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_OnObjectPropertiesFamily);
-			Client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_OnObjectProperties);
+			Client.Objects.ObjectPropertiesFamily -= Objects_OnObjectPropertiesFamily;
+			Client.Objects.ObjectProperties += Objects_OnObjectProperties;
 		}
 		
 		public void ExportToFile(string filename, uint localID)

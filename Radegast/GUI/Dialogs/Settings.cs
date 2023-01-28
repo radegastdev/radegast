@@ -216,23 +216,23 @@ namespace Radegast
 
             cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();
 
-            cbChatTimestamps.CheckedChanged += new EventHandler(cbChatTimestamps_CheckedChanged);
-            cbIMTimeStamps.CheckedChanged += new EventHandler(cbIMTimeStamps_CheckedChanged);
+            cbChatTimestamps.CheckedChanged += cbChatTimestamps_CheckedChanged;
+            cbIMTimeStamps.CheckedChanged += cbIMTimeStamps_CheckedChanged;
 
             cbTrasactDialog.Checked = s["transaction_notification_dialog"].AsBoolean();
             cbTransactChat.Checked = s["transaction_notification_chat"].AsBoolean();
 
             cbFriendsNotifications.Checked = s["show_friends_online_notifications"].AsBoolean();
-            cbFriendsNotifications.CheckedChanged += new EventHandler(cbFriendsNotifications_CheckedChanged);
+            cbFriendsNotifications.CheckedChanged += cbFriendsNotifications_CheckedChanged;
 
             cbAutoReconnect.Checked = s["auto_reconnect"].AsBoolean();
-            cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
+            cbAutoReconnect.CheckedChanged += cbAutoReconnect_CheckedChanged;
 
             cbResolveURIs.Checked = s["resolve_uris"].AsBoolean();
-            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged);
+            cbResolveURIs.CheckedChanged += cbResolveURIs_CheckedChanged;
 
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
-            cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
+            cbHideLoginGraphics.CheckedChanged += cbHideLoginGraphics_CheckedChanged;
 
             cbRLV.Checked = s["rlv_enabled"].AsBoolean();
             cbRLV.CheckedChanged += (sender, e) =>
@@ -695,9 +695,9 @@ namespace Radegast
 
             Instance.State.LSLHelper.LoadSettings();
             tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwners);
-            cbLSLHelperEnabled.CheckedChanged -= new EventHandler(cbLSLHelperEnabled_CheckedChanged);
+            cbLSLHelperEnabled.CheckedChanged -= cbLSLHelperEnabled_CheckedChanged;
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
-            cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
+            cbLSLHelperEnabled.CheckedChanged += cbLSLHelperEnabled_CheckedChanged;
         }
 
         private void LSLHelperPrefsSave()

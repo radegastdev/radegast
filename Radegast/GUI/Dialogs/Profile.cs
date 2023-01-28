@@ -54,7 +54,7 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmProfile_Disposed);
+            Disposed += frmProfile_Disposed;
 
             AutoSavePosition = true;
 
@@ -110,17 +110,17 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            client.Avatars.AvatarPropertiesReply += Avatars_AvatarPropertiesReply;
+            client.Avatars.AvatarPicksReply += Avatars_AvatarPicksReply;
             //client.Avatars.AvatarClassifiedReply += new EventHandler<AvatarClassifiedReplyEventArgs>(Avatars_AvatarClassifiedsReply);
-            client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
-            client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
-            client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
-            client.Avatars.AvatarInterestsReply += new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
-            client.Avatars.AvatarNotesReply += new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
-            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
+            client.Avatars.PickInfoReply += Avatars_PickInfoReply;
+            client.Parcels.ParcelInfoReply += Parcels_ParcelInfoReply;
+            client.Avatars.AvatarGroupsReply += Avatars_AvatarGroupsReply;
+            client.Avatars.AvatarInterestsReply += Avatars_AvatarInterestsReply;
+            client.Avatars.AvatarNotesReply += Avatars_AvatarNotesReply;
+            client.Self.MuteListUpdated += Self_MuteListUpdated;
+            netcom.ClientDisconnected += netcom_ClientDisconnected;
+            instance.InventoryClipboardUpdated += instance_InventoryClipboardUpdated;
             InitializeProfile();
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
@@ -128,17 +128,17 @@ namespace Radegast
 
         void frmProfile_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            client.Avatars.AvatarPicksReply -= new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            client.Avatars.AvatarPropertiesReply -= Avatars_AvatarPropertiesReply;
+            client.Avatars.AvatarPicksReply -= Avatars_AvatarPicksReply;
             //client.Avatars.AvatarClassifiedReply -= new EventHandler<AvatarClassifiedReplyEventArgs>(Avatars_AvatarClassifiedsReply);
-            client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
-            client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
-            client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
-            client.Avatars.AvatarInterestsReply -= new EventHandler<AvatarInterestsReplyEventArgs>(Avatars_AvatarInterestsReply);
-            client.Avatars.AvatarNotesReply -= new EventHandler<AvatarNotesReplyEventArgs>(Avatars_AvatarNotesReply);
-            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.InventoryClipboardUpdated -= new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
+            client.Avatars.PickInfoReply -= Avatars_PickInfoReply;
+            client.Parcels.ParcelInfoReply -= Parcels_ParcelInfoReply;
+            client.Avatars.AvatarGroupsReply -= Avatars_AvatarGroupsReply;
+            client.Avatars.AvatarInterestsReply -= Avatars_AvatarInterestsReply;
+            client.Avatars.AvatarNotesReply -= Avatars_AvatarNotesReply;
+            client.Self.MuteListUpdated -= Self_MuteListUpdated;
+            netcom.ClientDisconnected -= netcom_ClientDisconnected;
+            instance.InventoryClipboardUpdated -= instance_InventoryClipboardUpdated;
         }
 
         void Self_MuteListUpdated(object sender, EventArgs e)
@@ -295,7 +295,7 @@ namespace Radegast
                 };
                 b.Top = i++ * b.Height + 5;
                 b.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-                b.Click += new EventHandler(PickButtonClick);
+                b.Click += PickButtonClick;
                 pickListPanel.Controls.Add(b);
 
                 if (firstButton == null)

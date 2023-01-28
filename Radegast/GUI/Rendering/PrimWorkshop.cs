@@ -107,7 +107,7 @@ namespace Radegast.Rendering
             RootPrimLocalID = rootLocalID;
 
             InitializeComponent();
-            Disposed += new EventHandler(FrmPrimWorkshop_Disposed);
+            Disposed += FrmPrimWorkshop_Disposed;
             AutoSavePosition = true;
             UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
             cbAA.CheckedChanged += cbAA_CheckedChanged;
@@ -117,9 +117,9 @@ namespace Radegast.Rendering
             renderer = new MeshmerizerR();
             textRendering = new TextRendering(instance);
 
-            Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+            Client.Objects.TerseObjectUpdate += Objects_TerseObjectUpdate;
+            Client.Objects.ObjectUpdate += Objects_ObjectUpdate;
+            Client.Objects.ObjectDataBlockUpdate += Objects_ObjectDataBlockUpdate;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -134,9 +134,9 @@ namespace Radegast.Rendering
 
             glControl?.Dispose();
             glControl = null;
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+            Client.Objects.TerseObjectUpdate -= Objects_TerseObjectUpdate;
+            Client.Objects.ObjectUpdate -= Objects_ObjectUpdate;
+            Client.Objects.ObjectDataBlockUpdate -= Objects_ObjectDataBlockUpdate;
         }
         #endregion Construction and disposal
 
@@ -232,8 +232,8 @@ namespace Radegast.Rendering
             glControl.MouseUp += glControl_MouseUp;
             glControl.MouseMove += glControl_MouseMove;
             glControl.MouseWheel += glControl_MouseWheel;
-            glControl.Load += new EventHandler(glControl_Load);
-            glControl.Disposed += new EventHandler(glControl_Disposed);
+            glControl.Load += glControl_Load;
+            glControl.Disposed += glControl_Disposed;
             glControl.Dock = DockStyle.Fill;
             Controls.Add(glControl);
             glControl.BringToFront();

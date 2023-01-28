@@ -42,7 +42,7 @@ namespace Radegast
         public Notecard(RadegastInstance instance, InventoryNotecard notecard, Primitive prim)
         {
             InitializeComponent();
-            Disposed += new EventHandler(Notecard_Disposed);
+            Disposed += Notecard_Disposed;
 
             this.instance = instance;
             this.notecard = notecard;
@@ -140,7 +140,7 @@ namespace Radegast
 
                         titem.Name = item.UUID.ToString();
                         titem.Tag = item;
-                        titem.Click += new EventHandler(attachmentMenuItem_Click);
+                        titem.Click += attachmentMenuItem_Click;
 
                         var saveToInv = new ToolStripMenuItem("Save to inventory");
                         saveToInv.Click += (xsender, xe) =>

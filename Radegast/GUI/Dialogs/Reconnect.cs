@@ -41,7 +41,7 @@ namespace Radegast
         public frmReconnect(RadegastInstance instance, int time)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmReconnect_Disposed);
+            Disposed += frmReconnect_Disposed;
             this.instance = instance;
             ReconnectTime = time;
             lblAutoReconnect.Text = string.Format("Auto reconnect in {0} seconds.", reconnectTime);

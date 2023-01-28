@@ -39,7 +39,7 @@ namespace Radegast
         public frmPay(RadegastInstance instance, UUID target, string name, bool isObject)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmPay_Disposed);
+            Disposed += frmPay_Disposed;
 
             this.instance = instance;
             this.target = target;
@@ -50,15 +50,15 @@ namespace Radegast
             buttons = new Button[] { btnFastPay1, btnFastPay2, btnFastPay3, btnFastPay4 };
             for (int i = 0; i < buttons.Length; i++)
             {
-                buttons[i].Click += new EventHandler(frmPay_Click);
+                buttons[i].Click += frmPay_Click;
                 buttons[i].Text = string.Format("L${0}", defaultAmounts[i]);
                 buttons[i].Tag = defaultAmounts[i];
             }
 
             // Callbacks
-            client.Objects.PayPriceReply += new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
-            client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            client.Objects.PayPriceReply += Objects_PayPriceReply;
+            client.Objects.ObjectPropertiesFamily += Objects_ObjectPropertiesFamily;
+            instance.Names.NameUpdated += Avatars_UUIDNameReply;
 
             if (isObject)
             {
@@ -83,9 +83,9 @@ namespace Radegast
 
         void frmPay_Disposed(object sender, EventArgs e)
         {
-            client.Objects.PayPriceReply -= new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
-            client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            client.Objects.PayPriceReply -= Objects_PayPriceReply;
+            client.Objects.ObjectPropertiesFamily -= Objects_ObjectPropertiesFamily;
+            instance.Names.NameUpdated -= Avatars_UUIDNameReply;
         }
 
         void frmPay_Click(object sender, EventArgs e)

@@ -174,50 +174,50 @@ namespace Radegast
         public StateManager(RadegastInstance instance)
         {
             this.instance = instance;
-            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+            this.instance.ClientChanged += Instance_ClientChanged;
             KnownAnimations = Animations.ToDictionary();
             AutoSit = new AutoSit(this.instance);
             PseudoHome = new PseudoHome(this.instance);
             LSLHelper = new LSLHelper(this.instance);
 
             beamTimer = new System.Timers.Timer {Enabled = false};
-            beamTimer.Elapsed += new ElapsedEventHandler(BeamTimer_Elapsed);
+            beamTimer.Elapsed += BeamTimer_Elapsed;
 
             // Callbacks
-            Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
-            Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            Netcom.ChatReceived += new EventHandler<ChatEventArgs>(Netcom_ChatReceived);
+            Netcom.ClientConnected += Netcom_ClientConnected;
+            Netcom.ClientDisconnected += Netcom_ClientDisconnected;
+            Netcom.ChatReceived += Netcom_ChatReceived;
             RegisterClientEvents(Client);
         }
 
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Objects.AvatarUpdate += new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
-            client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            client.Objects.AvatarSitChanged += new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
-            client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
-            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Objects.AvatarUpdate += Objects_AvatarUpdate;
+            client.Objects.TerseObjectUpdate += Objects_TerseObjectUpdate;
+            client.Objects.AvatarSitChanged += Objects_AvatarSitChanged;
+            client.Self.AlertMessage += Self_AlertMessage;
+            client.Self.TeleportProgress += Self_TeleportProgress;
+            client.Network.EventQueueRunning += Network_EventQueueRunning;
+            client.Network.SimChanged += Network_SimChanged;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Objects.AvatarUpdate -= new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
-            client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            client.Objects.AvatarSitChanged -= new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
-            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
-            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Objects.AvatarUpdate -= Objects_AvatarUpdate;
+            client.Objects.TerseObjectUpdate -= Objects_TerseObjectUpdate;
+            client.Objects.AvatarSitChanged -= Objects_AvatarSitChanged;
+            client.Self.AlertMessage -= Self_AlertMessage;
+            client.Self.TeleportProgress -= Self_TeleportProgress;
+            client.Network.EventQueueRunning -= Network_EventQueueRunning;
+            client.Network.SimChanged -= Network_SimChanged;
         }
 
         public void Dispose()
         {
-            Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_ClientConnected);
-            Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            Netcom.ChatReceived -= new EventHandler<ChatEventArgs>(Netcom_ChatReceived);
+            Netcom.ClientConnected -= Netcom_ClientConnected;
+            Netcom.ClientDisconnected -= Netcom_ClientDisconnected;
+            Netcom.ChatReceived -= Netcom_ChatReceived;
             UnregisterClientEvents(Client);
             beamTimer.Dispose();
             beamTimer = null;
@@ -520,7 +520,7 @@ namespace Radegast
 
             if (lookAtTimer == null)
             {
-                lookAtTimer = new System.Threading.Timer(new TimerCallback(LookAtTimerTick), null, Timeout.Infinite, Timeout.Infinite);
+                lookAtTimer = new System.Threading.Timer(LookAtTimerTick, null, Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -763,7 +763,7 @@ namespace Radegast
 
             if (walkTimer == null)
             {
-                walkTimer = new System.Threading.Timer(new TimerCallback(WalkTimerElapsed), null, walkChekInterval, Timeout.Infinite);
+                walkTimer = new System.Threading.Timer(WalkTimerElapsed, null, walkChekInterval, Timeout.Infinite);
             }
 
             lastDistanceChanged = Environment.TickCount;

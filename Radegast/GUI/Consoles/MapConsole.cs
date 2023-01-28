@@ -43,13 +43,13 @@ namespace Radegast
         public MapConsole(RadegastInstance inst)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmMap_Disposed);
+            Disposed += frmMap_Disposed;
 
             instance = inst;
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged += instance_ClientChanged;
 
             Visible = false;
-            VisibleChanged += new EventHandler(MapConsole_VisibleChanged);
+            VisibleChanged += MapConsole_VisibleChanged;
 
             // Register callbacks
             RegisterClientEvents(client);
@@ -59,18 +59,18 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Friends.FriendFoundReply += new EventHandler<FriendFoundReplyEventArgs>(Friends_FriendFoundReply);
+            client.Grid.GridRegion += Grid_GridRegion;
+            client.Self.TeleportProgress += Self_TeleportProgress;
+            client.Network.SimChanged += Network_SimChanged;
+            client.Friends.FriendFoundReply += Friends_FriendFoundReply;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Friends.FriendFoundReply -= new EventHandler<FriendFoundReplyEventArgs>(Friends_FriendFoundReply);
+            client.Grid.GridRegion -= Grid_GridRegion;
+            client.Self.TeleportProgress -= Self_TeleportProgress;
+            client.Network.SimChanged -= Network_SimChanged;
+            client.Friends.FriendFoundReply -= Friends_FriendFoundReply;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -92,7 +92,7 @@ namespace Radegast
                     lblStatus.Text = "Ready for " + e.Region.Name;
                 };
 
-                mmap.ZoomChanged += new EventHandler<EventArgs>(mmap_ZoomChaged);
+                mmap.ZoomChanged += mmap_ZoomChaged;
 
                 if (instance.Netcom.Grid.ID == "agni")
                 {
@@ -115,7 +115,7 @@ namespace Radegast
 
         void map_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            map.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
+            map.DocumentCompleted -= map_DocumentCompleted;
             map.AllowWebBrowserDrop = false;
             map.WebBrowserShortcutsEnabled = false;
             map.ScriptErrorsSuppressed = true;
@@ -124,7 +124,7 @@ namespace Radegast
 
             if (instance.MonoRuntime)
             {
-                map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
+                map.Navigating += map_Navigating;
             }
 
             ThreadPool.QueueUserWorkItem(sync =>
@@ -151,13 +151,13 @@ namespace Radegast
         {
             // Unregister callbacks
             UnregisterClientEvents(client);
-            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged -= instance_ClientChanged;
 
             if (map != null)
             {
                 if (instance.MonoRuntime)
                 {
-                    map.Navigating -= new WebBrowserNavigatingEventHandler(map_Navigating);
+                    map.Navigating -= map_Navigating;
                 }
                 else
                 {

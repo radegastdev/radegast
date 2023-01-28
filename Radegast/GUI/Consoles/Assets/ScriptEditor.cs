@@ -53,7 +53,7 @@ namespace Radegast
         public ScriptEditor(RadegastInstance instance, InventoryLSL script, Primitive prim)
         {
             InitializeComponent();
-            Disposed += new EventHandler(SscriptEditor_Disposed);
+            Disposed += SscriptEditor_Disposed;
 
             this.instance = instance;
             this.script = script;
@@ -189,11 +189,11 @@ namespace Radegast
             SetTitle();
             detachedForm.ActiveControl = this;
             detachedForm.Show();
-            detachedForm.FormClosing += new FormClosingEventHandler(detachedForm_FormClosing);
+            detachedForm.FormClosing += detachedForm_FormClosing;
 
             if (originalParent != null)
             {
-                originalParent.ControlAdded += new ControlEventHandler(originalParent_ControlAdded);
+                originalParent.ControlAdded += originalParent_ControlAdded;
             }
             else
             {
@@ -218,9 +218,9 @@ namespace Radegast
         {
             if (detachedForm != null)
             {
-                detachedForm.FormClosing -= new FormClosingEventHandler(detachedForm_FormClosing);
+                detachedForm.FormClosing -= detachedForm_FormClosing;
             }
-            originalParent.ControlAdded -= new ControlEventHandler(originalParent_ControlAdded);
+            originalParent.ControlAdded -= originalParent_ControlAdded;
             tbtnAttach.Visible = false;
         }
 
@@ -235,7 +235,7 @@ namespace Radegast
 
             if (originalParent != null)
             {
-                originalParent.ControlAdded -= new ControlEventHandler(originalParent_ControlAdded);
+                originalParent.ControlAdded -= originalParent_ControlAdded;
                 Parent = originalParent;
             }
 

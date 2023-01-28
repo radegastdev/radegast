@@ -105,12 +105,12 @@ namespace Radegast
         public PrimDeserializer(GridClient c)
         {
             Client = c;
-            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectUpdate += Objects_ObjectUpdate;
         }
 
         public void CleanUp()
         {
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectUpdate -= Objects_ObjectUpdate;
         }
 
         public bool CreateObjectFromXml(string xml)

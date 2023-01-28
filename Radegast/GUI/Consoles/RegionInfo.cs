@@ -38,7 +38,7 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(RegionInfo_Disposed);
+            Disposed += RegionInfo_Disposed;
 
             refresh = new Timer()
             {
@@ -46,10 +46,10 @@ namespace Radegast
                 Interval = 1000,
             };
 
-            client.Groups.GroupNamesReply += new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
-            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Parcels.ParcelDwellReply += new EventHandler<ParcelDwellReplyEventArgs>(Parcels_ParcelDwellReply);
-            refresh.Tick += new EventHandler(refresh_Tick);
+            client.Groups.GroupNamesReply += Groups_GroupNamesReply;
+            client.Parcels.ParcelProperties += Parcels_ParcelProperties;
+            client.Parcels.ParcelDwellReply += Parcels_ParcelDwellReply;
+            refresh.Tick += refresh_Tick;
             refresh.Enabled = true;
             UpdateDisplay();
             client.Parcels.RequestDwell(client.Network.CurrentSim, instance.State.Parcel.LocalID);
@@ -59,9 +59,9 @@ namespace Radegast
 
         void RegionInfo_Disposed(object sender, EventArgs e)
         {
-            client.Groups.GroupNamesReply -= new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
-            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Parcels.ParcelDwellReply -= new EventHandler<ParcelDwellReplyEventArgs>(Parcels_ParcelDwellReply);
+            client.Groups.GroupNamesReply -= Groups_GroupNamesReply;
+            client.Parcels.ParcelProperties -= Parcels_ParcelProperties;
+            client.Parcels.ParcelDwellReply -= Parcels_ParcelDwellReply;
             refresh.Enabled = false;
             refresh.Dispose();
             refresh = null;

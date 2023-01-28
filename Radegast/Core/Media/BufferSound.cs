@@ -277,7 +277,7 @@ namespace Radegast.Media
 
             finished = true;
 
-            invoke(new SoundDelegate(delegate
+            invoke(delegate
             {
                 string chanStr = "none";
                 string soundStr = "none";
@@ -310,7 +310,7 @@ namespace Radegast.Media
 
                 if (blocking)
                     stopped?.Set();
-            }));
+            });
 
             if (blocking)
                 stopped.WaitOne();

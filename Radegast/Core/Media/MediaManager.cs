@@ -51,19 +51,19 @@ namespace Radegast.Media
                 return;
             }
 
-            endCallback = new CHANNELCONTROL_CALLBACK(DispatchEndCallback);
+            endCallback = DispatchEndCallback;
             allBuffers = new Dictionary<UUID, BufferSound>();
 
             soundCancelToken = new CancellationTokenSource();
 
             // Start the background thread that does the audio calls.
-            Task soundTask = Task.Factory.StartNew(new Action(CommandLoop), 
+            Task soundTask = Task.Factory.StartNew(CommandLoop, 
                 soundCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             // Start the background thread that updates listerner position.
-            Task listenerTask = Task.Factory.StartNew(new Action(ListenerUpdate), 
+            Task listenerTask = Task.Factory.StartNew(ListenerUpdate, 
                 soundCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+            Instance.ClientChanged += Instance_ClientChanged;
 
             // Wait for init to complete
             initDone.WaitOne();
@@ -79,24 +79,24 @@ namespace Radegast.Media
 
         void RegisterClientEvents(GridClient client)
         {
-            client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-            client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-            client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Sound.SoundTrigger += Sound_SoundTrigger;
+            client.Sound.AttachedSound += Sound_AttachedSound;
+            client.Sound.PreloadSound += Sound_PreloadSound;
+            client.Objects.ObjectUpdate += Objects_ObjectUpdate;
+            client.Objects.KillObject += Objects_KillObject;
+            client.Network.SimChanged += Network_SimChanged;
+            client.Self.ChatFromSimulator += Self_ChatFromSimulator;
         }
 
         void UnregisterClientEvents(GridClient client)
         {
-            client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-            client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-            client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Sound.SoundTrigger -= Sound_SoundTrigger;
+            client.Sound.AttachedSound -= Sound_AttachedSound;
+            client.Sound.PreloadSound -= Sound_PreloadSound;
+            client.Objects.ObjectUpdate -= Objects_ObjectUpdate;
+            client.Objects.KillObject -= Objects_KillObject;
+            client.Network.SimChanged -= Network_SimChanged;
+            client.Self.ChatFromSimulator -= Self_ChatFromSimulator;
         }
 
         /// <summary>
@@ -339,10 +339,10 @@ namespace Radegast.Media
                 if (newPosition.ApproxEquals(lastpos, 0.5f) &&
                     Math.Abs(newFace - lastface) < 0.2)
                 {
-                    invoke(new SoundDelegate(delegate
+                    invoke(delegate
                     {
                         FMODExec(system.update());
-                    }));
+                    });
                     continue;
                 }
 
@@ -381,7 +381,7 @@ namespace Radegast.Media
                 //    Helpers.LogLevel.Debug);
 
                 // Tell FMOD the new orientation.
-                invoke(new SoundDelegate(delegate
+                invoke(delegate
                 {
                     FMODExec(system.set3DListenerAttributes(
                         0,
@@ -391,7 +391,7 @@ namespace Radegast.Media
                         ref UpVector));    // Top of head
 
                     FMODExec(system.update());
-                }));
+                });
             }
         }
 

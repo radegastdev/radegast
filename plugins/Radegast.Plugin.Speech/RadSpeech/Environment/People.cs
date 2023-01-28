@@ -56,13 +56,13 @@ namespace RadegastSpeech.Environment
         {
             // We need appearance info about people
             Client.Avatars.AvatarAppearance +=
-                new EventHandler<AvatarAppearanceEventArgs>(Avatars_OnAvatarAppearance);
+                Avatars_OnAvatarAppearance;
         }
 
         internal void Shutdown()
         {
             Client.Avatars.AvatarAppearance -=
-               new EventHandler<AvatarAppearanceEventArgs>(Avatars_OnAvatarAppearance);
+               Avatars_OnAvatarAppearance;
             information.Clear();
         }
 

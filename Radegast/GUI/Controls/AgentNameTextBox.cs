@@ -58,20 +58,20 @@ namespace Radegast
         public AgentNameTextBox()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            Disposed += new EventHandler(CleanupHandlers);
+            Disposed += CleanupHandlers;
         }
 
         void SetupHandlers()
         {
             if (instance?.Names == null) return;
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            instance.Names.NameUpdated += Names_NameUpdated;
         }
 
         void CleanupHandlers(object sender, EventArgs e)
         {
             if (instance?.Names != null)
             {
-                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+                instance.Names.NameUpdated -= Names_NameUpdated;
             }
         }
 

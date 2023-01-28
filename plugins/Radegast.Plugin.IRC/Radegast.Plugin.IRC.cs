@@ -39,7 +39,7 @@ namespace Radegast.Plugin.IRC
             instance = inst;
 
             IRCButton = new ToolStripMenuItem("New IRC Relay...");
-            IRCButton.Click += new EventHandler(IRCButton_Click);
+            IRCButton.Click += IRCButton_Click;
             instance.MainForm.PluginsMenu.DropDownItems.Add(IRCButton);
         }
 

@@ -45,7 +45,7 @@ namespace Radegast
         public SearchConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(SearchConsole_Disposed);
+            Disposed += SearchConsole_Disposed;
 
             this.instance = instance;
 
@@ -54,14 +54,14 @@ namespace Radegast
             lvwEvents.ListViewItemSorter = new EventSorter();
 
             // Callbacks
-            client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
-            client.Directory.DirPlacesReply += new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
-            client.Directory.DirGroupsReply += new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
+            client.Directory.DirPeopleReply += Directory_DirPeopleReply;
+            client.Directory.DirPlacesReply += Directory_DirPlacesReply;
+            client.Directory.DirGroupsReply += Directory_DirGroupsReply;
             client.Directory.DirEventsReply += Directory_DirEventsReply;
             client.Directory.EventInfoReply += Directory_EventInfoReply;
             instance.Names.NameUpdated += Names_NameUpdated;
             console = new FindPeopleConsole(instance, UUID.Random()) {Dock = DockStyle.Fill};
-            console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
+            console.SelectedIndexChanged += console_SelectedIndexChanged;
             pnlFindPeople.Controls.Add(console);
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
             lvwGroups.ListViewItemSorter = new GroupSorter();
@@ -71,9 +71,9 @@ namespace Radegast
 
         void SearchConsole_Disposed(object sender, EventArgs e)
         {
-            client.Directory.DirPeopleReply -= new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
-            client.Directory.DirPlacesReply -= new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
-            client.Directory.DirGroupsReply -= new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
+            client.Directory.DirPeopleReply -= Directory_DirPeopleReply;
+            client.Directory.DirPlacesReply -= Directory_DirPlacesReply;
+            client.Directory.DirGroupsReply -= Directory_DirGroupsReply;
             client.Directory.DirEventsReply -= Directory_DirEventsReply;
             client.Directory.EventInfoReply -= Directory_EventInfoReply;
             instance.Names.NameUpdated -= Names_NameUpdated;

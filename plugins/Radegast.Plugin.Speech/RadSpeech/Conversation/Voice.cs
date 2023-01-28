@@ -42,9 +42,9 @@ namespace RadegastSpeech.Conversation
 
         internal override void Start()
         {
-            vTab.gateway.OnSessionCreate +=new EventHandler(OnSessionCreate);
-            vTab.gateway.OnSessionRemove += new EventHandler(gateway_OnSessionRemove);
-            vTab.chkVoiceEnable.CheckStateChanged += new EventHandler(chkVoiceEnable_CheckStateChanged);
+            vTab.gateway.OnSessionCreate +=OnSessionCreate;
+            vTab.gateway.OnSessionRemove += gateway_OnSessionRemove;
+            vTab.chkVoiceEnable.CheckStateChanged += chkVoiceEnable_CheckStateChanged;
             SayEnabled();
         }
 
@@ -52,10 +52,10 @@ namespace RadegastSpeech.Conversation
         {
             if (vTab.gateway != null)
             {
-                vTab.gateway.OnSessionCreate -= new EventHandler(OnSessionCreate);
-                vTab.gateway.OnSessionRemove -= new EventHandler(gateway_OnSessionRemove);
+                vTab.gateway.OnSessionCreate -= OnSessionCreate;
+                vTab.gateway.OnSessionRemove -= gateway_OnSessionRemove;
             }
-            vTab.chkVoiceEnable.CheckStateChanged -= new EventHandler(chkVoiceEnable_CheckStateChanged);
+            vTab.chkVoiceEnable.CheckStateChanged -= chkVoiceEnable_CheckStateChanged;
         }
 #endregion
 

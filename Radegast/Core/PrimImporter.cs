@@ -86,12 +86,12 @@ namespace Radegast
 		{
 			Client = client;
 			Textures = new Dictionary<UUID, UUID>();
-			Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_OnNewPrim);
+			Client.Objects.ObjectUpdate += Objects_OnNewPrim;
 		}
 		
 		public void CleanUp()
 		{
-			Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_OnNewPrim);
+			Client.Objects.ObjectUpdate -= Objects_OnNewPrim;
 		}
 		
 		public void ImportFromFile(string filename)

@@ -36,15 +36,15 @@ namespace Radegast
             :base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(DebugConsole_Disposed);
-            RadegastAppender.Log += new EventHandler<LogEventArgs>(RadegastAppender_Log);
+            Disposed += DebugConsole_Disposed;
+            RadegastAppender.Log += RadegastAppender_Log;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DebugConsole_Disposed(object sender, EventArgs e)
         {
-            RadegastAppender.Log -= new EventHandler<LogEventArgs>(RadegastAppender_Log);
+            RadegastAppender.Log -= RadegastAppender_Log;
         }
 
         void RadegastAppender_Log(object sender, LogEventArgs e)

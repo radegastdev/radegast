@@ -38,13 +38,13 @@ namespace Radegast.Commands
             Usage = Name;
 
             this.instance = instance;
-            this.instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            this.instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            instance.Netcom.ClientDisconnected -= Netcom_ClientDisconnected;
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)

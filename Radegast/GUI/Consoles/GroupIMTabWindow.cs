@@ -42,7 +42,7 @@ namespace Radegast
         public GroupIMTabWindow(RadegastInstance instance, UUID session, string sessionName)
         {
             InitializeComponent();
-            Disposed += new EventHandler(IMTabWindow_Disposed);
+            Disposed += IMTabWindow_Disposed;
 
             this.instance = instance;
             SessionId = session;
@@ -58,33 +58,33 @@ namespace Radegast
             {
                 client.Self.RequestJoinGroupChat(session);
             }
-            Load += new EventHandler(GroupIMTabWindow_Load);
+            Load += GroupIMTabWindow_Load;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Self.GroupChatJoined += new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
-            client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
-            client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
-            instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_Connected);
-            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            client.Self.GroupChatJoined += Self_GroupChatJoined;
+            client.Self.ChatSessionMemberAdded += Self_ChatSessionMemberAdded;
+            client.Self.ChatSessionMemberLeft += Self_ChatSessionMemberLeft;
+            instance.Names.NameUpdated += Names_NameUpdated;
+            instance.Netcom.ClientConnected += Netcom_Connected;
+            instance.Netcom.ClientDisconnected += Netcom_Disconnected;
+            instance.GlobalSettings.OnSettingChanged += GlobalSettings_OnSettingChanged;
+            instance.ClientChanged += instance_ClientChanged;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
-            client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
-            client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
-            instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_Connected);
-            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
-            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
-            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            client.Self.GroupChatJoined -= Self_GroupChatJoined;
+            client.Self.ChatSessionMemberAdded -= Self_ChatSessionMemberAdded;
+            client.Self.ChatSessionMemberLeft -= Self_ChatSessionMemberLeft;
+            instance.Names.NameUpdated -= Names_NameUpdated;
+            instance.Netcom.ClientConnected -= Netcom_Connected;
+            instance.Netcom.ClientDisconnected -= Netcom_Disconnected;
+            instance.GlobalSettings.OnSettingChanged -= GlobalSettings_OnSettingChanged;
+            instance.ClientChanged -= instance_ClientChanged;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)

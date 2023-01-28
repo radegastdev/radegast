@@ -44,7 +44,7 @@ namespace Radegast
 
         public DettachableControl()
         {
-            SizeChanged += new System.EventHandler(DettachableControl_SizeChanged);
+            SizeChanged += DettachableControl_SizeChanged;
         }
 
         void DettachableControl_SizeChanged(object sender, System.EventArgs e)
@@ -102,7 +102,7 @@ namespace Radegast
             SetTitle();
             detachedForm.ActiveControl = this;
             detachedForm.Show();
-            detachedForm.FormClosing += new FormClosingEventHandler(detachedForm_FormClosing);
+            detachedForm.FormClosing += detachedForm_FormClosing;
 
             if (OriginalParent == null)
             {
@@ -110,7 +110,7 @@ namespace Radegast
             }
             else
             {
-                OriginalParent.ControlAdded += new ControlEventHandler(originalParent_ControlAdded);
+                OriginalParent.ControlAdded += originalParent_ControlAdded;
             }
 
             OnDetached?.Invoke();
@@ -122,9 +122,9 @@ namespace Radegast
         {
             if (detachedForm != null)
             {
-                detachedForm.FormClosing -= new FormClosingEventHandler(detachedForm_FormClosing);
+                detachedForm.FormClosing -= detachedForm_FormClosing;
             }
-            OriginalParent.ControlAdded -= new ControlEventHandler(originalParent_ControlAdded);
+            OriginalParent.ControlAdded -= originalParent_ControlAdded;
             ControlIsNotRetachable();
         }
 
@@ -139,7 +139,7 @@ namespace Radegast
 
             if (OriginalParent != null)
             {
-                OriginalParent.ControlAdded -= new ControlEventHandler(originalParent_ControlAdded);
+                OriginalParent.ControlAdded -= originalParent_ControlAdded;
                 Size = AttachedSize;
             }
 

@@ -48,12 +48,12 @@ namespace Radegast
         public ObjectsConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmObjects_Disposed);
+            Disposed += frmObjects_Disposed;
 
             this.instance = instance;
 
             propRequester = new PropertiesQueue(instance);
-            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
+            propRequester.OnTick += propRequester_OnTick;
 
             btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
             State_SitStateChanged(this, new SitEventArgs(instance.State.IsSitting));
@@ -83,16 +83,16 @@ namespace Radegast
             contentsDownloadCancelToken = new CancellationTokenSource();
 
             // Callbacks
-            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            instance.State.SitStateChanged += new EventHandler<SitEventArgs>(State_SitStateChanged);
-            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObjects += new EventHandler<KillObjectsEventArgs>(Objects_KillObjects);
-            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
-            client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
+            instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
+            instance.State.SitStateChanged += State_SitStateChanged;
+            client.Objects.ObjectUpdate += Objects_ObjectUpdate;
+            client.Objects.KillObjects += Objects_KillObjects;
+            client.Objects.ObjectProperties += Objects_ObjectProperties;
+            client.Objects.ObjectPropertiesFamily += Objects_ObjectPropertiesFamily;
+            client.Network.SimChanged += Network_SimChanged;
+            client.Self.MuteListUpdated += Self_MuteListUpdated;
+            instance.Names.NameUpdated += Avatars_UUIDNameReply;
+            instance.State.OnWalkStateCanged += State_OnWalkStateCanged;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -106,16 +106,16 @@ namespace Radegast
             } catch (ObjectDisposedException) { }
 
             propRequester.Dispose();
-            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
-            instance.State.SitStateChanged -= new EventHandler<SitEventArgs>(State_SitStateChanged);
-            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObjects -= new EventHandler<KillObjectsEventArgs>(Objects_KillObjects);
-            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
-            client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
+            instance.Netcom.ClientDisconnected -= Netcom_ClientDisconnected;
+            instance.State.SitStateChanged -= State_SitStateChanged;
+            client.Objects.ObjectUpdate -= Objects_ObjectUpdate;
+            client.Objects.KillObjects -= Objects_KillObjects;
+            client.Objects.ObjectProperties -= Objects_ObjectProperties;
+            client.Objects.ObjectPropertiesFamily -= Objects_ObjectPropertiesFamily;
+            client.Network.SimChanged -= Network_SimChanged;
+            client.Self.MuteListUpdated -= Self_MuteListUpdated;
+            instance.Names.NameUpdated -= Avatars_UUIDNameReply;
+            instance.State.OnWalkStateCanged -= State_OnWalkStateCanged;
         }
 
         void State_SitStateChanged(object sender, SitEventArgs e)
@@ -622,17 +622,16 @@ namespace Radegast
                     UUID.Zero != prim.Properties.GroupID)
                 {
                     AutoResetEvent nameReceivedSignal = new AutoResetEvent(false);
-                    EventHandler<GroupNamesEventArgs> cbGroupName = new EventHandler<GroupNamesEventArgs>(
-                        delegate(object sender, GroupNamesEventArgs e)
+                    EventHandler<GroupNamesEventArgs> cbGroupName = delegate(object sender, GroupNamesEventArgs e)
+                    {
+                        if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
                         {
-                            if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
-                            {
-                                e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
-                                if (string.IsNullOrEmpty(ownerName))
-                                    ownerName = "Loading...";
-                                nameReceivedSignal.Set();
-                            }
-                        });
+                            e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
+                            if (string.IsNullOrEmpty(ownerName))
+                                ownerName = "Loading...";
+                            nameReceivedSignal.Set();
+                        }
+                    };
                     client.Groups.GroupNamesReply += cbGroupName;
                     client.Groups.RequestGroupName(prim.Properties.GroupID);
                     nameReceivedSignal.WaitOne(5000, false);
@@ -1415,7 +1414,7 @@ namespace Radegast
         {
             this.instance = instance;
             qTimer = new System.Timers.Timer(2500) {Enabled = true};
-            qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
+            qTimer.Elapsed += qTimer_Elapsed;
         }
 
         public void RequestProps(Primitive prim)
@@ -1456,7 +1455,7 @@ namespace Radegast
         {
             if (qTimer != null)
             {
-                qTimer.Elapsed -= new ElapsedEventHandler(qTimer_Elapsed);
+                qTimer.Elapsed -= qTimer_Elapsed;
                 qTimer.Enabled = false;
                 qTimer = null;
             }

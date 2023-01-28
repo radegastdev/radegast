@@ -59,7 +59,7 @@ namespace Radegast
             DisposeOnDetachedClose = false;
             Text = "Media";
 
-            Disposed += new EventHandler(MediaConsole_Disposed);
+            Disposed += MediaConsole_Disposed;
 
             this.instance = instance;
             parcelStream = new Stream();
@@ -105,18 +105,18 @@ namespace Radegast
             }
 
             // GUI Events
-            volAudioStream.Scroll += new EventHandler(volAudioStream_Scroll);
-            txtAudioURL.TextChanged += new EventHandler(txtAudioURL_TextChanged);
-            cbKeep.CheckedChanged += new EventHandler(cbKeep_CheckedChanged);
-            cbPlayAudioStream.CheckedChanged += new EventHandler(cbPlayAudioStream_CheckedChanged);
+            volAudioStream.Scroll += volAudioStream_Scroll;
+            txtAudioURL.TextChanged += txtAudioURL_TextChanged;
+            cbKeep.CheckedChanged += cbKeep_CheckedChanged;
+            cbPlayAudioStream.CheckedChanged += cbPlayAudioStream_CheckedChanged;
             lblStation.Tag = lblStation.Text = string.Empty;
-            lblStation.Click += new EventHandler(lblStation_Click);
+            lblStation.Click += lblStation_Click;
 
-            objVolume.Scroll += new EventHandler(volObject_Scroll);
-            cbObjSoundEnable.CheckedChanged += new EventHandler(cbObjEnableChanged);
+            objVolume.Scroll += volObject_Scroll;
+            cbObjSoundEnable.CheckedChanged += cbObjEnableChanged;
 
             // Network callbacks
-            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Parcels.ParcelProperties += Parcels_ParcelProperties;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -125,7 +125,7 @@ namespace Radegast
         {
             Stop();
 
-            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Parcels.ParcelProperties -= Parcels_ParcelProperties;
 
             if (configTimer != null)
             {

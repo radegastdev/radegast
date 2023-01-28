@@ -97,7 +97,7 @@ namespace Radegast
             cacheTimer = new Timer(SaveCache, null, Timeout.Infinite, Timeout.Infinite);
             cacheFileName = Path.Combine(instance.UserDir, "name.cache");
             LoadCachedNames();
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged += instance_ClientChanged;
             RegisterEvents(client);
         }
 
@@ -128,14 +128,14 @@ namespace Radegast
 
         void RegisterEvents(GridClient c)
         {
-            c.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            c.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
+            c.Avatars.UUIDNameReply += Avatars_UUIDNameReply;
+            c.Avatars.DisplayNameUpdate += Avatars_DisplayNameUpdate;
         }
 
         void DeregisterEvents(GridClient c)
         {
-            c.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            c.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
+            c.Avatars.UUIDNameReply -= Avatars_UUIDNameReply;
+            c.Avatars.DisplayNameUpdate -= Avatars_DisplayNameUpdate;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)

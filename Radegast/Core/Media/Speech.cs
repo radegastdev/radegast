@@ -96,71 +96,70 @@ namespace Radegast.Media
 
             System.Threading.AutoResetEvent done = new System.Threading.AutoResetEvent(false);
 
-            invoke(new SoundDelegate(
-                delegate
+            invoke(delegate
+            {
+                try
                 {
-                    try
-                    {
-                        FMODExec(
+                    FMODExec(
                         system.createSound(filename,
-                        mode,
-                        ref extraInfo,
-                        out sound));
+                            mode,
+                            ref extraInfo,
+                            out sound));
 
-                        // Register for callbacks.
-                        RegisterSound(sound);
+                    // Register for callbacks.
+                    RegisterSound(sound);
 
-                        // Find out how long the sound should play
-                        FMODExec(sound.getLength(out len, TIMEUNIT.MS));
+                    // Find out how long the sound should play
+                    FMODExec(sound.getLength(out len, TIMEUNIT.MS));
 
-                        // Allocate a channel, initially paused.
-                        ChannelGroup masterChannelGroup;
-                        system.getMasterChannelGroup(out masterChannelGroup);
-                        FMODExec(system.playSound(sound, masterChannelGroup, true, out channel));
+                    // Allocate a channel, initially paused.
+                    ChannelGroup masterChannelGroup;
+                    system.getMasterChannelGroup(out masterChannelGroup);
+                    FMODExec(system.playSound(sound, masterChannelGroup, true, out channel));
 
-                        // Set general Speech volume.
-                        //TODO Set this in the GUI
-                        volume = 1.0f;
-                        FMODExec(channel.setVolume(volume));
+                    // Set general Speech volume.
+                    //TODO Set this in the GUI
+                    volume = 1.0f;
+                    FMODExec(channel.setVolume(volume));
 
-                        if (Surround)
-                        {
-                            // Set attenuation limits so distant people get a little softer,
-                            // but not TOO soft
-                            if (Compress)
-                                FMODExec(sound.set3DMinMaxDistance(
-                                        2f,       // Any closer than this gets no louder
-                                        3.5f));     // Further than this gets no softer.
-                            else
-                                FMODExec(sound.set3DMinMaxDistance(
-                                        2f,       // Any closer than this gets no louder
-                                        10f));     // Further than this gets no softer.
-
-                            // Set speaker position.
-                            position = FromOMVSpace(speakerPos);
-                            FMODExec(channel.set3DAttributes(
-                               ref position,
-                               ref ZeroVector));
-
-                            Logger.Log($"Speech at <{position.x:0.0},{position.y:0.0},{position.z:0.0}>", Helpers.LogLevel.Debug);
-                        }
-
-                        // SET a handler for when it finishes.
-                        FMODExec(channel.setCallback(endCallback));
-                        RegisterChannel(channel);
-
-                        // Un-pause the sound.
-                        FMODExec(channel.setPaused(false));
-                    }
-                    catch (Exception ex)
+                    if (Surround)
                     {
-                        Logger.Log("Error playing speech: ", Helpers.LogLevel.Error, ex);
+                        // Set attenuation limits so distant people get a little softer,
+                        // but not TOO soft
+                        if (Compress)
+                            FMODExec(sound.set3DMinMaxDistance(
+                                2f,       // Any closer than this gets no louder
+                                3.5f));     // Further than this gets no softer.
+                        else
+                            FMODExec(sound.set3DMinMaxDistance(
+                                2f,       // Any closer than this gets no louder
+                                10f));     // Further than this gets no softer.
+
+                        // Set speaker position.
+                        position = FromOMVSpace(speakerPos);
+                        FMODExec(channel.set3DAttributes(
+                            ref position,
+                            ref ZeroVector));
+
+                        Logger.Log($"Speech at <{position.x:0.0},{position.y:0.0},{position.z:0.0}>", Helpers.LogLevel.Debug);
                     }
-                    finally
-                    {
-                        done.Set();
-                    }
-                }));
+
+                    // SET a handler for when it finishes.
+                    FMODExec(channel.setCallback(endCallback));
+                    RegisterChannel(channel);
+
+                    // Un-pause the sound.
+                    FMODExec(channel.setPaused(false));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Error playing speech: ", Helpers.LogLevel.Error, ex);
+                }
+                finally
+                {
+                    done.Set();
+                }
+            });
 
             done.WaitOne(30 * 1000, false);
             return len;
@@ -172,26 +171,25 @@ namespace Radegast.Media
         /// <returns></returns>
         protected override RESULT EndCallbackHandler()
         {
-            invoke(new SoundDelegate(
-                 delegate
-                 {
-                     UnRegisterChannel();
-                     channel.clearHandle();
-                     UnRegisterSound();
-                     FMODExec(sound.release());
-                     sound.clearHandle();
+            invoke(delegate
+            {
+                UnRegisterChannel();
+                channel.clearHandle();
+                UnRegisterSound();
+                FMODExec(sound.release());
+                sound.clearHandle();
 
-                     // Tell speech control the file has been played.  Note
-                     // the event is dispatched on FMOD's thread, to make sure
-                     // the event handler does not start a new sound before the
-                     // old one is cleaned up.
-                     if (OnSpeechDone != null)
-                         try
-                         {
-                             OnSpeechDone(this, new EventArgs());
-                         }
-                         catch (Exception) { }
-                 }));
+                // Tell speech control the file has been played.  Note
+                // the event is dispatched on FMOD's thread, to make sure
+                // the event handler does not start a new sound before the
+                // old one is cleaned up.
+                if (OnSpeechDone != null)
+                    try
+                    {
+                        OnSpeechDone(this, new EventArgs());
+                    }
+                    catch (Exception) { }
+            });
 
 
             return RESULT.OK;

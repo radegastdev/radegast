@@ -192,7 +192,7 @@ namespace Radegast
                 Interval = 120 * 1000 // two minutes
             };
 
-            CleanupTimer.Elapsed += new System.Timers.ElapsedEventHandler(CleanupTimer_Elapsed);
+            CleanupTimer.Elapsed += CleanupTimer_Elapsed;
         }
 
         private void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

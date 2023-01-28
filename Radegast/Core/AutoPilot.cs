@@ -53,8 +53,8 @@ namespace Radegast
         {
             Client = client;
             Ticker.Enabled = false;
-            Ticker.Elapsed += new System.Timers.ElapsedEventHandler(Ticker_Elapsed);
-            Client.Objects.TerseObjectUpdate += new System.EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Ticker.Elapsed += Ticker_Elapsed;
+            Client.Objects.TerseObjectUpdate += Objects_TerseObjectUpdate;
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)

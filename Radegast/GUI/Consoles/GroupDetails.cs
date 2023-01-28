@@ -46,7 +46,7 @@ namespace Radegast
         public GroupDetails(RadegastInstance instance, Group group)
         {
             InitializeComponent();
-            Disposed += new EventHandler(GroupDetails_Disposed);
+            Disposed += GroupDetails_Disposed;
 
             this.instance = instance;
             this.group = group;
@@ -91,18 +91,18 @@ namespace Radegast
             lvwNoticeArchive.ListViewItemSorter = new GroupNoticeSorter();
 
             // Callbacks
-            client.Groups.GroupTitlesReply += new EventHandler<GroupTitlesReplyEventArgs>(Groups_GroupTitlesReply);
-            client.Groups.GroupMembersReply += new EventHandler<GroupMembersReplyEventArgs>(Groups_GroupMembersReply);
-            client.Groups.GroupProfile += new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
-            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
-            client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
-            client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
-            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
-            client.Groups.GroupMemberEjected += new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
-            client.Groups.GroupRoleMembersReply += new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
-            client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            client.Groups.GroupTitlesReply += Groups_GroupTitlesReply;
+            client.Groups.GroupMembersReply += Groups_GroupMembersReply;
+            client.Groups.GroupProfile += Groups_GroupProfile;
+            client.Groups.CurrentGroups += Groups_CurrentGroups;
+            client.Groups.GroupNoticesListReply += Groups_GroupNoticesListReply;
+            client.Groups.GroupJoinedReply += Groups_GroupJoinedReply;
+            client.Groups.GroupLeaveReply += Groups_GroupLeaveReply;
+            client.Groups.GroupRoleDataReply += Groups_GroupRoleDataReply;
+            client.Groups.GroupMemberEjected += Groups_GroupMemberEjected;
+            client.Groups.GroupRoleMembersReply += Groups_GroupRoleMembersReply;
+            client.Self.IM += Self_IM;
+            instance.Names.NameUpdated += Names_NameUpdated;
             RefreshControlsAvailability();
             RefreshGroupInfo();
 
@@ -111,20 +111,20 @@ namespace Radegast
 
         void GroupDetails_Disposed(object sender, EventArgs e)
         {
-            client.Groups.GroupTitlesReply -= new EventHandler<GroupTitlesReplyEventArgs>(Groups_GroupTitlesReply);
-            client.Groups.GroupMembersReply -= new EventHandler<GroupMembersReplyEventArgs>(Groups_GroupMembersReply);
-            client.Groups.GroupProfile -= new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
-            client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupNoticesListReply -= new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
-            client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
-            client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
-            client.Groups.GroupRoleDataReply -= new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
-            client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
-            client.Groups.GroupMemberEjected -= new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
-            client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
+            client.Groups.GroupTitlesReply -= Groups_GroupTitlesReply;
+            client.Groups.GroupMembersReply -= Groups_GroupMembersReply;
+            client.Groups.GroupProfile -= Groups_GroupProfile;
+            client.Groups.CurrentGroups -= Groups_CurrentGroups;
+            client.Groups.GroupNoticesListReply -= Groups_GroupNoticesListReply;
+            client.Groups.GroupJoinedReply -= Groups_GroupJoinedReply;
+            client.Groups.GroupLeaveReply -= Groups_GroupLeaveReply;
+            client.Groups.GroupRoleDataReply -= Groups_GroupRoleDataReply;
+            client.Groups.GroupRoleMembersReply -= Groups_GroupRoleMembersReply;
+            client.Groups.GroupMemberEjected -= Groups_GroupMemberEjected;
+            client.Self.IM -= Self_IM;
             if (instance?.Names != null)
             {
-                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+                instance.Names.NameUpdated -= Names_NameUpdated;
             }
             if (nameUpdateTimer != null)
             {
@@ -327,8 +327,8 @@ namespace Radegast
             {
                 cbxReceiveNotices.Checked = myGroups[group.ID].AcceptNotices;
                 cbxListInProfile.Checked = myGroups[group.ID].ListInProfile;
-                cbxReceiveNotices.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
-                cbxListInProfile.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
+                cbxReceiveNotices.CheckedChanged += cbxListInProfile_CheckedChanged;
+                cbxListInProfile.CheckedChanged += cbxListInProfile_CheckedChanged;
             }
             else if (group.OpenEnrollment) // I am not in this group, but I could join it
             {
@@ -568,8 +568,8 @@ namespace Radegast
             if (isMember) lvwMemberDetails.VirtualListSize = 0;
 
             cbxActiveTitle.SelectedIndexChanged -= cbxActiveTitle_SelectedIndexChanged;
-            cbxReceiveNotices.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
-            cbxListInProfile.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
+            cbxReceiveNotices.CheckedChanged -= cbxListInProfile_CheckedChanged;
+            cbxListInProfile.CheckedChanged -= cbxListInProfile_CheckedChanged;
 
             cbxActiveTitle.Items.Clear();
 

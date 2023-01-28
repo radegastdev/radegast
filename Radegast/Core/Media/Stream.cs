@@ -74,20 +74,19 @@ namespace Radegast.Media
 
             if (!channel.hasHandle()) return;
             ManualResetEvent stopped = new ManualResetEvent(false);
-            invoke(new SoundDelegate(
-                delegate
+            invoke(delegate
+            {
+                try
                 {
-                    try
-                    {
-                        FMODExec(channel.stop());
-                        channel.clearHandle();
-                        UnRegisterSound();
-                        FMODExec(sound.release());
-                        sound.clearHandle();
-                    }
-                    catch { }
-                    stopped.Set();
-                }));
+                    FMODExec(channel.stop());
+                    channel.clearHandle();
+                    UnRegisterSound();
+                    FMODExec(sound.release());
+                    sound.clearHandle();
+                }
+                catch { }
+                stopped.Set();
+            });
             stopped.WaitOne();
         }
 
@@ -102,40 +101,39 @@ namespace Radegast.Media
 
             extraInfo.format = SOUND_FORMAT.PCM16;
 
-            invoke(new SoundDelegate(
-                delegate
+            invoke(delegate
+            {
+                try
                 {
-                    try
-                    {
-                        FMODExec(
-                            system.setStreamBufferSize(4 * 128 * 128, TIMEUNIT.RAWBYTES));
+                    FMODExec(
+                        system.setStreamBufferSize(4 * 128 * 128, TIMEUNIT.RAWBYTES));
 
-                        FMODExec(
-                            system.createSound(url,
+                    FMODExec(
+                        system.createSound(url,
                             (MODE._2D | MODE.CREATESTREAM),
                             ref extraInfo,
                             out sound), "Stream load");
-                        // Register for callbacks.
-                        RegisterSound(sound);
+                    // Register for callbacks.
+                    RegisterSound(sound);
 
-                        // Allocate a channel and set initial volume.
-                        ChannelGroup masterChannelGroup;
-                        system.getMasterChannelGroup(out masterChannelGroup);
-                        FMODExec(system.playSound(sound, masterChannelGroup, false,
-                            out channel), "Stream channel");
-                        FMODExec(channel.setVolume(volume), "Stream volume");
+                    // Allocate a channel and set initial volume.
+                    ChannelGroup masterChannelGroup;
+                    system.getMasterChannelGroup(out masterChannelGroup);
+                    FMODExec(system.playSound(sound, masterChannelGroup, false,
+                        out channel), "Stream channel");
+                    FMODExec(channel.setVolume(volume), "Stream volume");
 
-                        if (updateTimer == null)
-                        {
-                            updateTimer = new Timer(Update);
-                        }
-                        updateTimer.Change(0, updateIntervl);
-                    }
-                    catch (Exception ex)
+                    if (updateTimer == null)
                     {
-                        Logger.Log("Error playing stream: " + ex, Helpers.LogLevel.Debug);
+                        updateTimer = new Timer(Update);
                     }
-                }));
+                    updateTimer.Change(0, updateIntervl);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Error playing stream: " + ex, Helpers.LogLevel.Debug);
+                }
+            });
         }
 
 
@@ -143,7 +141,7 @@ namespace Radegast.Media
         {
             if (!sound.hasHandle()) return;
 
-            invoke(new SoundDelegate(() =>
+            invoke(() =>
             {
                 try
                 {
@@ -181,7 +179,7 @@ namespace Radegast.Media
                 {
                     Logger.DebugLog("Error getting stream tags: " + ex.Message);
                 }
-            }));
+            });
         }
     }
 }

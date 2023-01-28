@@ -38,7 +38,7 @@ namespace Radegast
         public IMTabWindow(RadegastInstance instance, UUID target, UUID session, string toName)
         {
             InitializeComponent();
-            Disposed += new EventHandler(IMTabWindow_Disposed);
+            Disposed += IMTabWindow_Disposed;
             
             this.instance = instance;
 
@@ -60,16 +60,16 @@ namespace Radegast
 
         private void AddNetcomEvents()
         {
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientDisconnected += netcom_ClientDisconnected;
+            instance.GlobalSettings.OnSettingChanged += GlobalSettings_OnSettingChanged;
         }
 
         private void RemoveNetcomEvents()
         {
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+            netcom.ClientDisconnected -= netcom_ClientDisconnected;
+            instance.GlobalSettings.OnSettingChanged -= GlobalSettings_OnSettingChanged;
         }
 
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)

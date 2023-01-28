@@ -82,9 +82,9 @@ namespace Radegast.Automation
         {
             m_instance = instance;
             m_Timer = new Timer(10 * 1000);
-            m_Timer.Elapsed += new ElapsedEventHandler((sender, args) => {
+            m_Timer.Elapsed += (sender, args) => {
                 TrySit();
-            });
+            };
             m_Timer.Enabled = false;
         }
 

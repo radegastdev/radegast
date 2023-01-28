@@ -35,7 +35,7 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new System.EventHandler(frmGroupInfo_Disposed);
+            Disposed += frmGroupInfo_Disposed;
             AutoSavePosition = true;
 
             this.instance = instance;
@@ -46,7 +46,7 @@ namespace Radegast
             MinimumSize = Size;
             Controls.Add(GroupDetails);
             Text = group.Name + " - Group information";
-            instance.Netcom.ClientDisconnected += new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            instance.Netcom.ClientDisconnected += Netcom_ClientDisconnected;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -57,7 +57,7 @@ namespace Radegast
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            ((Radegast.Netcom)sender).ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            ((Radegast.Netcom)sender).ClientDisconnected -= Netcom_ClientDisconnected;
 
             if (InvokeRequired)
             {

@@ -37,11 +37,11 @@ namespace Radegast
             : base(NotificationType.GroupNotice)
         {
             InitializeComponent();
-            Disposed += new System.EventHandler(ntfGroupNotice_Disposed);
+            Disposed += ntfGroupNotice_Disposed;
 
             this.instance = instance;
             this.msg = msg;
-            client.Groups.GroupProfile += new System.EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
+            client.Groups.GroupProfile += Groups_GroupProfile;
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
@@ -117,7 +117,7 @@ namespace Radegast
 
         void ntfGroupNotice_Disposed(object sender, System.EventArgs e)
         {
-            client.Groups.GroupProfile -= new System.EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
+            client.Groups.GroupProfile -= Groups_GroupProfile;
         }
 
         void Groups_GroupProfile(object sender, GroupProfileEventArgs e)

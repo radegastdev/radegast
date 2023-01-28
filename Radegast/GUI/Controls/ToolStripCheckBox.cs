@@ -77,7 +77,7 @@ namespace Radegast
         public ToolStripCheckBox()
             : base(new CheckBox())
         {
-            CheckBoxControl.MouseHover += new EventHandler(chk_MouseHover);
+            CheckBoxControl.MouseHover += chk_MouseHover;
         }
 
         void chk_MouseHover(object sender, EventArgs e)
@@ -88,15 +88,15 @@ namespace Radegast
         protected override void OnSubscribeControlEvents(Control c)
         {
             base.OnSubscribeControlEvents(c);
-            ((CheckBox)c).CheckedChanged += new EventHandler(ToolStripCheckBox_CheckedChanged);
-            ((CheckBox)c).CheckStateChanged += new EventHandler(ToolStripCheckBox_CheckStateChanged);
+            ((CheckBox)c).CheckedChanged += ToolStripCheckBox_CheckedChanged;
+            ((CheckBox)c).CheckStateChanged += ToolStripCheckBox_CheckStateChanged;
         }
 
         protected override void OnUnsubscribeControlEvents(Control c)
         {
             base.OnUnsubscribeControlEvents(c);
-            ((CheckBox)c).CheckedChanged -= new EventHandler(ToolStripCheckBox_CheckedChanged);
-            ((CheckBox)c).CheckStateChanged -= new EventHandler(ToolStripCheckBox_CheckStateChanged);
+            ((CheckBox)c).CheckedChanged -= ToolStripCheckBox_CheckedChanged;
+            ((CheckBox)c).CheckStateChanged -= ToolStripCheckBox_CheckStateChanged;
         }
 
         void ToolStripCheckBox_CheckedChanged(object sender, EventArgs e)

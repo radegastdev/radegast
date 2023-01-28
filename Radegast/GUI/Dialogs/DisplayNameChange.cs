@@ -40,17 +40,17 @@ namespace Radegast
             : base(inst)
         {
             InitializeComponent();
-            Disposed += new EventHandler(DisplayNameChange_Disposed);
+            Disposed += DisplayNameChange_Disposed;
             AutoSavePosition = true;
 
-            Client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
+            Client.Self.SetDisplayNameReply += Self_SetDisplayNameReply;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DisplayNameChange_Disposed(object sender, EventArgs e)
         {
-            Client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
+            Client.Self.SetDisplayNameReply += Self_SetDisplayNameReply;
         }
 
         void Self_SetDisplayNameReply(object sender, SetDisplayNameReplyEventArgs e)

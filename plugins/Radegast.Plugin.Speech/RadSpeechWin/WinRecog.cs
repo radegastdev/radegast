@@ -53,14 +53,14 @@ namespace RadegastSpeech
         {
             if (rec == null) return;
             rec.Enabled = true;
-            rec.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeech);
+            rec.SpeechRecognized += onSpeech;
         }
 
         internal void Stop()
         {
             if (rec == null) return;
             rec.Enabled = false;
-            rec.SpeechRecognized -= new EventHandler<SpeechRecognizedEventArgs>(onSpeech);
+            rec.SpeechRecognized -= onSpeech;
             rec.Dispose();
             rec = null;
         }

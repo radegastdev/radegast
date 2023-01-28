@@ -35,7 +35,7 @@ namespace Radegast
         public Gesture(RadegastInstance instance, InventoryGesture gesture)
         {
             InitializeComponent();
-            Disposed += new EventHandler(Guesture_Disposed);
+            Disposed += Guesture_Disposed;
 
             if (!instance.advancedDebugging)
             {

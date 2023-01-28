@@ -44,13 +44,13 @@ namespace Radegast.Rendering
         {
             Instance = instance;
             Window = window;
-            Instance.TabConsole.MainChatManger.ChatLineAdded += new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
+            Instance.TabConsole.MainChatManger.ChatLineAdded += MainChatManger_ChatLineAdded;
             chatLines = new Queue<ChatLine>();
         }
 
         public void Dispose()
         {
-            Instance.TabConsole.MainChatManger.ChatLineAdded -= new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
+            Instance.TabConsole.MainChatManger.ChatLineAdded -= MainChatManger_ChatLineAdded;
 
             if (chatLines != null)
             {

@@ -92,10 +92,10 @@ namespace Radegast
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmMain_Disposed);
+            Disposed += frmMain_Disposed;
 
             this.instance = instance;
-            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            this.instance.ClientChanged += instance_ClientChanged;
 
             netcom.NetcomSync = this;
             ShowAgentProfile = ShowAgentProfileInternal;
@@ -118,7 +118,7 @@ namespace Radegast
             btnDialogNextControl.UseVisualStyleBackColor = false;
             btnDialogNextControl.Top = btnDialogNextControl.Parent.ClientSize.Height - btnDialogNextControl.Size.Height;
             btnDialogNextControl.Left = btnDialogNextControl.Parent.ClientSize.Width - btnDialogNextControl.Size.Width;
-            btnDialogNextControl.Click += new EventHandler(btnDialogNextControl_Click);
+            btnDialogNextControl.Click += btnDialogNextControl_Click;
 
             if (instance.MonoRuntime)
             {
@@ -126,10 +126,10 @@ namespace Radegast
             }
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientLoggedOut += netcom_ClientLoggedOut;
+            netcom.ClientDisconnected += netcom_ClientDisconnected;
+            instance.Names.NameUpdated += Names_NameUpdated;
             client.Network.SimChanged += Network_SimChanged;
 
             RegisterClientEvents(client);
@@ -150,16 +150,16 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Self.MoneyBalanceReply += new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
-            client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
+            client.Parcels.ParcelProperties += Parcels_ParcelProperties;
+            client.Self.MoneyBalanceReply += Self_MoneyBalanceReply;
+            client.Self.MoneyBalance += Self_MoneyBalance;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Self.MoneyBalanceReply -= new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
-            client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
+            client.Parcels.ParcelProperties -= Parcels_ParcelProperties;
+            client.Self.MoneyBalanceReply -= Self_MoneyBalanceReply;
+            client.Self.MoneyBalance -= Self_MoneyBalance;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -173,9 +173,9 @@ namespace Radegast
             if (netcom != null)
             {
                 netcom.NetcomSync = null;
-                netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-                netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-                netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+                netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+                netcom.ClientLoggedOut -= netcom_ClientLoggedOut;
+                netcom.ClientDisconnected -= netcom_ClientDisconnected;
             }
 
             if (client != null)
@@ -185,7 +185,7 @@ namespace Radegast
 
             if (instance?.Names != null)
             {
-                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+                instance.Names.NameUpdated -= Names_NameUpdated;
             }
 
             if (instance != null) instance.CleanUp();
@@ -274,12 +274,11 @@ namespace Radegast
         {
             // Sleep for 3 seconds on a separate thread while things unwind on
             // disconnect, since ShowDialog() blocks GUI thread
-            (new Thread(new ThreadStart(() =>
-                {
-                    Thread.Sleep(3000);
-                    DisplayAutoReconnectForm();
-                }
-                ))
+            (new Thread(() =>
+                    {
+                        Thread.Sleep(3000);
+                        DisplayAutoReconnectForm();
+                    })
                 {
                     Name = "Reconnect Delay Thread",
                     IsBackground = true
@@ -497,7 +496,7 @@ namespace Radegast
         private void InitializeStatusTimer()
         {
             statusTimer = new System.Timers.Timer(250) {SynchronizingObject = this};
-            statusTimer.Elapsed += new ElapsedEventHandler(statusTimer_Elapsed);
+            statusTimer.Elapsed += statusTimer_Elapsed;
         }
 
         private void statusTimer_Elapsed(object sender, ElapsedEventArgs e)

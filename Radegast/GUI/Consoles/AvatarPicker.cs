@@ -57,12 +57,12 @@ namespace Radegast
         public AvatarPicker(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(AvatarPicker_Disposed);
+            Disposed += AvatarPicker_Disposed;
             
             this.instance = instance;
 
             // events
-            client.Avatars.AvatarPickerReply += new EventHandler<AvatarPickerReplyEventArgs>(Avatars_AvatarPickerReply);
+            client.Avatars.AvatarPickerReply += Avatars_AvatarPickerReply;
 
             List<NearbyAvatar> nearAvatars = instance.TabConsole.NearbyAvatars;
             foreach (var avatar in nearAvatars)
@@ -76,7 +76,7 @@ namespace Radegast
 
         void AvatarPicker_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.AvatarPickerReply -= new EventHandler<AvatarPickerReplyEventArgs>(Avatars_AvatarPickerReply);
+            client.Avatars.AvatarPickerReply -= Avatars_AvatarPickerReply;
         }
 
         void Avatars_AvatarPickerReply(object sender, AvatarPickerReplyEventArgs e)

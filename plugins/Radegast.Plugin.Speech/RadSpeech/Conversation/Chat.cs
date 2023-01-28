@@ -39,17 +39,17 @@ namespace RadegastSpeech.Conversation
         {
             // We want to process incoming chat
             control.instance.Client.Self.ChatFromSimulator +=
-                new EventHandler<ChatEventArgs>(OnChat);
+                OnChat;
             control.instance.Client.Self.AlertMessage +=
-                new EventHandler<AlertMessageEventArgs>(OnAlertMessage);
+                OnAlertMessage;
             Radegast.RadegastTab chatTab = control.instance.TabConsole.Tabs["chat"];
             Radegast.ChatConsole chatscreen = (Radegast.ChatConsole)chatTab.Control;
 
             nearby = chatscreen.lvwObjects;
-            nearby.SelectedIndexChanged += new EventHandler(nearby_SelectedIndexChanged);
+            nearby.SelectedIndexChanged += nearby_SelectedIndexChanged;
 
-            nearby.GotFocus += new EventHandler(nearby_GotFocus);
-            chatscreen.ChatInputText.GotFocus += new EventHandler(cbxInput_GotFocus);
+            nearby.GotFocus += nearby_GotFocus;
+            chatscreen.ChatInputText.GotFocus += cbxInput_GotFocus;
 
             Title = "chat";
 
@@ -63,9 +63,9 @@ namespace RadegastSpeech.Conversation
         public void Dispose()
         {
             control.instance.Client.Self.ChatFromSimulator -=
-                new EventHandler<ChatEventArgs>(OnChat);
+                OnChat;
             control.instance.Client.Self.AlertMessage -=
-                new EventHandler<AlertMessageEventArgs>(OnAlertMessage);
+                OnAlertMessage;
             
             if (control.instance.TabConsole != null && control.instance.TabConsole.TabExists("chat"))
             {
@@ -73,10 +73,10 @@ namespace RadegastSpeech.Conversation
                 Radegast.ChatConsole chatscreen = (Radegast.ChatConsole)chatTab.Control;
 
                 nearby = chatscreen.lvwObjects;
-                nearby.SelectedIndexChanged -= new EventHandler(nearby_SelectedIndexChanged);
+                nearby.SelectedIndexChanged -= nearby_SelectedIndexChanged;
 
-                nearby.GotFocus -= new EventHandler(nearby_GotFocus);
-                chatscreen.ChatInputText.GotFocus -= new EventHandler(cbxInput_GotFocus);
+                nearby.GotFocus -= nearby_GotFocus;
+                chatscreen.ChatInputText.GotFocus -= cbxInput_GotFocus;
             }
 
             nearby = null;

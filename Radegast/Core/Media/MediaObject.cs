@@ -123,7 +123,7 @@ namespace Radegast.Media
                 volume = value;
                 if (!channel.hasHandle()) return;
 
-                invoke(new SoundDelegate(delegate
+                invoke(delegate
                 {
                     try
                     {
@@ -133,10 +133,10 @@ namespace Radegast.Media
                     {
                         Logger.Log(
                             $"Error on volume change on channel {channel.handle.ToString("X")} sound {sound.handle.ToString("X")} finished {finished}",
-                             Helpers.LogLevel.Error,
-                             ex);
+                            Helpers.LogLevel.Error,
+                            ex);
                     }
-                }));
+                });
             }
         }
 
@@ -151,21 +151,21 @@ namespace Radegast.Media
                 position = FromOMVSpace(value);
                 if (!channel.hasHandle()) return;
 
-                invoke(new SoundDelegate(delegate
+                invoke(delegate
+                {
+                    try
                     {
-                        try
-                        {
-                            FMODExec(channel.set3DAttributes(
-                                ref position,
-                                ref ZeroVector));
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(
-                                $"Error on position change on channel {channel.handle.ToString("X")} sound {sound.handle.ToString("X")} finished {finished}",
-                                Helpers.LogLevel.Error, ex);
-                        }
-                    }));
+                        FMODExec(channel.set3DAttributes(
+                            ref position,
+                            ref ZeroVector));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(
+                            $"Error on position change on channel {channel.handle.ToString("X")} sound {sound.handle.ToString("X")} finished {finished}",
+                            Helpers.LogLevel.Error, ex);
+                    }
+                });
 
             }
         }
@@ -174,10 +174,10 @@ namespace Radegast.Media
         {
             if (channel.hasHandle())
             {
-                invoke(new SoundDelegate(delegate
+                invoke(delegate
                 {
                     FMODExec(channel.stop());
-                }));
+                });
             }
         }
 

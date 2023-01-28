@@ -45,7 +45,7 @@ namespace Radegast
         public InventoryBackup(RadegastInstance instance, UUID rootFolder)
         {
             InitializeComponent();
-            Disposed += new EventHandler(InventoryBackup_Disposed);
+            Disposed += InventoryBackup_Disposed;
 
             this.instance = instance;
 

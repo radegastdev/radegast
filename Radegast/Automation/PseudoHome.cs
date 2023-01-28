@@ -94,9 +94,9 @@ namespace Radegast.Automation
         {
             m_instance = instance;
             m_Timer = new Timer(5000);
-            m_Timer.Elapsed += new ElapsedEventHandler((sender, args) => {
+            m_Timer.Elapsed += (sender, args) => {
                 ETGoHome();
-            });
+            };
             m_Timer.Enabled = false;
         }
 

@@ -59,9 +59,9 @@ namespace RadegastSpeech.Conversation
             invTab = (InventoryConsole)control.instance.TabConsole.Tabs[INVNAME].Control;
             tree = invTab.invTree;
  
-            tree.AfterSelect += new TreeViewEventHandler(OnItemChange);
-            tree.AfterExpand += new TreeViewEventHandler(tree_AfterExpand);
-            tree.AfterCollapse += new TreeViewEventHandler(tree_AfterCollapse);
+            tree.AfterSelect += OnItemChange;
+            tree.AfterExpand += tree_AfterExpand;
+            tree.AfterCollapse += tree_AfterCollapse;
 
             Talker.SayMore("Inventory");
             SayWhere();
@@ -73,9 +73,9 @@ namespace RadegastSpeech.Conversation
             Listener.DeactivateGrammar(INVNAME);
 
             if (tree == null) return;
-            tree.AfterSelect -= new TreeViewEventHandler(OnItemChange);
-            tree.AfterExpand -= new TreeViewEventHandler(tree_AfterExpand);
-            tree.AfterCollapse -= new TreeViewEventHandler(tree_AfterCollapse);
+            tree.AfterSelect -= OnItemChange;
+            tree.AfterExpand -= tree_AfterExpand;
+            tree.AfterCollapse -= tree_AfterCollapse;
         }
 
         void tree_AfterCollapse(object sender, TreeViewEventArgs e)

@@ -268,7 +268,7 @@ namespace Radegast
             MainForm = new frmMain(this);
             MainForm.InitializeControls();
 
-            MainForm.Load += new EventHandler(mainForm_Load);
+            MainForm.Load += mainForm_Load;
             PluginManager = new PluginManager(this);
         }
 
@@ -324,24 +324,24 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
-            client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+            client.Groups.CurrentGroups += Groups_CurrentGroups;
+            client.Groups.GroupLeaveReply += Groups_GroupsChanged;
+            client.Groups.GroupDropped += Groups_GroupsChanged;
+            client.Groups.GroupJoinedReply += Groups_GroupsChanged;
             if (Netcom != null)
-                Netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
-            client.Network.LoginProgress += new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
+                Netcom.ClientConnected += netcom_ClientConnected;
+            client.Network.LoginProgress += Network_LoginProgress;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-            client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
-            client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+            client.Groups.CurrentGroups -= Groups_CurrentGroups;
+            client.Groups.GroupLeaveReply -= Groups_GroupsChanged;
+            client.Groups.GroupDropped -= Groups_GroupsChanged;
+            client.Groups.GroupJoinedReply -= Groups_GroupsChanged;
             if (Netcom != null)
-                Netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
-            client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
+                Netcom.ClientConnected -= netcom_ClientConnected;
+            client.Network.LoginProgress -= Network_LoginProgress;
         }
 
         private void GetWorldTimeZone()
@@ -460,7 +460,7 @@ namespace Radegast
             }
             if (MainForm != null)
             {
-                MainForm.Load -= new EventHandler(mainForm_Load);
+                MainForm.Load -= mainForm_Load;
             }
             Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
         }

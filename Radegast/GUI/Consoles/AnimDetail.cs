@@ -40,7 +40,7 @@ namespace Radegast
         public AnimDetail(RadegastInstance instance, Avatar av, UUID anim, int n)
         {
             InitializeComponent();
-            Disposed += new EventHandler(AnimDetail_Disposed);
+            Disposed += AnimDetail_Disposed;
             this.instance = instance;
             this.av = av;
             this.anim = anim;

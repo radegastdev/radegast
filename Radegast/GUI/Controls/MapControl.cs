@@ -64,7 +64,7 @@ namespace Radegast
         {
             Zoom = 1.0f;
             InitializeComponent();
-            Disposed += new EventHandler(MapControl_Disposed);
+            Disposed += MapControl_Disposed;
             Instance = instance;
 
             background = Color.FromArgb(4, 4, 75);
@@ -76,7 +76,7 @@ namespace Radegast
 
             repaint = new System.Threading.Timer(RepaintTick, null, 1000, 1000);
 
-            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+            Instance.ClientChanged += Instance_ClientChanged;
             RegisterClientEvents();
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
@@ -108,18 +108,18 @@ namespace Radegast
 
         void RegisterClientEvents()
         {
-            Client.Grid.GridItems += new EventHandler<GridItemsEventArgs>(Grid_GridItems);
-            Client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-            Client.Grid.GridLayer += new EventHandler<GridLayerEventArgs>(Grid_GridLayer);
+            Client.Grid.GridItems += Grid_GridItems;
+            Client.Grid.GridRegion += Grid_GridRegion;
+            Client.Grid.GridLayer += Grid_GridLayer;
         }
 
 
         void UnregisterClientEvents(GridClient Client)
         {
             if (Client == null) return;
-            Client.Grid.GridItems -= new EventHandler<GridItemsEventArgs>(Grid_GridItems);
-            Client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-            Client.Grid.GridLayer -= new EventHandler<GridLayerEventArgs>(Grid_GridLayer);
+            Client.Grid.GridItems -= Grid_GridItems;
+            Client.Grid.GridRegion -= Grid_GridRegion;
+            Client.Grid.GridLayer -= Grid_GridLayer;
         }
 
         void RepaintTick(object sync)

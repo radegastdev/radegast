@@ -39,7 +39,7 @@ namespace Radegast
         public FriendsConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(FriendsConsole_Disposed);
+            Disposed += FriendsConsole_Disposed;
 
             this.instance = instance;
 
@@ -54,13 +54,13 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Friends.FriendOffline += new EventHandler<FriendInfoEventArgs>(Friends_FriendOffline);
-            client.Friends.FriendOnline += new EventHandler<FriendInfoEventArgs>(Friends_FriendOnline);
-            client.Friends.FriendshipTerminated += new EventHandler<FriendshipTerminatedEventArgs>(Friends_FriendshipTerminated);
-            client.Friends.FriendshipResponse += new EventHandler<FriendshipResponseEventArgs>(Friends_FriendshipResponse);
-            client.Friends.FriendNames += new EventHandler<FriendNamesEventArgs>(Friends_FriendNames);
-            Load += new EventHandler(FriendsConsole_Load);
-            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            client.Friends.FriendOffline += Friends_FriendOffline;
+            client.Friends.FriendOnline += Friends_FriendOnline;
+            client.Friends.FriendshipTerminated += Friends_FriendshipTerminated;
+            client.Friends.FriendshipResponse += Friends_FriendshipResponse;
+            client.Friends.FriendNames += Friends_FriendNames;
+            Load += FriendsConsole_Load;
+            instance.Names.NameUpdated += Names_NameUpdated;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -89,11 +89,11 @@ namespace Radegast
 
         void FriendsConsole_Disposed(object sender, EventArgs e)
         {
-            client.Friends.FriendOffline -= new EventHandler<FriendInfoEventArgs>(Friends_FriendOffline);
-            client.Friends.FriendOnline -= new EventHandler<FriendInfoEventArgs>(Friends_FriendOnline);
-            client.Friends.FriendshipTerminated -= new EventHandler<FriendshipTerminatedEventArgs>(Friends_FriendshipTerminated);
-            client.Friends.FriendshipResponse -= new EventHandler<FriendshipResponseEventArgs>(Friends_FriendshipResponse);
-            client.Friends.FriendNames -= new EventHandler<FriendNamesEventArgs>(Friends_FriendNames);
+            client.Friends.FriendOffline -= Friends_FriendOffline;
+            client.Friends.FriendOnline -= Friends_FriendOnline;
+            client.Friends.FriendshipTerminated -= Friends_FriendshipTerminated;
+            client.Friends.FriendshipResponse -= Friends_FriendshipResponse;
+            client.Friends.FriendNames -= Friends_FriendNames;
         }
 
         void FriendsConsole_Load(object sender, EventArgs e)

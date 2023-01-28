@@ -34,7 +34,7 @@ namespace Radegast
             :base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(MuteResidentForm_Disposed);
+            Disposed += MuteResidentForm_Disposed;
             AutoSavePosition = true;
 
             this.instance = instance;
@@ -42,10 +42,10 @@ namespace Radegast
 
             picker = new AvatarPicker(instance) { Dock = DockStyle.Fill };
             Controls.Add(picker);
-            picker.SelectionChaged += new EventHandler(picker_SelectionChaged);
+            picker.SelectionChaged += picker_SelectionChaged;
             picker.BringToFront();
             
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            netcom.ClientDisconnected += Netcom_ClientDisconnected;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
@@ -57,7 +57,7 @@ namespace Radegast
 
         void MuteResidentForm_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            netcom.ClientDisconnected -= Netcom_ClientDisconnected;
             netcom = null;
             instance = null;
             picker.Dispose();
@@ -66,7 +66,7 @@ namespace Radegast
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            ((Radegast.Netcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            ((Radegast.Netcom)sender).ClientDisconnected -= Netcom_ClientDisconnected;
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 BeginInvoke(new MethodInvoker(Close));

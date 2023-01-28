@@ -41,9 +41,9 @@ namespace RadegastSpeech.Conversation
             friends = frTab.listFriends;
 
             control.instance.Client.Friends.FriendOffline +=
-                new EventHandler<FriendInfoEventArgs>(Friends_OnFriendOffline);
+                Friends_OnFriendOffline;
             control.instance.Client.Friends.FriendOnline +=
-                new EventHandler<FriendInfoEventArgs>(Friends_OnFriendOnline);
+                Friends_OnFriendOnline;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace RadegastSpeech.Conversation
         internal override void Start()
         {
             base.Start();
-            friends.SelectedIndexChanged += new EventHandler(friends_ItemSelectionChanged);
+            friends.SelectedIndexChanged += friends_ItemSelectionChanged;
             Talker.SayMore("Friends");
         }
 
@@ -61,7 +61,7 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         internal override void Stop()
         {
-            friends.SelectedIndexChanged -= new EventHandler(friends_ItemSelectionChanged);
+            friends.SelectedIndexChanged -= friends_ItemSelectionChanged;
             base.Stop();
         }
         #endregion

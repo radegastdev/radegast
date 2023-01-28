@@ -54,7 +54,7 @@ namespace Radegast.Plugin.Alice
         public void StartPlugin(RadegastInstance inst)
         {
             Instance = inst;
-            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+            Instance.ClientChanged += Instance_ClientChanged;
 
             if (!Instance.GlobalSettings.Keys.Contains("plugin.alice.enabled"))
             {
@@ -335,18 +335,18 @@ namespace Radegast.Plugin.Alice
 
         private void RegisterClientEvents(GridClient client)
         {
-            Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-            Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            Client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            Instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
+            Client.Self.ChatFromSimulator += Self_ChatFromSimulator;
+            Client.Self.IM += Self_IM;
+            Client.Avatars.AvatarPropertiesReply += Avatars_AvatarPropertiesReply;
+            Instance.Netcom.ClientConnected += Netcom_ClientConnected;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-            Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            Client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            Instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_ClientConnected);
+            Client.Self.ChatFromSimulator -= Self_ChatFromSimulator;
+            Client.Self.IM -= Self_IM;
+            Client.Avatars.AvatarPropertiesReply -= Avatars_AvatarPropertiesReply;
+            Instance.Netcom.ClientConnected -= Netcom_ClientConnected;
         }
 
         void Instance_ClientChanged(object sender, ClientChangedEventArgs e)

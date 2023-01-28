@@ -84,7 +84,7 @@ namespace RadegastSpeech
 
                 // Hook up event relay
                 recog.OnWinRecognition +=
-                    new SpeechEventHandler(recog_OnWinRecognition);
+                    recog_OnWinRecognition;
             }
             catch (Exception)
             {

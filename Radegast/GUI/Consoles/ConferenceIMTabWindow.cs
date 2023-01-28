@@ -42,7 +42,7 @@ namespace Radegast
         public ConferenceIMTabWindow(RadegastInstance instance, UUID session, string sessionName)
         {
             InitializeComponent();
-            Disposed += new EventHandler(IMTabWindow_Disposed);
+            Disposed += IMTabWindow_Disposed;
 
             this.instance = instance;
             client = instance.Client;
@@ -54,9 +54,9 @@ namespace Radegast
             TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, SessionId, sessionName);
             
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientDisconnected += netcom_ClientDisconnected;
+            instance.GlobalSettings.OnSettingChanged += GlobalSettings_OnSettingChanged;
 
             if (!client.Self.GroupChatSessions.ContainsKey(session))
             {
@@ -68,9 +68,9 @@ namespace Radegast
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+            netcom.ClientDisconnected -= netcom_ClientDisconnected;
+            instance.GlobalSettings.OnSettingChanged -= GlobalSettings_OnSettingChanged;
             CleanUp();
         }
 

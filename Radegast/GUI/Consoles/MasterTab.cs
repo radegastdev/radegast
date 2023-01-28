@@ -41,7 +41,7 @@ namespace Radegast
         public MasterTab(RadegastInstance instance, Avatar avatar)
         {
             InitializeComponent();
-            Disposed += new EventHandler(MasterTab_Disposed);
+            Disposed += MasterTab_Disposed;
 
             if (!instance.advancedDebugging)
             {
@@ -53,16 +53,16 @@ namespace Radegast
             this.avatar = avatar;
             
             // Callbacks
-            client.Avatars.ViewerEffectPointAt += new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
-            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Avatars.ViewerEffectPointAt += Avatars_ViewerEffectPointAt;
+            client.Objects.ObjectProperties += Objects_ObjectProperties;
 
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MasterTab_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.ViewerEffectPointAt -= new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
-            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Avatars.ViewerEffectPointAt -= Avatars_ViewerEffectPointAt;
+            client.Objects.ObjectProperties -= Objects_ObjectProperties;
         }
 
         void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)

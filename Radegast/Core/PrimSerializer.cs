@@ -39,12 +39,12 @@ namespace Radegast
         public PrimSerializer(GridClient c)
         {
             Client = c;
-            Client.Objects.ObjectProperties += new System.EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            Client.Objects.ObjectProperties += Objects_ObjectProperties;
         }
 
         public void CleanUp()
         {
-            Client.Objects.ObjectProperties -= new System.EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            Client.Objects.ObjectProperties -= Objects_ObjectProperties;
         }
 
         public string GetSerializedAttachmentPrims(Simulator sim, uint localID)

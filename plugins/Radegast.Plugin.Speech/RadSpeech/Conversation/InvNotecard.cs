@@ -76,7 +76,7 @@ namespace RadegastSpeech.Conversation
                         StopPosition = 0;
                         NextSection();
                         control.instance.MainForm.KeyDown +=
-                            new System.Windows.Forms.KeyEventHandler(MainForm_KeyPress);
+                            MainForm_KeyPress;
                     }
                     else
                     {
@@ -103,7 +103,7 @@ namespace RadegastSpeech.Conversation
                     return true;
                 case "stop":
                     control.instance.MainForm.KeyDown -=
-                        new System.Windows.Forms.KeyEventHandler(MainForm_KeyPress);
+                        MainForm_KeyPress;
                     FinishInterruption();
                     return true;
             }

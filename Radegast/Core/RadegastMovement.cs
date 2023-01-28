@@ -161,7 +161,7 @@ namespace Radegast
         {
             this.instance = instance;
             timer = new Timer(100);
-            timer.Elapsed +=new ElapsedEventHandler(timer_Elapsed);
+            timer.Elapsed +=timer_Elapsed;
             timer.Enabled = false;
         }
 

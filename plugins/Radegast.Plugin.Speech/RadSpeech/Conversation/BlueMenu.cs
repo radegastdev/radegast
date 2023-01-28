@@ -37,9 +37,9 @@ namespace RadegastSpeech.Conversation
 
             // Watch for being closed by keyboard before we get to talk about it.
             note.OnNotificationClicked +=
-                new Notification.NotificationClickedCallback(note_OnNotificationClicked);
+                note_OnNotificationClicked;
             note.OnNotificationClosed +=
-                new Notification.NotificationCallback(note_OnNotificationClosed);
+                note_OnNotificationClosed;
         }
 
         internal override void Start()
@@ -83,9 +83,9 @@ namespace RadegastSpeech.Conversation
         void note_OnNotificationClosed(object sender, NotificationEventArgs e)
         {
             note.OnNotificationClosed -=
-                new Notification.NotificationCallback(note_OnNotificationClosed);
+                note_OnNotificationClosed;
             note.OnNotificationClicked -=
-                new Notification.NotificationClickedCallback(note_OnNotificationClicked);
+                note_OnNotificationClicked;
             FinishInterruption();
         }
 

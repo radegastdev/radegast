@@ -38,7 +38,7 @@ namespace RadegastSpeech.Sound
         {
             playing = new AutoResetEvent(false);
             speechPlayer = new Speech();
-            speechPlayer.OnSpeechDone += new Speech.SpeechDoneCallback(SpeechDoneHandler);
+            speechPlayer.OnSpeechDone += SpeechDoneHandler;
         }
 
         internal override void Stop()

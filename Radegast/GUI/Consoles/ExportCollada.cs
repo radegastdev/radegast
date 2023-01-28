@@ -37,7 +37,7 @@ namespace Radegast
 		{
 			InitializeComponent();
             Exporter = new DAEExport(instance, prim);
-            Exporter.Progress += new EventHandler<DAEStatutsEventArgs>(Exporter_Progress);
+            Exporter.Progress += Exporter_Progress;
             UpdateInfo();
             cbImageType.Text = "TGA";
 
