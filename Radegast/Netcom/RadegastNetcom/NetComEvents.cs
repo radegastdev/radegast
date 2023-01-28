@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -44,7 +44,6 @@ namespace Radegast
         public event EventHandler<ChatSentEventArgs> ChatSent;
         public event EventHandler<InstantMessageEventArgs> InstantMessageReceived;
         public event EventHandler<InstantMessageSentEventArgs> InstantMessageSent;
-        public event EventHandler<TeleportingEventArgs> Teleporting;
         public event EventHandler<TeleportEventArgs> TeleportStatusChanged;
         public event EventHandler<AlertMessageEventArgs> AlertMessageReceived;
         public event EventHandler<BalanceEventArgs> MoneyBalanceUpdated;
@@ -92,11 +91,6 @@ namespace Radegast
         protected virtual void OnInstantMessageSent(InstantMessageSentEventArgs e)
         {
             InstantMessageSent?.Invoke(this, e);
-        }
-
-        protected virtual void OnTeleporting(TeleportingEventArgs e)
-        {
-            Teleporting?.Invoke(this, e);
         }
 
         protected virtual void OnTeleportStatusChanged(TeleportEventArgs e)

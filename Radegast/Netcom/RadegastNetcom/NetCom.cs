@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2022, Sjofn, LLC
+ * Copyright(c) 2016-2023, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -120,7 +120,7 @@ namespace Radegast
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), new object[] { e });
+                NetcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), e);
             else
                 OnInstantMessageReceived(e);
         }
@@ -133,7 +133,7 @@ namespace Radegast
                 client.Self.RequestBalance();
                 if (CanSyncInvoke)
                 {
-                    NetcomSync.BeginInvoke(new ClientConnectedRaise(OnClientConnected), new object[] { EventArgs.Empty });
+                    NetcomSync.BeginInvoke(new ClientConnectedRaise(OnClientConnected), EventArgs.Empty);
                 }
                 else
                 {
@@ -159,20 +159,15 @@ namespace Radegast
             IsLoggedIn = false;
 
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnClientLogoutRaise(OnClientLoggedOut), new object[] { EventArgs.Empty });
+                NetcomSync.BeginInvoke(new OnClientLogoutRaise(OnClientLoggedOut), EventArgs.Empty);
             else
                 OnClientLoggedOut(EventArgs.Empty);
         }
 
         void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
-            if (e.Status == TeleportStatus.Finished || e.Status == TeleportStatus.Failed)
-            {
-                IsTeleporting = false;
-            }
-
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { e });
+                NetcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), e);
             else
                 OnTeleportStatusChanged(e);
         }
@@ -180,7 +175,7 @@ namespace Radegast
         private void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { e });
+                NetcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), e);
             else
                 OnChatReceived(e);
         }
@@ -191,7 +186,7 @@ namespace Radegast
             instance.MarkEndExecution();
 
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), new object[] { e });
+                NetcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), e);
             else
                 OnClientDisconnected(e);
         }
@@ -199,7 +194,7 @@ namespace Radegast
         void Self_MoneyBalance(object sender, BalanceEventArgs e)
         {
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), new object[] { e });
+                NetcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), e);
             else
                 OnMoneyBalanceUpdated(e);
         }
@@ -207,7 +202,7 @@ namespace Radegast
         void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
             if (CanSyncInvoke)
-                NetcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), new object[] { e });
+                NetcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), e);
             else
                 OnAlertMessageReceived(e);
         }
@@ -344,24 +339,9 @@ namespace Radegast
                 InstantMessageOnline.Online, client.Self.SimPosition, client.Network.CurrentSim.ID, null);
         }
 
-        public void Teleport(string sim, Vector3 coordinates)
-        {
-            if (!IsLoggedIn) return;
-            if (IsTeleporting) return;
-
-            TeleportingEventArgs ea = new TeleportingEventArgs(sim, coordinates);
-            OnTeleporting(ea);
-            if (ea.Cancel) return;
-
-            IsTeleporting = true;
-            client.Self.Teleport(sim, coordinates);
-        }
-
         public bool IsLoggingIn { get; private set; } = false;
 
         public bool IsLoggedIn { get; private set; } = false;
-
-        public bool IsTeleporting { get; private set; } = false;
 
         public LoginOptions LoginOptions
         {
