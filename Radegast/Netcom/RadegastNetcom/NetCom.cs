@@ -1,4 +1,4 @@
-/**
+/*
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
  * Copyright(c) 2016-2023, Sjofn, LLC
@@ -25,7 +25,7 @@ using OpenMetaverse;
 namespace Radegast
 {
     /// <summary>
-    /// RadegastNetcom is a class built on top of libsecondlife that provides a way to
+    /// Netcom is a class built on top of libsecondlife that provides a way to
     /// raise events on the proper thread (for GUI apps especially).
     /// </summary>
     public partial class Netcom : IDisposable
@@ -73,32 +73,32 @@ namespace Radegast
             this.instance = instance;
             loginOptions = new LoginOptions();
 
-            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            instance.ClientChanged += instance_ClientChanged;
             RegisterClientEvents(client);
         }
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-            client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
-            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Network.Disconnected += new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
-            client.Network.LoginProgress += new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
-            client.Network.LoggedOut += new EventHandler<LoggedOutEventArgs>(Network_LoggedOut);
+            client.Self.ChatFromSimulator += Self_ChatFromSimulator;
+            client.Self.IM += Self_IM;
+            client.Self.MoneyBalance += Self_MoneyBalance;
+            client.Self.TeleportProgress += Self_TeleportProgress;
+            client.Self.AlertMessage += Self_AlertMessage;
+            client.Network.Disconnected += Network_Disconnected;
+            client.Network.LoginProgress += Network_LoginProgress;
+            client.Network.LoggedOut += Network_LoggedOut;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-            client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
-            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Network.Disconnected -= new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
-            client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
-            client.Network.LoggedOut -= new EventHandler<LoggedOutEventArgs>(Network_LoggedOut);
+            client.Self.ChatFromSimulator -= Self_ChatFromSimulator;
+            client.Self.IM -= Self_IM;
+            client.Self.MoneyBalance -= Self_MoneyBalance;
+            client.Self.TeleportProgress -= Self_TeleportProgress;
+            client.Self.AlertMessage -= Self_AlertMessage;
+            client.Network.Disconnected -= Network_Disconnected;
+            client.Network.LoginProgress -= Network_LoginProgress;
+            client.Network.LoggedOut -= Network_LoggedOut;
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
