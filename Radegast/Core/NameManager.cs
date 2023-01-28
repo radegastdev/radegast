@@ -348,7 +348,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Failed loading cached avatar names: ", Helpers.LogLevel.Warning, client, ex);
+                    Logger.Log("Failed to load avatar name cache: " + ex.Message, Helpers.LogLevel.Warning, client);
                 }
             });
         }
