@@ -113,10 +113,10 @@ namespace Radegast
         public TabsConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(TabsConsole_Disposed);
+            Disposed += TabsConsole_Disposed;
 
             this.instance = instance;
-            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            this.instance.ClientChanged += instance_ClientChanged;
 
             AddNetcomEvents();
 
@@ -131,23 +131,23 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
-            client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
-            client.Self.LoadURL += new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
-            client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
-            client.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
-            client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Self.ScriptQuestion += Self_ScriptQuestion;
+            client.Self.ScriptDialog += Self_ScriptDialog;
+            client.Self.LoadURL += Self_LoadURL;
+            client.Self.SetDisplayNameReply += Self_SetDisplayNameReply;
+            client.Avatars.DisplayNameUpdate += Avatars_DisplayNameUpdate;
+            client.Network.EventQueueRunning += Network_EventQueueRunning;
             client.Network.RegisterCallback(OpenMetaverse.Packets.PacketType.ScriptTeleportRequest, ScriptTeleportRequestHandler);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
-            client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
-            client.Self.LoadURL -= new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
-            client.Self.SetDisplayNameReply -= new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
-            client.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
-            client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Self.ScriptQuestion -= Self_ScriptQuestion;
+            client.Self.ScriptDialog -= Self_ScriptDialog;
+            client.Self.LoadURL -= Self_LoadURL;
+            client.Self.SetDisplayNameReply -= Self_SetDisplayNameReply;
+            client.Avatars.DisplayNameUpdate -= Avatars_DisplayNameUpdate;
+            client.Network.EventQueueRunning -= Network_EventQueueRunning;
             client.Network.UnregisterCallback(OpenMetaverse.Packets.PacketType.ScriptTeleportRequest, ScriptTeleportRequestHandler);
         }
 
@@ -165,22 +165,22 @@ namespace Radegast
 
         private void AddNetcomEvents()
         {
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
-            netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+            netcom.ClientLoginStatus += netcom_ClientLoginStatus;
+            netcom.ClientLoggedOut += netcom_ClientLoggedOut;
+            netcom.ClientDisconnected += netcom_ClientDisconnected;
+            netcom.ChatSent += netcom_ChatSent;
+            netcom.AlertMessageReceived += netcom_AlertMessageReceived;
+            netcom.InstantMessageReceived += netcom_InstantMessageReceived;
         }
 
         private void RemoveNetcomEvents()
         {
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
-            netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
-            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+            netcom.ClientLoginStatus -= netcom_ClientLoginStatus;
+            netcom.ClientLoggedOut -= netcom_ClientLoggedOut;
+            netcom.ClientDisconnected -= netcom_ClientDisconnected;
+            netcom.ChatSent -= netcom_ChatSent;
+            netcom.AlertMessageReceived -= netcom_AlertMessageReceived;
+            netcom.InstantMessageReceived -= netcom_InstantMessageReceived;
         }
 
         void ScriptTeleportRequestHandler(object sender, PacketReceivedEventArgs e)
@@ -215,7 +215,7 @@ namespace Radegast
             if (TabExists("friends")) return;
             if (e.Simulator == client.Network.CurrentSim)
             {
-                client.Self.UpdateAgentLanguage("en", true);
+                client.Self.UpdateAgentLanguage("en", true); // FIXME: This should user set.
                 InitializeOnlineTabs();
             }
         }
@@ -267,7 +267,7 @@ namespace Radegast
             }
             else if (e.Status == LoginStatus.Success)
             {
-                DisplayNotificationInChat("Logged in as " + netcom.LoginOptions.FullName + ".", ChatBufferTextStyle.StatusDarkBlue);
+                DisplayNotificationInChat($"Logged in as {netcom.LoginOptions.FullName}.", ChatBufferTextStyle.StatusDarkBlue);
                 DisplayNotificationInChat("Login reply: " + e.Message, ChatBufferTextStyle.StatusDarkBlue);
 
                 if (Tabs.ContainsKey("login"))
@@ -296,23 +296,23 @@ namespace Radegast
 
             DisposeOnlineTabs();
             SelectDefaultTab();
-            DisplayNotificationInChat("Disconnected: " + e.Message, ChatBufferTextStyle.Error);
+            DisplayNotificationInChat($"Disconnected: {e.Message}", ChatBufferTextStyle.Error);
         }
 
         void Avatars_DisplayNameUpdate(object sender, DisplayNameUpdateEventArgs e)
         {
-            DisplayNotificationInChat(string.Format("({0}) is now known as {1}", e.DisplayName.UserName, e.DisplayName.DisplayName));
+            DisplayNotificationInChat($"({e.DisplayName.UserName}) is now known as {e.DisplayName.DisplayName}");
         }
 
         void Self_SetDisplayNameReply(object sender, SetDisplayNameReplyEventArgs e)
         {
             if (e.Status == 200)
             {
-                DisplayNotificationInChat("You are now knows as " + e.DisplayName.DisplayName);
+                DisplayNotificationInChat($"You are now knows as {e.DisplayName.DisplayName}");
             }
             else
             {
-                DisplayNotificationInChat("Failed to set a new display name: " + e.Reason, ChatBufferTextStyle.Error);
+                DisplayNotificationInChat($"Failed to set a new display name: {e.Reason}", ChatBufferTextStyle.Error);
             }
         }
 
@@ -438,7 +438,7 @@ namespace Radegast
                 case InstantMessageDialog.RequestTeleport:
                     if (instance.RLV.AutoAcceptTP(e.IM.FromAgentID))
                     {
-                        DisplayNotificationInChat("Auto accepting teleprot from " + e.IM.FromAgentName);
+                        DisplayNotificationInChat($"Automatically accepted a teleport request from {e.IM.FromAgentName}");
                         instance.Client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, true);
                     }
                     else
@@ -467,11 +467,11 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.InventoryAccepted:
-                    DisplayNotificationInChat(e.IM.FromAgentName + " accepted your inventory offer.");
+                    DisplayNotificationInChat($"{e.IM.FromAgentName} accepted your inventory offer.");
                     break;
 
                 case InstantMessageDialog.InventoryDeclined:
-                    DisplayNotificationInChat(e.IM.FromAgentName + " declined your inventory offer.");
+                    DisplayNotificationInChat($"{e.IM.FromAgentName} declined your inventory offer.");
                     break;
 
                 case InstantMessageDialog.GroupNotice:
@@ -820,7 +820,7 @@ namespace Radegast
             button.Image = null;
             button.AutoToolTip = false;
             button.Tag = tab.Name;
-            button.Click += new EventHandler(TabButtonClick);
+            button.Click += TabButtonClick;
             tab.Button = button;
             Tabs.Add(tab.Name, tab);
 
@@ -852,16 +852,16 @@ namespace Radegast
             button.AutoToolTip = false;
             button.Tag = name.ToLower();
             button.AllowDrop = true;
-            button.Click += new EventHandler(TabButtonClick);
+            button.Click += TabButtonClick;
 
             RadegastTab tab = new RadegastTab(instance, button, control, name.ToLower(), label);
             if (control is RadegastTabControl)
                 ((RadegastTabControl)control).RadegastTab = tab;
-            tab.TabAttached += new EventHandler(tab_TabAttached);
-            tab.TabDetached += new EventHandler(tab_TabDetached);
-            tab.TabSelected += new EventHandler(tab_TabSelected);
-            tab.TabClosed += new EventHandler(tab_TabClosed);
-            tab.TabHidden += new EventHandler(tab_TabHidden);
+            tab.TabAttached += tab_TabAttached;
+            tab.TabDetached += tab_TabDetached;
+            tab.TabSelected += tab_TabSelected;
+            tab.TabClosed += tab_TabClosed;
+            tab.TabHidden += tab_TabHidden;
             Tabs.Add(name.ToLower(), tab);
 
             if (OnTabAdded != null)
@@ -1168,13 +1168,13 @@ namespace Radegast
                 {
                     ToolStripItem item = tmnuMergeWith.DropDown.Items.Add(tab.Label);
                     item.Tag = tab.Name;
-                    item.Click += new EventHandler(MergeItemClick);
+                    item.Click += MergeItemClick;
                 }
             }
             else
             {
                 tmnuMergeWith.Text = "Split";
-                tmnuMergeWith.Click += new EventHandler(SplitClick);
+                tmnuMergeWith.Click += SplitClick;
             }
         }
 
@@ -1276,13 +1276,13 @@ namespace Radegast
                     {
                         ToolStripItem item = ctxBtnMerge.DropDown.Items.Add(tab.Label);
                         item.Tag = tab.Name;
-                        item.Click += new EventHandler(MergeItemClick);
+                        item.Click += MergeItemClick;
                     }
                 }
                 else
                 {
                     ctxBtnMerge.Text = "Split";
-                    ctxBtnMerge.Click += new EventHandler(SplitClick);
+                    ctxBtnMerge.Click += SplitClick;
                 }
 
             }
