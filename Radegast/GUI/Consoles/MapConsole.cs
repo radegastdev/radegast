@@ -249,7 +249,7 @@ namespace Radegast
             }
 
             gotoRegion(client.Network.CurrentSim.Name, (int)client.Self.SimPosition.X, (int)client.Self.SimPosition.Y);
-            lblStatus.Text = "Now in " + client.Network.CurrentSim.Name;
+            lblStatus.Text = $"Now in {client.Network.CurrentSim.Name}";
         }
 
         int lastTick = 0;

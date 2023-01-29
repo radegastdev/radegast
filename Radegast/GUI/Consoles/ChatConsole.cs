@@ -177,7 +177,7 @@ namespace Radegast
                             agentSimHandle.Remove(key);
                             try
                             {
-                                lvwObjects.Items.RemoveByKey("" + key);
+                                lvwObjects.Items.RemoveByKey(key.ToString());
                             }
                             catch (Exception)
                             {
@@ -244,7 +244,7 @@ namespace Radegast
                 return;
             }
 
-            // later on we can set this with something from the GUI
+            // *TODO: later on we can set this with something from the GUI
             const double MAX_DISTANCE = 362.0; // one sim a corner to corner distance
             lock (agentSimHandle)
                 try
@@ -264,7 +264,7 @@ namespace Radegast
                     List<UUID> existing = new List<UUID>();
                     List<UUID> removed = new List<UUID>(e.RemovedEntries);
 
-                    e.Simulator.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
+                    e.Simulator.AvatarPositions.ForEach(avi =>
                     {
                         existing.Add(avi.Key);
                         if (!lvwObjects.Items.ContainsKey(avi.Key.ToString()))
