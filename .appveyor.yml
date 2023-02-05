@@ -75,3 +75,6 @@ artifacts:
   - path: 'Radegast-*.tbz'
     name: 'Radegast Linux x86'
     type: Auto
+  - path: 'bin\Release\Radegast.pdb'
+    name: 'Radegast symbols'
+    type: Auto
