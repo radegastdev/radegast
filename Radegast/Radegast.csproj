@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
-    <PackageReference Include="BugSplatDotNetStandard" Version="3.1.1" />
+    <PackageReference Include="BugSplatDotNetStandard" Version="3.2.0" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="LibreMetaverse" Version="2.0.6.545" />
