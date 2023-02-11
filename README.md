@@ -22,7 +22,7 @@ There is a strong focus on accessability and non-3D interaction.
 
 ### Prerequisites
 
-Radegast requires .NET Framework 4.7.2 or compatible Mono version to build and run.
+Radegast requires .NET Framework 4.8 or compatible Mono version to build and run.
 
 ### Contributing
 
