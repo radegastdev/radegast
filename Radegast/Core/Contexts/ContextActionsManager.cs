@@ -211,7 +211,7 @@ namespace Radegast
         /// </summary>
         /// <param name="strip">The form's menu</param>        
         /// <param name="type">The type it will target</param>
-        /// <param name="obj">the Target ofbject</param>
+        /// <param name="obj">the Target object</param>
         /// <param name="controls">Control to search for extra contributions (like buttons)</param>
         public void GleanContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
