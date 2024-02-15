@@ -1529,6 +1529,14 @@ namespace Radegast
                     }
                     ctxInv.Items.Add(ctxItem);
 
+                    if (item.InventoryType == InventoryType.Object && IsAttached(item))
+                    {
+                        ctxItem = new ToolStripMenuItem("Touch", null, OnInvContextClick) { Name = "touch" };
+                        //TODO: add RLV support
+                        if ((attachments[item.UUID].Prim.Flags & PrimFlags.Touch) == 0) ctxItem.Enabled = false;
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
                     if (IsAttached(item) && instance.RLV.AllowDetach(attachments[item.UUID]))
                     {
                         ctxItem =
@@ -1837,6 +1845,18 @@ namespace Radegast
 
                     case "rename_item":
                         invTree.SelectedNode.BeginEdit();
+                        break;
+
+                    case "touch":
+                        lock (attachments[item.UUID])
+                        {
+                            AttachmentInfo aInfo = attachments[item.UUID];
+                            Client.Self.Grab(aInfo.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, 0,
+                                    Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                            Thread.Sleep(100);
+                            Client.Self.DeGrab(aInfo.Prim.LocalID, Vector3.Zero, Vector3.Zero, 0, Vector3.Zero,
+                                    Vector3.Zero, Vector3.Zero);
+                        }
                         break;
 
                     case "detach":

@@ -1668,7 +1668,14 @@ namespace Radegast.Rendering
                 BinBVHAnimationReader bvh;
                 if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
                 {
-                    skeleton.addanimation(null, tid, bvh, anim.AnimationID);
+                    try
+                    {
+                        skeleton.addanimation(null, tid, bvh, anim.AnimationID);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log($"Failure in skel.addanimation: {ex.Message}", Helpers.LogLevel.Error);
+                    }
                     continue;
                 }
 
